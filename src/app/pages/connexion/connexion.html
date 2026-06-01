@@ -1,0 +1,81 @@
+<div class="auth-page">
+  <div class="auth-card">
+
+    <!-- Logo -->
+    <div class="auth-logo">
+      <div  class="logo-icon" >
+      <img src="assets/logo.png" style="width: 40px; height: 40px;" >
+      </div>
+      <span class="logo-text" style="font-size: 1.5rem; font-weight: 700;">DevFolio</span>
+    </div>
+
+    <div class="auth-header">
+      <h1>Bon retour !</h1>
+      <p>Connectez-vous pour accéder à votre espace portfolio.</p>
+    </div>
+
+    <!-- Formulaire -->
+    <div class="auth-form">
+      <div class="form-group">
+        <label class="form-label" for="email">Adresse email</label>
+        <div class="input-wrap">
+          <span class="material-symbols-outlined input-icon">mail</span>
+          <input
+            id="email"
+            type="email"
+            class="form-input"
+            placeholder="vous@exemple.com"
+            [(ngModel)]="email"
+          />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="password">Mot de passe</label>
+        <div class="input-wrap">
+          <span class="material-symbols-outlined input-icon">lock</span>
+          <input
+            id="password"
+            [type]="showPassword ? 'text' : 'password'"
+            class="form-input"
+            placeholder="••••••••"
+            [(ngModel)]="password"
+          />
+          <button class="toggle-pw" type="button" (click)="togglePassword()">
+            <span class="material-symbols-outlined">{{ showPassword ? 'visibility_off' : 'visibility' }}</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="form-options">
+        <label class="checkbox-label">
+          <input type="checkbox" [(ngModel)]="rememberMe" />
+          Se souvenir de moi
+        </label>
+        <a class="forgot-link" routerLink="/forgot">Mot de passe oublié ?</a>
+      </div>
+
+      <button class="btn btn-primary btn-full" (click)="login()">
+        <span class="material-symbols-outlined btn-icon">login</span>
+        Se connecter
+      </button>
+
+      <div *ngIf="errorMsg" class="error-banner">
+        <span class="material-symbols-outlined">error</span>
+        {{ errorMsg }}
+      </div>
+    </div>
+
+    <div class="auth-divider"><span>ou</span></div>
+
+    <div class="auth-footer">
+      Pas encore de compte ?
+      <a routerLink="/inscription" class="link-yellow">Créer un compte</a>
+    </div>
+
+  </div>
+
+  <!-- Déco fond -->
+  <div class="auth-bg-deco auth-bg-deco-1"></div>
+  <div class="auth-bg-deco auth-bg-deco-2"></div>
+</div>

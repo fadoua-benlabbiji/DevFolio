@@ -1,0 +1,110 @@
+<div class="auth-page">
+  <div class="auth-card">
+
+    <!-- Logo -->
+    <div class="auth-logo">
+      <div  class="logo-icon" >
+      <img src="assets/logo.png" style="width: 40px; height: 40px;" >
+      </div>
+      <span class="logo-text" style="font-size: 1.5rem; font-weight: 700;">DevFolio</span>
+    </div>
+
+    <div class="auth-header">
+      <h1>Créer un compte</h1>
+      <p>Rejoignez la communauté DevFolio et construisez votre portfolio.</p>
+    </div>
+
+    <!-- Formulaire -->
+    <div class="auth-form">
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="prenom">Prénom</label>
+          <div class="input-wrap">
+            <span class="material-symbols-outlined input-icon">person</span>
+            <input id="prenom" type="text" class="form-input" placeholder="Prénom" [(ngModel)]="prenom" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="nom">Nom</label>
+          <div class="input-wrap">
+            <span class="material-symbols-outlined input-icon">badge</span>
+            <input id="nom" type="text" class="form-input" placeholder="Nom" [(ngModel)]="nom" />
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="email">Adresse email</label>
+        <div class="input-wrap">
+          <span class="material-symbols-outlined input-icon">mail</span>
+          <input id="email" type="email" class="form-input" placeholder="vous@exemple.com" [(ngModel)]="email" />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="password">Mot de passe</label>
+        <div class="input-wrap">
+          <span class="material-symbols-outlined input-icon">lock</span>
+          <input
+            id="password"
+            [type]="showPassword ? 'text' : 'password'"
+            class="form-input"
+            placeholder="8 caractères minimum"
+            [(ngModel)]="password"
+          />
+          <button class="toggle-pw" type="button" (click)="togglePassword()">
+            <span class="material-symbols-outlined">{{ showPassword ? 'visibility_off' : 'visibility' }}</span>
+          </button>
+        </div>
+        <!-- Indicateur de force du mot de passe -->
+        <div class="pw-strength" *ngIf="password.length > 0">
+          <div class="pw-strength-bar">
+            <div class="pw-strength-fill" [style.width]="pwStrengthWidth" [class]="pwStrengthClass"></div>
+          </div>
+          <span class="pw-strength-label" [class]="pwStrengthClass">{{ pwStrengthLabel }}</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="confirm">Confirmer le mot de passe</label>
+        <div class="input-wrap">
+          <span class="material-symbols-outlined input-icon">lock_reset</span>
+          <input
+            id="confirm"
+            [type]="showPassword ? 'text' : 'password'"
+            class="form-input"
+            placeholder="Répétez votre mot de passe"
+            [(ngModel)]="confirmPassword"
+          />
+        </div>
+      </div>
+
+      <label class="checkbox-label terms-label">
+        <input type="checkbox" [(ngModel)]="acceptTerms" />
+        J'accepte les <a class="link-yellow" href="#">conditions d'utilisation</a>
+      </label>
+
+      <button class="btn btn-primary btn-full" (click)="register()">
+        <span class="material-symbols-outlined btn-icon">person_add</span>
+        Créer mon compte
+      </button>
+
+      <div *ngIf="errorMsg" class="error-banner">
+        <span class="material-symbols-outlined">error</span>
+        {{ errorMsg }}
+      </div>
+    </div>
+
+    <div class="auth-divider"><span>ou</span></div>
+
+    <div class="auth-footer">
+      Déjà un compte ?
+      <a routerLink="/connexion" class="link-yellow">Se connecter</a>
+    </div>
+
+  </div>
+
+  <div class="auth-bg-deco auth-bg-deco-1"></div>
+  <div class="auth-bg-deco auth-bg-deco-2"></div>
+</div>
