@@ -1,7 +1,338 @@
-/* You can add global styles to this file, and also import other style files */
-html, body {
-  height: 100%;
+/* ===================================================
+   STYLES GLOBAUX — DevFolio
+   À mettre dans : src/styles.css
+   (PAS dans app.css — app.css reste vide ou pour
+    les styles du shell app uniquement)
+   =================================================== */
+
+/* Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined');
+
+/* ===== VARIABLES ===== */
+:root {
+  /* Jaune */
+  --yellow-hot:   #FFD60A;
+  --yellow-mid:   #FFC300;
+  --yellow-warm:  #FFB703;
+  --yellow-light: #FFF3B0;
+  --yellow-pale:  #FFFBE6;
+
+  /* Neutres */
+  --dark:         #0D0D0D;
+  --dark-2:       #1A1A1A;
+  --dark-3:       #2C2C2C;
+  --gray-text:    #555555;
+  --gray-light:   #AAAAAA;
+  --border:       #E8E8E8;
+  --white:        #FFFFFF;
+  --bg:           #FAFAF8;
+
+  /* Gradients */
+  --grad-yellow:  linear-gradient(135deg, #FFD60A 0%, #FFC300 50%, #FFB703 100%);
+  --grad-hero:    linear-gradient(135deg, #FFFBE6 0%, #FFF3B0 50%, #FFE566 100%);
+  --grad-dark:    linear-gradient(135deg, #1A1A1A 0%, #0D0D0D 100%);
+
+  /* Ombres */
+  --shadow-sm:    0 2px 8px rgba(255, 198, 0, 0.15);
+  --shadow-md:    0 8px 32px rgba(255, 198, 0, 0.2);
+  --shadow-lg:    0 20px 60px rgba(255, 198, 0, 0.25);
+  --shadow-card:  0 4px 20px rgba(0, 0, 0, 0.08);
+
+  /* Typo */
+  --font-main:    'Plus Jakarta Sans', sans-serif;
+
+  /* Rayons */
+  --radius-sm:    8px;
+  --radius-md:    16px;
+  --radius-lg:    24px;
+  --radius-xl:    32px;
+
+  /* Transitions */
+  --transition:   all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ===== RESET ===== */
+*, *::before, *::after {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
-  overflow: hidden;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-main);
+  background-color: var(--bg);
+  color: var(--dark);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* ===== TYPOGRAPHIE ===== */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--dark);
+}
+
+h1 { font-size: clamp(2.2rem, 5vw, 4rem); font-weight: 800; }
+h2 { font-size: clamp(1.6rem, 3vw, 2.5rem); font-weight: 700; }
+h3 { font-size: clamp(1.2rem, 2vw, 1.6rem); font-weight: 600; }
+
+p { color: var(--gray-text); line-height: 1.7; }
+a { text-decoration: none; color: inherit; transition: var(--transition); }
+
+/* ===== UTILITAIRES ===== */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.section { padding: 80px 0; }
+.text-center { text-align: center; }
+.text-yellow { color: var(--yellow-mid); }
+.text-dark   { color: var(--dark); }
+
+/* Texte dégradé */
+.gradient-text {
+  background: var(--grad-yellow);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ===== BOUTONS ===== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 28px;
+  border-radius: 50px;
+  font-family: var(--font-main);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: var(--transition);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.btn-primary {
+  background: var(--grad-yellow);
+  color: var(--dark);
+  box-shadow: var(--shadow-md);
+}
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: var( --yellow-mid);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--dark);
+  border: 2px solid var(--dark);
+}
+.btn-outline:hover {
+  background: var(--dark);
+  color: var(--yellow-hot);
+  transform: translateY(-2px);
+}
+
+.btn-dark {
+  background: var(--dark);
+  color: var(--yellow-hot);
+}
+.btn-dark:hover {
+  background: var(--dark-3);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-card);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--gray-text);
+  border: 2px solid var(--border);
+}
+.btn-ghost:hover {
+  border-color: var(--yellow-mid);
+  color: var(--dark);
+}
+
+.btn-sm { padding: 8px 20px; font-size: 0.85rem; }
+.btn-lg { padding: 16px 36px; font-size: 1.05rem; }
+
+/* ===== CARDS ===== */
+.card {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  box-shadow: var(--shadow-card);
+  border: 1px solid var(--border);
+  transition: var(--transition);
+}
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+
+/* ===== BADGES ===== */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 50px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.badge-yellow {
+  background: var(--yellow-pale);
+  color: var(--yellow-warm);
+  border: 1px solid rgba(255, 195, 0, 0.3);
+}
+
+.badge-dark {
+  background: var(--dark);
+  color: var(--yellow-hot);
+}
+
+/* ===== TAGS (Skills) ===== */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: var(--yellow-pale);
+  border: 1px solid rgba(255, 195, 0, 0.4);
+  border-radius: 50px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--dark);
+  transition: var(--transition);
+}
+.tag:hover { background: var(--yellow-light); }
+
+/* ===== SECTION HEADER ===== */
+.section-header {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.section-header .subtitle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--yellow-warm);
+  margin-bottom: 12px;
+}
+
+.subtitle-line {
+  display: inline-block;
+  width: 32px;
+  height: 2px;
+  background: var(--grad-yellow);
+  border-radius: 2px;
+}
+
+/* ===== DIVIDER ===== */
+.divider {
+  width: 60px;
+  height: 4px;
+  background: var(--grad-yellow);
+  border-radius: 4px;
+  margin: 16px 0;
+}
+.divider-center { margin: 16px auto; }
+
+/* ===== FORM ===== */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--dark);
+}
+
+.form-control {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-main);
+  font-size: 0.9rem;
+  color: var(--dark);
+  background: var(--white);
+  transition: var(--transition);
+  outline: none;
+}
+
+.form-control:focus {
+  border-color: var(--yellow-mid);
+  box-shadow: 0 0 0 4px rgba(255, 195, 0, 0.15);
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-10px); }
+}
+
+@keyframes floatSlow {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-6px); }
+}
+
+.animate-fade-up  { animation: fadeInUp 0.6s ease forwards; }
+.animate-float    { animation: float 4s ease-in-out infinite; }
+.animate-float-slow { animation: floatSlow 5s ease-in-out infinite 0.5s; }
+
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--yellow-mid); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: var(--yellow-warm); }
+
+/* ===== MATERIAL ICONS ===== */
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .section { padding: 60px 0; }
+  .container { padding: 0 16px; }
+  h1 { font-size: 2rem; }
+  h2 { font-size: 1.5rem; }
 }

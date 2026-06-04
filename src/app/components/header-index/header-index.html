@@ -1,27 +1,46 @@
 <nav class="navbar" [class.scrolled]="isScrolled">
   <div class="container nav-inner">
-   <a routerLink="/" class="logo">
-      <img src="assets/logo.png" class="logo-img">
+
+    <!-- Logo -->
+    <a routerLink="/" class="logo">
+      <div class="logo-icon">
+        <img src="logo2.png" class="logo-img">
+      </div>
       <span class="logo-text">
-        Dev<span style="color:#f6c200;">Folio</span>
+        Dev<span class="logo-accent">Folio</span>
       </span>
     </a>
-    <!-- Nav Links -->
-    <ul class="nav-links" [class.open]="menuOpen">
-      <li><a routerLink="/" (click)="scrollTo('hero', $event)">Accueil</a></li>
-      <li><a routerLink="/features" (click)="scrollTo('features', $event)">Fonctionnalités</a></li>
-      <li><a routerLink="/explorer" (click)="scrollTo('explorer1', $event)">Explorer</a></li>
-      <li><a routerLink="/contact" (click)="scrollTo('footer', $event)">Contact</a></li>
+
+    <!-- Nav Links desktop (colonne centrale) -->
+    <ul class="nav-links">
+      <li>
+        <a [class.active]="activeSection === 'hero'" (click)="scrollToSection('hero', $event)" href="#">Accueil</a>
+      </li>
+      <li>
+        <a [class.active]="activeSection === 'features'" (click)="scrollToSection('features', $event)" href="#">Fonctionnalités</a>
+      </li>
+      <li>
+        <a [class.active]="activeSection === 'footer'" (click)="scrollToSection('footer', $event)" href="#">Contact</a>
+      </li>
     </ul>
 
-    <!-- Actions -->
+    <!-- Actions desktop + hamburger -->
     <div class="nav-actions">
       <button class="btn btn-outline btn-sm" (click)="goLogin()">Connexion</button>
-      <button class="btn btn-primary btn-sm" (click)="goRegister()">Créer un compte</button>
       <button class="hamburger" (click)="toggleMenu()" aria-label="Menu">
         <span></span><span></span><span></span>
       </button>
     </div>
 
   </div>
+
+  <!-- Menu mobile déroulant -->
+  <div class="mobile-menu" [class.open]="menuOpen">
+    <ul class="mobile-nav-links">
+      <li><a [class.active]="activeSection === 'hero'" (click)="scrollToSection('hero', $event)" href="#">Accueil</a></li>
+      <li><a [class.active]="activeSection === 'features'" (click)="scrollToSection('features', $event)" href="#">Fonctionnalités</a></li>
+      <li><a [class.active]="activeSection === 'footer'" (click)="scrollToSection('footer', $event)" href="#">Contact</a></li>
+    </ul>
+  </div>
+
 </nav>

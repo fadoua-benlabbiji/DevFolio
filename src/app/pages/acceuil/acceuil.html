@@ -8,10 +8,12 @@
 
   <div class="container">
     <div class="hero-content">
+
+      <!-- Texte gauche -->
       <div class="hero-text">
         <div class="hero-pill">
-          <span class="pill-dot"></span>
-          Nouveau · Éditeur visuel en temps réel
+          <span class="pill-star">✦</span>
+          Créateur de Portfolio Professionnel
         </div>
 
         <h1>
@@ -26,39 +28,23 @@
         </p>
 
         <div class="hero-actions">
-          <a routerLink="/auth" class="btn btn-primary btn-lg">
-            Créer mon portfolio
+          <button class="btn btn-primary btn-lg" (click)="goRegister()">
+            Commencer gratuitement
             <span class="btn-arrow">→</span>
-          </a>
-          <a routerLink="/explorer" class="btn btn-ghost btn-lg">
-            Voir des exemples
+          </button>
+          <a routerLink="/explorer" class="btn btn-outline btn-lg">
+            Explorer les profils
           </a>
         </div>
+      </div><!-- /hero-text -->
 
-        <div class="hero-stats">
-          <div class="stat">
-            <div class="stat-num">1.2k+</div>
-            <div class="stat-label">Portfolios créés</div>
-          </div>
-          <div class="stat-divider"></div>
-          <div class="stat">
-            <div class="stat-num">98%</div>
-            <div class="stat-label">Satisfaction</div>
-          </div>
-          <div class="stat-divider"></div>
-          <div class="stat">
-            <div class="stat-num">5 min</div>
-            <div class="stat-label">Pour démarrer</div>
-          </div>
-        </div>
-      </div>
-
+      <!-- Visuel droite -->
       <div class="hero-visual">
         <div class="float-badge float-badge-1 animate-float-slow">
-          <span class="badge-icon">⚡</span> Publié en 1 clic
+          <span class="badge-icon">✦</span> Publié en 1 clic
         </div>
         <div class="float-badge float-badge-2 animate-float">
-          <span class="badge-icon">✨</span> 100% personnalisable
+          <span class="badge-icon">✦</span> 100% personnalisable
         </div>
 
         <div class="portfolio-mockup animate-float">
@@ -108,9 +94,10 @@
             </div>
           </div>
         </div>
-      </div>
-    </div>
-  </div>
+      </div><!-- /hero-visual -->
+
+    </div><!-- /hero-content -->
+  </div><!-- /container -->
 </section>
 
 <!-- ========== FEATURES ========== -->
@@ -122,7 +109,6 @@
         Pourquoi nous choisir
       </div>
       <h2>Tout ce dont vous avez besoin</h2>
-
     </div>
 
     <div class="features-grid">
@@ -132,9 +118,10 @@
         </div>
         <h3>{{ f.title }}</h3>
         <p>{{ f.desc }}</p>
-        <div class="feature-arrow">→</div>
+        
       </div>
     </div>
   </div>
 </section>
+
 <app-footer></app-footer>

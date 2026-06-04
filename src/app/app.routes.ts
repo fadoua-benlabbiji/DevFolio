@@ -12,7 +12,7 @@ export const routes: Routes = [
   { path: 'explorer',    component: Explorer },
   {
     path: '',
-    component: Dashboard,
+    component: Acceuil,
     children: [
       { path: '',              redirectTo: 'vue-ensemble', pathMatch: 'full' },
       { path: 'vue-ensemble',  component: VueEnsemble },

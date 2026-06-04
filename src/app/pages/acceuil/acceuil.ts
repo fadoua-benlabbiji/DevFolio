@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
 import { HeaderIndex } from '../../components/header-index/header-index';
 import { Footer } from '../../components/footer/footer';
-
 
 export interface Profile {
   id: number;
@@ -21,15 +20,14 @@ export interface Profile {
 @Component({
   selector: 'app-acceuil',
   standalone: true,
-  imports: [CommonModule, HeaderIndex, Footer],
+  imports: [CommonModule, RouterLink, HeaderIndex, Footer],
   templateUrl: './acceuil.html',
   styleUrls: ['./acceuil.css'],
 })
 export class Acceuil implements OnInit {
 
   profiles: Profile[] = [];
-  
-  // Données des fonctionnalités
+
   features = [
     {
       icon: 'palette',
@@ -63,13 +61,16 @@ export class Acceuil implements OnInit {
     }
   ];
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private router: Router) {}
 
   ngOnInit(): void {
-    // Chargement des profils depuis le fichier JSON local
     this.http.get<Profile[]>('assets/profiles.json').subscribe({
       next: (data) => this.profiles = data,
       error: (err) => console.error('Erreur lors du chargement des profils', err)
     });
+  }
+
+  goRegister(): void {
+    this.router.navigate(['/inscription']);
   }
 }
