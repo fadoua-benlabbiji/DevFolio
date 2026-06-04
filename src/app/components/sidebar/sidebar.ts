@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { Router, RouterModule } from '@angular/router';
 export interface NavItem {
   icon: string;
   label: string;
@@ -11,11 +12,12 @@ export interface NavItem {
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule,RouterModule],
   templateUrl: './sidebar.html',
   styleUrls: ['./sidebar.css']
 })
 export class Sidebar {
+
   user = {
     name: 'Lina Bensalem',
     username: '@lina-dev',
@@ -24,15 +26,15 @@ export class Sidebar {
 
   activeRoute = 'overview';
 
-  navItems: NavItem[] = [
-    { icon: 'grid', label: "Dashboard", route: 'overview' },
-    { icon: 'folder', label: 'Projets', route: 'projects' },
-    { icon: 'wrench', label: 'Compétences', route: 'skills' },
-    { icon: 'mail', label: 'Messages', route: 'messages', badge: 1 },
-    { icon: 'file-text', label: 'Générer CV', route: 'cv' },
-    { icon: 'globe', label: 'Mon DevFolio', route: 'devfolio' },
-    { icon: 'settings', label: 'Paramètres', route: 'settings' },
-  ];
+navItems: NavItem[] = [
+  { icon: 'grid',      label: 'Dashboard',   route: '/vue-ensemble' },
+  { icon: 'folder',    label: 'Projets',      route: '/projects' },
+  { icon: 'wrench',    label: 'Compétences',  route: '/skills' },
+  { icon: 'mail',      label: 'Messages',     route: '/messages', badge: 1 },
+  { icon: 'file-text', label: 'Générer CV',   route: '/cv' },
+  { icon: 'globe',     label: 'Mon DevFolio', route: '/devfolio' },
+  { icon: 'settings',  label: 'Paramètres',   route: '/settings' },
+];
   constructor(private sanitizer: DomSanitizer) {}
   setActive(route: string): void {
     this.activeRoute = route;

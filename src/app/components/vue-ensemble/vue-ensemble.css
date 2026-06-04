@@ -1,0 +1,341 @@
+app-vue-ensemble {
+  --accent:       #F5C518;
+  --accent-light: #fffbea;
+  --accent-dark:  #b8930a;
+  --text-primary: #111111;
+  --text-sec:     #4d5158;
+  --border:       #e5e7eb;
+  --radius:       12px;
+}
+
+/* ── Welcome Card ───────────────────────────────── */
+.welcome-card {
+  position: relative;
+  overflow: hidden;
+  background: #ffffff;
+  border-radius: 20px;
+  border: 1.5px solid #F5C518;
+  padding: 28px 32px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 20px;
+  box-shadow: 0 4px 24px rgba(245,197,24,0.15), 0 1px 4px rgba(0,0,0,0.05);
+}
+
+.welcome-card__stripe {
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 6px;
+  background: #F5C518;
+  border-radius: 20px 0 0 20px;
+}
+
+.welcome-card__dot1 {
+  position: absolute;
+  top: -30px; right: 80px;
+  width: 120px; height: 120px;
+  border-radius: 50%;
+  background: rgba(245,197,24,0.08);
+  pointer-events: none;
+}
+
+.welcome-card__dot2 {
+  position: absolute;
+  bottom: -40px; right: -20px;
+  width: 160px; height: 160px;
+  border-radius: 50%;
+  background: rgba(245,197,24,0.06);
+  pointer-events: none;
+}
+
+.welcome-card__content {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  position: relative;
+  z-index: 1;
+}
+
+.welcome-card__avatar {
+  width: 54px; height: 54px;
+  border-radius: 16px;
+  background: #F5C518;
+  display: grid;
+  place-items: center;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #111;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(245,197,24,0.4);
+}
+
+.welcome-card__tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #fffbea;
+  border: 1px solid #fde68a;
+  border-radius: 20px;
+  padding: 3px 11px;
+  font-size: .72rem;
+  font-weight: 700;
+  color: #b8930a;
+  margin-bottom: 7px;
+  letter-spacing: .02em;
+}
+
+.welcome-card__greeting {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #111111;
+  margin: 0 0 4px;
+  letter-spacing: -0.02em;
+}
+
+.welcome-card__greeting strong { color: #b8930a; }
+
+.welcome-card__sub {
+  font-size: .82rem;
+  color: #4d5158;
+  margin: 0;
+}
+
+.welcome-card__right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+  position: relative;
+  z-index: 1;
+}
+
+.welcome-card__date {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: .75rem;
+  font-weight: 500;
+  color: #4d5158;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 20px;
+  padding: 5px 13px;
+  white-space: nowrap;
+}
+
+.welcome-card__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #F5C518;
+  color: #111;
+  font-size: .84rem;
+  font-weight: 700;
+  border-radius: 12px;
+  padding: 10px 20px;
+  text-decoration: none;
+  white-space: nowrap;
+  box-shadow: 0 4px 14px rgba(245,197,24,0.35);
+  transition: transform .2s, box-shadow .2s;
+}
+
+.welcome-card__btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(245,197,24,0.45);
+}
+
+/* ── Stats ──────────────────────────────────────── */
+.stats {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.stat {
+  flex: 1;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 20px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: box-shadow .2s, transform .2s;
+}
+
+.stat:hover {
+  box-shadow: 0 4px 20px rgba(0,0,0,0.07);
+  transform: translateY(-2px);
+}
+
+.stat__icon {
+  width: 38px; height: 38px;
+  border-radius: 10px;
+  background: #fffbea;
+  display: grid;
+  place-items: center;
+}
+
+.stat__value {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #111111;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.stat__label {
+  font-size: .71rem;
+  font-weight: 700;
+  color: #4d5158;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+}
+
+/* ── Grid 2 cols ────────────────────────────────── */
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+/* ── Card ───────────────────────────────────────── */
+.card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 22px 24px;
+}
+
+.card__title {
+  font-size: .71rem;
+  font-weight: 700;
+  color: #4d5158;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  margin: 0 0 18px;
+}
+
+/* ── Skills ─────────────────────────────────────── */
+.skill-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+}
+
+.skill__top {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.skill__name {
+  font-size: .85rem;
+  font-weight: 600;
+  color: #111111;
+}
+
+.skill__pct {
+  font-size: .8rem;
+  font-weight: 700;
+  color: #4d5158;
+}
+
+.skill__bar-bg {
+  height: 6px;
+  background: #f3f4f6;
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.skill__bar-fill {
+  height: 100%;
+  border-radius: 99px;
+  transition: width .6s cubic-bezier(.4,0,.2,1);
+}
+
+/* ── Projects ───────────────────────────────────── */
+.proj-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.proj {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.proj__dot {
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.proj__info { flex: 1; min-width: 0; }
+
+.proj__name {
+  font-size: .875rem;
+  font-weight: 600;
+  color: #111111;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.proj__stack {
+  font-size: .75rem;
+  color: #4d5158;
+  margin-top: 1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.proj__right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.proj__pct {
+  font-size: .75rem;
+  font-weight: 700;
+  color: #4d5158;
+}
+
+.badge--done {
+  font-size: .7rem;
+  font-weight: 700;
+  background: #F5C518;
+  color: #111;
+  border-radius: 20px;
+  padding: 2px 10px;
+}
+
+.prog-bg {
+  width: 64px; height: 5px;
+  background: #f3f4f6;
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.prog-fill {
+  height: 100%;
+  border-radius: 99px;
+  transition: width .6s cubic-bezier(.4,0,.2,1);
+}
+
+/* ── Responsive ─────────────────────────────────── */
+@media (max-width: 900px) {
+  .grid-2  { grid-template-columns: 1fr; }
+  .stats   { flex-direction: column; }
+  .welcome-card { flex-direction: column; align-items: flex-start; }
+  .welcome-card__right { align-items: flex-start; }
+}

@@ -27,8 +27,8 @@
       <li *ngFor="let item of navItems" class="sidebar__nav-item">
         <button
           class="sidebar__nav-btn"
-          [class.sidebar__nav-btn--active]="activeRoute === item.route"
-          (click)="setActive(item.route)"
+          [routerLink]="item.route"
+          routerLinkActive="sidebar__nav-btn--active"
         >
           <span class="sidebar__nav-icon" [innerHTML]="getIcon(item.icon)"></span>
           <span class="sidebar__nav-label">{{ item.label }}</span>

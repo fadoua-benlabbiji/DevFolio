@@ -5,8 +5,9 @@ import { HttpClient } from '@angular/common/http';
 
 
 import { Profile } from '../../pages/acceuil/acceuil';
-import { HeaderIndex } from '../header-index/header-index';
+
 import { Footer } from '../footer/footer';
+import { HeaderIndex } from '../header-index/header-index';
 
 @Component({
   selector: 'app-explorer',
