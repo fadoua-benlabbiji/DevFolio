@@ -1,0 +1,17 @@
+.header {
+  display: flex;
+  align-items: center;
+  height: 66px;
+  padding: 0 28px;
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+}
+
+.header__title {
+  font-size: 17px;
+  font-weight: 680;
+  color: #111111;
+  letter-spacing: -0.3px;
+  margin: 0;
+}

@@ -1,0 +1,108 @@
+<app-header-index></app-header-index>
+
+<div class="explorer-page">
+  <div class="container">
+
+    <!-- Hero Header -->
+    <div class="explorer-hero">
+      <div class="explorer-hero-left">
+        <div class="badge badge-yellow" style="margin-bottom: 20px;">
+          <span class="material-symbols-outlined" style="font-size:13px; vertical-align:middle;">group</span>
+          Communauté  DevFolio
+        </div>
+        <h1 class="explorer-title">Explore les portfolios</h1>
+        <p class="explorer-desc">
+          Découvre les profils des développeurs et consulte leurs portfolios<br>
+          publics en un clic.
+        </p>
+      </div>
+    </div>
+    <div class="filters-bar">
+      <div class="search-wrap">
+        <span class="material-symbols-outlined search-icon">search</span>
+        <input
+          type="text"
+          class="search-input"
+          placeholder="Rechercher un développeur, une compétence…"
+          [(ngModel)]="searchQuery"
+        />
+        <button *ngIf="searchQuery" class="search-clear" (click)="searchQuery = ''">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+
+      <div class="skill-filters">
+        <button
+          class="filter-chip"
+          [class.active]="activeSkill === ''"
+          (click)="activeSkill = ''"
+        >Tous</button>
+        <button
+          class="filter-chip"
+          *ngFor="let skill of allSkills"
+          [class.active]="activeSkill === skill"
+          (click)="filterBySkill(skill)"
+        >{{ skill }}</button>
+      </div>
+    </div>
+
+    <!-- Results count -->
+    <div class="results-info" *ngIf="filteredProfiles.length !== profiles.length">
+      {{ filteredProfiles.length }} résultat(s) trouvé(s)
+    </div>
+
+    <!-- Grid -->
+    <div class="profiles-grid" *ngIf="filteredProfiles.length > 0; else noResults">
+      <div
+        class="profile-card"
+        [class.profile-card--featured]="profile.featured"
+        *ngFor="let profile of filteredProfiles"
+      >
+        <!-- Top: Avatar + Nom -->
+        <div class="profile-card-top">
+          <img [src]="profile.avatar" [alt]="profile.nom" class="profile-avatar" />
+          <div class="profile-info">
+            <h3 class="profile-nom">{{ profile.nom }}</h3>
+            <span class="profile-titre">{{ profile.titre }}</span>
+          </div>
+        </div>
+
+        <!-- Bio -->
+        <p class="profile-bio">{{ profile.bio }}</p>
+
+        <!-- Skills -->
+        <div class="profile-skills">
+          <span class="skill-tag" *ngFor="let skill of profile.skills">{{ skill }}</span>
+        </div>
+        <!-- Footer -->
+        <div class="profile-card-footer">
+          <div class="profile-meta">
+            <span class="profile-meta-item">
+              <span class="material-symbols-outlined meta-icon">location_on</span>
+              {{ profile.ville }}
+            </span>
+            <span class="profile-meta-item">
+              <span class="material-symbols-outlined meta-icon">folder_copy</span>
+              {{ profile.projets }} projets
+            </span>
+          </div>
+          <a  class="profile-link" href="#">
+            Voir le portfolio
+            <span class="material-symbols-outlined" style="font-size:16px; vertical-align:middle;">arrow_forward</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty state -->
+    <ng-template #noResults>
+      <div class="no-results">
+        <span class="material-symbols-outlined no-results-icon">search_off</span>
+        <p>Aucun profil ne correspond à votre recherche.</p>
+        <button class="btn btn-outline btn-sm" (click)="resetFilters()">Réinitialiser les filtres</button>
+      </div>
+    </ng-template>
+
+  </div>
+</div>
+ <app-footer></app-footer>

@@ -1,0 +1,140 @@
+<app-header-index></app-header-index>
+
+<!-- ========== HERO ========== -->
+<section id="hero" class="hero">
+  <div class="hero-blob hero-blob-1"></div>
+  <div class="hero-blob hero-blob-2"></div>
+  <div class="hero-grid-pattern"></div>
+
+  <div class="container">
+    <div class="hero-content">
+      <div class="hero-text">
+        <div class="hero-pill">
+          <span class="pill-dot"></span>
+          Nouveau · Éditeur visuel en temps réel
+        </div>
+
+        <h1>
+          Construisez votre<br>
+          <span class="gradient-text">portfolio unique</span><br>
+          en quelques clics
+        </h1>
+
+        <p class="hero-desc">
+          Personnalisez chaque détail — couleurs, typographie, mise en page.
+          Visualisez en temps réel. Impressionnez vos recruteurs.
+        </p>
+
+        <div class="hero-actions">
+          <a routerLink="/auth" class="btn btn-primary btn-lg">
+            Créer mon portfolio
+            <span class="btn-arrow">→</span>
+          </a>
+          <a routerLink="/explorer" class="btn btn-ghost btn-lg">
+            Voir des exemples
+          </a>
+        </div>
+
+        <div class="hero-stats">
+          <div class="stat">
+            <div class="stat-num">1.2k+</div>
+            <div class="stat-label">Portfolios créés</div>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat">
+            <div class="stat-num">98%</div>
+            <div class="stat-label">Satisfaction</div>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat">
+            <div class="stat-num">5 min</div>
+            <div class="stat-label">Pour démarrer</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-visual">
+        <div class="float-badge float-badge-1 animate-float-slow">
+          <span class="badge-icon">⚡</span> Publié en 1 clic
+        </div>
+        <div class="float-badge float-badge-2 animate-float">
+          <span class="badge-icon">✨</span> 100% personnalisable
+        </div>
+
+        <div class="portfolio-mockup animate-float">
+          <div class="mockup-header">
+            <div class="mockup-dots">
+              <span></span><span></span><span></span>
+            </div>
+            <div class="mockup-url">devfolio.app/john-doe</div>
+          </div>
+
+          <div class="mockup-body">
+            <div class="mock-avatar">
+              <div class="mock-avatar-circle">JD</div>
+              <div>
+                <div class="mock-name">John Doe</div>
+                <div class="mock-title">Développeur Full Stack</div>
+              </div>
+              <div class="mock-status">
+                <span class="status-dot"></span> Disponible
+              </div>
+            </div>
+
+            <div class="mock-skills">
+              <span class="mock-tag">Angular</span>
+              <span class="mock-tag">React</span>
+              <span class="mock-tag">Node.js</span>
+              <span class="mock-tag">TypeScript</span>
+            </div>
+
+            <div class="mock-projects">
+              <div class="mock-project-card">
+                <div class="mock-project-thumb thumb-1"></div>
+                <div class="mock-project-info">
+                  <div class="mock-project-title"></div>
+                  <div class="mock-project-desc"></div>
+                  <div class="mock-project-desc short"></div>
+                </div>
+              </div>
+              <div class="mock-project-card">
+                <div class="mock-project-thumb thumb-2"></div>
+                <div class="mock-project-info">
+                  <div class="mock-project-title"></div>
+                  <div class="mock-project-desc"></div>
+                  <div class="mock-project-desc short"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== FEATURES ========== -->
+<section id="features" class="section">
+  <div class="container">
+    <div class="section-header">
+      <div class="subtitle">
+        <span class="subtitle-line"></span>
+        Pourquoi nous choisir
+      </div>
+      <h2>Tout ce dont vous avez besoin</h2>
+
+    </div>
+
+    <div class="features-grid">
+      <div class="feature-card" *ngFor="let f of features; let i = index" [style.animation-delay.ms]="i * 100">
+        <div class="feature-icon-wrap">
+          <span class="material-symbols-outlined feature-icon">{{ f.icon }}</span>
+        </div>
+        <h3>{{ f.title }}</h3>
+        <p>{{ f.desc }}</p>
+        <div class="feature-arrow">→</div>
+      </div>
+    </div>
+  </div>
+</section>
+<app-footer></app-footer>

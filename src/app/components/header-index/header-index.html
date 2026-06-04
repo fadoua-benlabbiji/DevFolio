@@ -1,0 +1,27 @@
+<nav class="navbar" [class.scrolled]="isScrolled">
+  <div class="container nav-inner">
+   <a routerLink="/" class="logo">
+      <img src="assets/logo.png" class="logo-img">
+      <span class="logo-text">
+        Dev<span style="color:#f6c200;">Folio</span>
+      </span>
+    </a>
+    <!-- Nav Links -->
+    <ul class="nav-links" [class.open]="menuOpen">
+      <li><a routerLink="/" (click)="scrollTo('hero', $event)">Accueil</a></li>
+      <li><a routerLink="/features" (click)="scrollTo('features', $event)">Fonctionnalités</a></li>
+      <li><a routerLink="/explorer" (click)="scrollTo('explorer1', $event)">Explorer</a></li>
+      <li><a routerLink="/contact" (click)="scrollTo('footer', $event)">Contact</a></li>
+    </ul>
+
+    <!-- Actions -->
+    <div class="nav-actions">
+      <button class="btn btn-outline btn-sm" (click)="goLogin()">Connexion</button>
+      <button class="btn btn-primary btn-sm" (click)="goRegister()">Créer un compte</button>
+      <button class="hamburger" (click)="toggleMenu()" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+
+  </div>
+</nav>
