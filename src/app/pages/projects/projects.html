@@ -1,0 +1,142 @@
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Mes Projets</h1>
+    <p class="page-sub">
+      {{ projects().length }} projets · {{ completedCount }} terminés · {{ inProgressCount }} en cours
+    </p>
+  </div>
+
+  <button class="btn btn-primary" (click)="openAdd()">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <line x1="12" y1="5" x2="12" y2="19"></line>
+      <line x1="5" y1="12" x2="19" y2="12"></line>
+    </svg>
+    Ajouter un projet
+  </button>
+</div>
+<!-- MODAL AJOUTER/MODIFIER PROJET -->
+@if (showForm()) {
+  <div class="modal-overlay" (click)="cancel()">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      
+      <h2 class="modal-title">
+        {{ editingId() !== null ? 'Modifier le projet' : 'Nouveau projet' }}
+      </h2>
+
+      <div class="form-group">
+        <label>Nom du projet</label>
+        <input type="text" [(ngModel)]="form.name" placeholder="Ex: TaskFlow" />
+      </div>
+
+      <div class="form-group">
+        <label>Stack technique</label>
+        <input type="text" [(ngModel)]="form.stack" placeholder="Ex: React, TypeScript, Supabase" />
+      </div>
+
+      <div class="form-group">
+        <label>Description</label>
+        <textarea [(ngModel)]="form.description" rows="3" placeholder="Description courte du projet..."></textarea>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Avancement ({{ form.pct }}%)</label>
+          <input type="range" min="0" max="100" [(ngModel)]="form.pct" />
+        </div>
+
+        <div class="form-group">
+          <label>Couleur</label>
+          <input type="color" [(ngModel)]="form.color" />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Logo du projet (URL)</label>
+        <input type="url" [(ngModel)]="form.logo" placeholder="https://.../logo.png" />
+      </div>
+
+      <div class="form-group">
+        <label>Description README</label>
+        <textarea [(ngModel)]="form.readme" rows="5" placeholder="Description détaillée..."></textarea>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>GitHub</label>
+          <input type="url" [(ngModel)]="form.github" placeholder="https://github.com/..." />
+        </div>
+
+        <div class="form-group">
+          <label>Demo</label>
+          <input type="url" [(ngModel)]="form.demo" placeholder="https://..." />
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn btn-ghost" (click)="cancel()">Annuler</button>
+        <button class="btn btn-primary" (click)="save()">Enregistrer</button>
+      </div>
+
+    </div>
+  </div>
+}
+
+<div class="projects-list">
+  @for (p of projects(); track p.id) {
+    <div class="proj-card">
+      
+      <div class="proj-card__logo" [style.background]="!p.logo ? p.color : 'transparent'">
+        @if (p.logo) {
+          <img [src]="p.logo" [alt]="p.name" (error)="onLogoError(p)" />
+        } @else {
+          <span class="proj-card__initial">{{ p.name.charAt(0).toUpperCase() }}</span>
+        }
+
+        <label class="logo-overlay">
+          <span>+</span>
+          <input type="file" (change)="onLogoUpload($event, p)" accept="image/*" style="display: none;" />
+        </label>
+      </div>
+
+      <div class="proj-card__content">
+        <div class="proj-card__header">
+          <h3 class="proj-card__name">{{ p.name }}</h3>
+          @if (p.pct === 100) {
+            <span class="badge badge--done">Terminé</span>
+          } @else {
+            <span class="badge badge--wip">{{ p.pct }}%</span>
+          }
+        </div>
+
+        <div class="proj-card__info">
+          <p class="proj-card__desc">{{ p.description | tronquer:90 }}</p>
+          <span class="proj-card__stack">{{ p.stack }}</span>
+          @if (p.pct < 100) {
+            <div class="prog-bg">
+              <div class="prog-fill" [style.width.%]="p.pct" [style.background]="p.color"></div>
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="proj-card__right">
+        <div class="proj-card__links">
+          @if (p.github) {
+            <a [href]="p.github" target="_blank" class="link-chip">GitHub</a>
+          }
+          <button class="link-chip" (click)="viewProject(p.id)">Détails</button>
+        </div>
+        <div class="proj-card__actions">
+          <button class="icon-btn" (click)="openEdit(p)">✏️</button>
+          <button class="icon-btn" (click)="delete(p.id)">🗑</button>
+        </div>
+      </div>
+
+    </div>
+  } @empty {
+    <div class="empty-state">
+      <p>Aucun projet pour le moment.</p>
+      <button class="btn btn-primary" (click)="openAdd()">Ajouter mon premier projet</button>
+    </div>
+  }
+</div>

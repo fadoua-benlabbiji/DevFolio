@@ -13,7 +13,12 @@
       <h1>Bon retour !</h1>
       <p>Connectez-vous pour accéder à votre espace portfolio.</p>
     </div>
-
+  @if (errorMsg) {
+    <div class="error-banner">
+      <span class="material-symbols-outlined">error</span>
+      <span>{{ errorMsg }}</span>
+    </div>
+  }
     <!-- Formulaire -->
     <div class="auth-form">
       <div class="form-group">
@@ -26,6 +31,7 @@
             class="form-input"
             placeholder="vous@exemple.com"
             [(ngModel)]="email"
+            (input)="errorMsg = ''"
           />
         </div>
       </div>
@@ -40,6 +46,7 @@
             class="form-input"
             placeholder="••••••••"
             [(ngModel)]="password"
+            (input)="errorMsg = ''"
           />
           <button class="toggle-pw" type="button" (click)="togglePassword()">
             <span class="material-symbols-outlined">{{ showPassword ? 'visibility_off' : 'visibility' }}</span>
@@ -53,11 +60,7 @@
         Se connecter
       </button>
 
-      <div *ngIf="errorMsg" class="error-banner">
-        <span class="material-symbols-outlined">error</span>
-        {{ errorMsg }}
-      </div>
-    </div>
+ 
 
     <div class="auth-divider"><span>ou</span></div>
 

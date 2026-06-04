@@ -339,3 +339,184 @@ app-vue-ensemble {
   .welcome-card { flex-direction: column; align-items: flex-start; }
   .welcome-card__right { align-items: flex-start; }
 }
+.welcome-card {
+  background: linear-gradient(135deg, #f5c400 0%, #e6a800 100%);
+  border-radius: 16px;
+  padding: 28px 32px;
+  margin-bottom: 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.welcome-card::before {
+  content: '';
+  position: absolute;
+  top: -40px;
+  right: 120px;
+  width: 180px;
+  height: 180px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 50%;
+}
+
+.welcome-card::after {
+  content: '';
+  position: absolute;
+  bottom: -60px;
+  right: 60px;
+  width: 220px;
+  height: 220px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 50%;
+}
+
+.welcome-card__content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  z-index: 1;
+}
+
+.welcome-card__left {
+  flex: 1;
+}
+
+.welcome-card__tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(255, 255, 255, 0.25);
+  color: #7a5c00;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 20px;
+  margin-bottom: 10px;
+}
+
+.welcome-card__greeting {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 6px;
+}
+
+.welcome-card__greeting span {
+  color: #fff;
+}
+
+.welcome-card__sub {
+  font-size: 0.875rem;
+  color: rgba(0, 0, 0, 0.55);
+  margin: 0 0 20px;
+}
+
+.welcome-card__actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.welcome-card__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 18px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: none;
+}
+
+.welcome-card__btn--primary {
+  background: #1a1a1a;
+  color: #fff;
+}
+
+.welcome-card__btn--primary:hover {
+  background: #333;
+}
+
+.welcome-card__btn--outline {
+  background: rgba(255, 255, 255, 0.35);
+  color: #1a1a1a;
+  border: 1.5px solid rgba(255, 255, 255, 0.6);
+}
+
+.welcome-card__btn--outline:hover {
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.welcome-card__avatar-wrap {
+  margin-left: 24px;
+  flex-shrink: 0;
+}
+
+.welcome-card__avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.35);
+  border: 3px solid rgba(255, 255, 255, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+.welcome-card__avatar {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.7);
+  object-fit: cover;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  display: block;
+}
+
+.welcome-card__avatar--initials {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.35);
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+.welcome-card__avatar {
+  width: 125px;
+  height: 125px;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.7);
+  object-fit: cover;
+  object-position: top; /* ← cadre sur le visage */
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  display: block;
+  margin-top: 15px;
+  margin-left: 500px;
+}
+.welcome-card__avatar-wrap {
+  margin-left: 24px;
+  flex-shrink: 0;
+  align-self: center; /* ← centre verticalement */
+}
+.welcome-card__avatar--initials {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.7);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  background: rgba(255, 255, 255, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  flex-shrink: 0;
+}

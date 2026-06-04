@@ -193,4 +193,42 @@
 .sidebar__logout .sidebar__nav-icon svg {
   stroke: #ef4444;
 }
- 
+.sidebar__avatar--initials {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background:  rgba(247, 241, 181, 0.35);
+  color: #1a1a1a;
+  font-weight: 700;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+.sidebar__logo .logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+}
+
+.sidebar__logo .logo-img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
+.sidebar__logo .logo-text {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.sidebar__logo .logo-accent {
+  color: #f5c400;
+}
+.sidebar__logo{
+  padding: 9px;
+  padding-left: 18px;
+}

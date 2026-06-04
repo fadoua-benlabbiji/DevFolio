@@ -1,7 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, computed, Signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { Router, RouterModule } from '@angular/router';
+import { UserService, User } from '../../user';           // ← ajustez le chemin
+import { ProfileService } from '../../profile';
 export interface NavItem {
   icon: string;
   label: string;
@@ -12,35 +14,57 @@ export interface NavItem {
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [CommonModule,RouterModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './sidebar.html',
-  styleUrls: ['./sidebar.css']
+  styleUrls: ['./sidebar.css'],
 })
 export class Sidebar {
+  currentUser: Signal<User | null>;
+  user: ReturnType<typeof computed<{
+    name: string;
+    username: string;
+    email: string;
+    avatar: string | null;
+    initials: string;
+  }>>;
 
-  user = {
-    name: 'Lina Bensalem',
-    username: '@lina-dev',
-    avatar: 'https://i.pravatar.cc/40?img=47'
+  constructor(
+    private userService: UserService,
+    private profileService: ProfileService,
+    private sanitizer: DomSanitizer,
+    private router: Router
+  ) {
+    this.currentUser = this.userService.currentUser;
+
+this.user = computed(() => {
+  const u = this.currentUser();
+  const profile = u ? this.profileService.getById(u.profileId) : null;
+  return {
+    name: `${u?.prenom ?? ''} ${u?.nom ?? ''}`.trim(),
+    username: profile?.username ? `@${profile.username}` : `@${u?.prenom?.toLowerCase() ?? ''}`,
+    email: profile?.email ?? u?.email ?? '',
+    avatar: profile?.avatar || null,
+    initials: `${u?.prenom?.charAt(0) ?? ''}${u?.nom?.charAt(0) ?? ''}`.toUpperCase(),
   };
-
-  activeRoute = 'overview';
-
-navItems: NavItem[] = [
-  { icon: 'grid',      label: 'Dashboard',   route: '/vue-ensemble' },
-  { icon: 'folder',    label: 'Projets',      route: '/projects' },
-  { icon: 'wrench',    label: 'Compétences',  route: '/skills' },
-  { icon: 'mail',      label: 'Messages',     route: '/messages', badge: 1 },
-  { icon: 'file-text', label: 'Générer CV',   route: '/cv' },
-  { icon: 'globe',     label: 'Mon DevFolio', route: '/devfolio' },
-  { icon: 'settings',  label: 'Paramètres',   route: '/settings' },
-];
-  constructor(private sanitizer: DomSanitizer) {}
-  setActive(route: string): void {
-    this.activeRoute = route;
+});
   }
 
-  getIcon(name: string): SafeHtml  {
+  navItems: NavItem[] = [
+    { icon: 'grid',      label: 'Dashboard',    route: '/dashboard/vue-ensemble' },
+    { icon: 'folder',    label: 'Projets',       route: '/dashboard/projects' },
+    { icon: 'wrench',    label: 'Compétences',   route: '/dashboard/skills' },
+    { icon: 'mail',      label: 'Messages',      route: '/dashboard/messages', badge: 1 },
+    { icon: 'file-text', label: 'Générer CV',    route: '/dashboard/cv' },
+    { icon: 'globe',     label: 'Mon DevFolio',  route: '/dashboard/devfolio' },
+    { icon: 'settings',  label: 'Paramètres',    route: '/dashboard/settings' },
+  ];
+
+  logout(): void {
+    this.userService.logout();
+    this.router.navigate(['/connexion']);
+  }
+
+  getIcon(name: string): SafeHtml {
     const icons: Record<string, string> = {
       grid: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>`,
       folder: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>`,
@@ -50,7 +74,6 @@ navItems: NavItem[] = [
       globe: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>`,
       settings: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>`,
     };
-   return this.sanitizer.bypassSecurityTrustHtml(icons[name] ?? '');
-
+    return this.sanitizer.bypassSecurityTrustHtml(icons[name] ?? '');
   }
 }

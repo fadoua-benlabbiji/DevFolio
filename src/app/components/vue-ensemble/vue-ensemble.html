@@ -1,42 +1,49 @@
 <div class="welcome-card">
-  <div class="welcome-card__stripe"></div>
-  <div class="welcome-card__dot1"></div>
-  <div class="welcome-card__dot2"></div>
-
   <div class="welcome-card__content">
-    <div class="welcome-card__avatar">{{ user.name.charAt(0) }}</div>
-    <div class="welcome-card__text">
-      <div class="welcome-card__tag">
+    <div class="welcome-card__left">
+      <p class="welcome-card__tag">
         <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor"
              stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
         </svg>
         Portfolio actif
+      </p>
+      <h2 class="welcome-card__greeting">
+        Bon retour, <span>{{ user.name }}</span> 👋
+      </h2>
+      <p class="welcome-card__sub">
+        Ajoute tes projets, gère tes compétences et génère ton CV.
+      </p>
+      <div class="welcome-card__actions">
+        <a routerLink="/dashboard/cv" class="welcome-card__btn welcome-card__btn--primary">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+          </svg>
+          Générer mon CV
+        </a>
+        <a routerLink="/dashboard/devfolio" class="welcome-card__btn welcome-card__btn--outline">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="2" y1="12" x2="22" y2="12"/>
+            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+          </svg>
+          Mon DevFolio
+        </a>
       </div>
-      <p class="welcome-card__greeting">Bonjour, <strong>{{ user.name }}</strong> 👋</p>
-      <p class="welcome-card__sub">Ajoute tes projets, gère tes compétences et génère ton CV.</p>
     </div>
-  </div>
 
-  <div class="welcome-card__right">
-    <span class="welcome-card__date">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-           stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="3" y="4" width="18" height="18" rx="2"/>
-        <line x1="16" y1="2" x2="16" y2="6"/>
-        <line x1="8" y1="2" x2="8" y2="6"/>
-        <line x1="3" y1="10" x2="21" y2="10"/>
-      </svg>
-      {{ today }}
-    </span>
-    <a routerLink="/devfolio" class="welcome-card__btn">
-      Voir mon DevFolio
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-           stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="5" y1="12" x2="19" y2="12"/>
-        <polyline points="12 5 19 12 12 19"/>
-      </svg>
-    </a>
+<div class="welcome-card__avatar-wrap">
+  @if (user.avatar) {
+    <img class="welcome-card__avatar" [src]="user.avatar" [alt]="user.name" />
+  } @else {
+    <div class="welcome-card__avatar welcome-card__avatar--initials">
+      {{ user.initials }}
+    </div>
+  }
+</div>
   </div>
 </div>
 
