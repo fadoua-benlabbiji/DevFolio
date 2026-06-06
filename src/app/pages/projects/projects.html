@@ -1,10 +1,21 @@
 <div class="page-header">
-  <div>
-    <h1 class="page-title">Mes Projets</h1>
-    <p class="page-sub">
-      {{ projects().length }} projets · {{ completedCount }} terminés · {{ inProgressCount }} en cours
-    </p>
-  </div>
+<div class="filter-tabs">
+  <button class="filter-tab" [class.active]="activeFilter() === 'tous'" (click)="activeFilter.set('tous')">
+
+    <span class="filter-tab__label">Tous   </span>
+        <span class="filter-tab__count">{{ projects().length }}</span>
+  </button>
+  <button class="filter-tab" [class.active]="activeFilter() === 'termine'" (click)="activeFilter.set('termine')">
+
+    <span class="filter-tab__label">Terminés   </span>
+        <span class="filter-tab__count">{{ completedCount }}</span>
+  </button>
+  <button class="filter-tab" [class.active]="activeFilter() === 'encours'" (click)="activeFilter.set('encours')">
+    
+    <span class="filter-tab__label">En cours  </span>
+    <span class="filter-tab__count">{{ inProgressCount }}</span>
+  </button>
+</div>
 
   <button class="btn btn-primary" (click)="openAdd()">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -14,11 +25,11 @@
     Ajouter un projet
   </button>
 </div>
-<!-- MODAL AJOUTER/MODIFIER PROJET -->
+
 @if (showForm()) {
   <div class="modal-overlay" (click)="cancel()">
     <div class="modal-card" (click)="$event.stopPropagation()">
-      
+
       <h2 class="modal-title">
         {{ editingId() !== null ? 'Modifier le projet' : 'Nouveau projet' }}
       </h2>
@@ -43,7 +54,6 @@
           <label>Avancement ({{ form.pct }}%)</label>
           <input type="range" min="0" max="100" [(ngModel)]="form.pct" />
         </div>
-
         <div class="form-group">
           <label>Couleur</label>
           <input type="color" [(ngModel)]="form.color" />
@@ -65,7 +75,6 @@
           <label>GitHub</label>
           <input type="url" [(ngModel)]="form.github" placeholder="https://github.com/..." />
         </div>
-
         <div class="form-group">
           <label>Demo</label>
           <input type="url" [(ngModel)]="form.demo" placeholder="https://..." />
@@ -82,16 +91,15 @@
 }
 
 <div class="projects-list">
-  @for (p of projects(); track p.id) {
+  @for (p of filteredProjects; track p.id) {
     <div class="proj-card">
-      
+
       <div class="proj-card__logo" [style.background]="!p.logo ? p.color : 'transparent'">
         @if (p.logo) {
           <img [src]="p.logo" [alt]="p.name" (error)="onLogoError(p)" />
         } @else {
           <span class="proj-card__initial">{{ p.name.charAt(0).toUpperCase() }}</span>
         }
-
         <label class="logo-overlay">
           <span>+</span>
           <input type="file" (change)="onLogoUpload($event, p)" accept="image/*" style="display: none;" />
@@ -107,7 +115,6 @@
             <span class="badge badge--wip">{{ p.pct }}%</span>
           }
         </div>
-
         <div class="proj-card__info">
           <p class="proj-card__desc">{{ p.description | tronquer:90 }}</p>
           <span class="proj-card__stack">{{ p.stack }}</span>

@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -14,19 +14,26 @@ import { TronquerPipe } from '../../tronquer-pipe';
 })
 export class Projects {
   private portfolio = inject(PortfolioService);
-  private router = inject(Router);
+  private router    = inject(Router);
 
-  // ← myProjects filtre automatiquement par userId de l'utilisateur connecté
   readonly projects = this.portfolio.myProjects;
 
-  showForm = signal(false);
-  editingId = signal<number | null>(null);
+  showForm    = signal(false);
+  editingId   = signal<number | null>(null);
+  activeFilter = signal<'tous' | 'termine' | 'encours'>('tous');
+
+  get filteredProjects(): Project[] {
+    const f = this.activeFilter();
+    if (f === 'termine') return this.projects().filter(p => p.pct === 100);
+    if (f === 'encours') return this.projects().filter(p => p.pct < 100);
+    return this.projects();
+  }
 
   form: Omit<Project, 'id'> = this.emptyForm();
 
   private emptyForm(): Omit<Project, 'id'> {
     return {
-      userId: 0, // ← sera écrasé par addProject() avec l'id du user connecté
+      userId: 0,
       name: '',
       stack: '',
       pct: 0,
@@ -100,13 +107,11 @@ export class Projects {
 
   onLogoError(project: Project): void {
     this.portfolio.updateProject(project.id, { ...project, logo: '' });
-    console.warn(`Logo introuvable pour: ${project.name}`);
   }
 
   onLogoUpload(event: Event, project: Project): void {
     const input = event.target as HTMLInputElement;
     if (!input.files || input.files.length === 0) return;
-
     const reader = new FileReader();
     reader.onload = () => {
       this.portfolio.updateProject(project.id, { ...project, logo: reader.result as string });

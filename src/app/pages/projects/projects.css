@@ -110,3 +110,31 @@ input, textarea { padding: 10px; border: 1px solid #d1d5db; border-radius: 8px; 
 
 /* --- État vide --- */
 .empty-state { text-align: center; padding: 40px; color: #666; }
+.filter-tabs {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.filter-tab {
+  padding: 8px 18px;
+  border-radius: 20px;
+  border: 2px solid #000000;
+  background: transparent;
+  font-size: 13px;
+  cursor: pointer;
+  color: #040404;
+  transition: all 0.2s;
+}
+
+.filter-tab.active {
+  background: #F5C518;
+  border-color: #F5C518;
+  color: #000;
+  font-weight: 600;
+}
+
+.filter-tab:hover:not(.active) {
+  border-color: #F5C518;
+  color: #000;
+}

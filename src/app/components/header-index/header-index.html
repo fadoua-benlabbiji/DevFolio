@@ -26,7 +26,17 @@
 
     <!-- Actions desktop + hamburger -->
     <div class="nav-actions">
-      <button class="btn btn-outline btn-sm" (click)="goLogin()">Connexion</button>
+
+      <!-- ✅ AJOUT : change selon la session -->
+      <ng-container *ngIf="isLoggedIn(); else loginBtn">
+<button class="btn btn-outline btn-sm" (click)="goDashboard()">
+  Mon espace
+</button>
+      </ng-container>
+      <ng-template #loginBtn>
+        <button class="btn btn-outline btn-sm" (click)="goLogin()">Connexion</button>
+      </ng-template>
+
       <button class="hamburger" (click)="toggleMenu()" aria-label="Menu">
         <span></span><span></span><span></span>
       </button>
@@ -40,6 +50,15 @@
       <li><a [class.active]="activeSection === 'hero'" (click)="scrollToSection('hero', $event)" href="#">Accueil</a></li>
       <li><a [class.active]="activeSection === 'features'" (click)="scrollToSection('features', $event)" href="#">Fonctionnalités</a></li>
       <li><a [class.active]="activeSection === 'footer'" (click)="scrollToSection('footer', $event)" href="#">Contact</a></li>
+
+      <!-- ✅ AJOUT : mobile aussi -->
+      <li *ngIf="isLoggedIn(); else mobileLoginBtn">
+        <a href="#" (click)="goDashboard()">Mon espace </a>
+      </li>
+      <ng-template #mobileLoginBtn>
+        <li><a href="#" (click)="goLogin()">Connexion</a></li>
+      </ng-template>
+
     </ul>
   </div>
 

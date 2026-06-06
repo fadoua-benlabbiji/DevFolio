@@ -32,7 +32,12 @@ export class HeaderIndex implements OnInit {
 
   ngOnInit(): void {
     this.activeSection = 'hero';
+      const fakeEvent = new Event('click');
+  fakeEvent.preventDefault = () => {};
+  this.scrollToSection('hero', fakeEvent);
+    
   }
+  get currentUser() { return this.userService.currentUser(); }
 
   @HostListener('window:scroll')
   onScroll(): void {
