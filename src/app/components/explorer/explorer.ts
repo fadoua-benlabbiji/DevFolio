@@ -1,33 +1,35 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
-
+import { RouterLink } from '@angular/router';
 
 import { Profile } from '../../pages/acceuil/acceuil';
-
 import { Footer } from '../footer/footer';
 import { HeaderIndex } from '../header-index/header-index';
+import { UserService } from '../../user';
+import { ProfileService } from '../../profile';
 
 @Component({
   selector: 'app-explorer',
   standalone: true,
-  imports: [CommonModule, FormsModule, HeaderIndex, Footer],
+  imports: [CommonModule, FormsModule, HeaderIndex, Footer, RouterLink],
   templateUrl: './explorer.html',
   styleUrl: './explorer.css',
 })
 export class Explorer implements OnInit {
+  private userService    = inject(UserService);
+  private profileService = inject(ProfileService);
+
   profiles: Profile[] = [];
   searchQuery = '';
   activeSkill = '';
 
-  constructor(private http: HttpClient) {}
+  // ✅ Session
+  readonly isLoggedIn = this.userService.isLoggedIn;
 
   ngOnInit(): void {
-    this.http.get<Profile[]>('assets/profiles.json').subscribe({
-      next: (data) => this.profiles = data,
-      error: (err) => console.error('Erreur chargement profiles.json', err)
-    });
+    // ✅ Charger les profils depuis ProfileService au lieu du JSON
+    this.profiles = this.profileService.getAll() as any[];
   }
 
   get allSkills(): string[] {

@@ -61,7 +61,7 @@ this.user = computed(() => {
 
   logout(): void {
     this.userService.logout();
-    this.router.navigate(['/connexion']);
+    this.router.navigate(['/']);
   }
 
   getIcon(name: string): SafeHtml {

@@ -1,3 +1,4 @@
+<!-- ✅ Header détecte la session automatiquement via UserService -->
 <app-header-index></app-header-index>
 
 <div class="explorer-page">
@@ -8,7 +9,7 @@
       <div class="explorer-hero-left">
         <div class="badge badge-yellow" style="margin-bottom: 20px;">
           <span class="material-symbols-outlined" style="font-size:13px; vertical-align:middle;">group</span>
-          Communauté  DevFolio
+          Communauté DevFolio
         </div>
         <h1 class="explorer-title">Explore les portfolios</h1>
         <p class="explorer-desc">
@@ -17,6 +18,7 @@
         </p>
       </div>
     </div>
+
     <div class="filters-bar">
       <div class="search-wrap">
         <span class="material-symbols-outlined search-icon">search</span>
@@ -58,7 +60,6 @@
         [class.profile-card--featured]="profile.featured"
         *ngFor="let profile of filteredProfiles"
       >
-        <!-- Top: Avatar + Nom -->
         <div class="profile-card-top">
           <img [src]="profile.avatar" [alt]="profile.nom" class="profile-avatar" />
           <div class="profile-info">
@@ -67,14 +68,12 @@
           </div>
         </div>
 
-        <!-- Bio -->
         <p class="profile-bio">{{ profile.bio }}</p>
 
-        <!-- Skills -->
         <div class="profile-skills">
           <span class="skill-tag" *ngFor="let skill of profile.skills">{{ skill }}</span>
         </div>
-        <!-- Footer -->
+
         <div class="profile-card-footer">
           <div class="profile-meta">
             <span class="profile-meta-item">
@@ -86,7 +85,8 @@
               {{ profile.projets }} projets
             </span>
           </div>
-          <a  class="profile-link" href="#">
+          <!-- ✅ Lien vers le portfolio public -->
+          <a [routerLink]="['/profil', profile.nom]" class="profile-link">
             Voir le portfolio
             <span class="material-symbols-outlined" style="font-size:16px; vertical-align:middle;">arrow_forward</span>
           </a>
@@ -94,7 +94,6 @@
       </div>
     </div>
 
-    <!-- Empty state -->
     <ng-template #noResults>
       <div class="no-results">
         <span class="material-symbols-outlined no-results-icon">search_off</span>
@@ -105,4 +104,5 @@
 
   </div>
 </div>
- <app-footer></app-footer>
+
+<app-footer></app-footer>
