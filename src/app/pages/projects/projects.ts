@@ -15,7 +15,9 @@ import { TronquerPipe } from '../../tronquer-pipe';
 export class Projects {
   private portfolio = inject(PortfolioService);
   private router = inject(Router);
-  readonly projects = this.portfolio.projects;
+
+  // ← myProjects filtre automatiquement par userId de l'utilisateur connecté
+  readonly projects = this.portfolio.myProjects;
 
   showForm = signal(false);
   editingId = signal<number | null>(null);
@@ -23,15 +25,16 @@ export class Projects {
   form: Omit<Project, 'id'> = this.emptyForm();
 
   private emptyForm(): Omit<Project, 'id'> {
-    return { 
-      name: '', 
-      stack: '', 
-      pct: 0, 
-      color: '#F5C518', 
-      description: '', 
-      readme: '', 
-      logo: '', 
-      github: '', 
+    return {
+      userId: 0, // ← sera écrasé par addProject() avec l'id du user connecté
+      name: '',
+      stack: '',
+      pct: 0,
+      color: '#F5C518',
+      description: '',
+      readme: '',
+      logo: '',
+      github: '',
       demo: '',
       startDate: '',
       endDate: '',
@@ -50,15 +53,16 @@ export class Projects {
   }
 
   openEdit(p: Project): void {
-    this.form = { 
-      name: p.name, 
-      stack: p.stack, 
-      pct: p.pct, 
-      color: p.color, 
-      description: p.description, 
-      readme: p.readme ?? '', 
+    this.form = {
+      userId: p.userId,
+      name: p.name,
+      stack: p.stack,
+      pct: p.pct,
+      color: p.color,
+      description: p.description,
+      readme: p.readme ?? '',
       logo: p.logo ?? '',
-      github: p.github ?? '', 
+      github: p.github ?? '',
       demo: p.demo ?? '',
       startDate: p.startDate ?? '',
       endDate: p.endDate ?? '',
@@ -86,44 +90,29 @@ export class Projects {
     if (confirm('Supprimer ce projet ?')) this.portfolio.deleteProject(id);
   }
 
-  cancel(): void { this.showForm.set(false); }
-
-  viewProject(projectId: number): void {
-    this.router.navigate(['/portfolio/projetDetail', projectId]);
+  cancel(): void {
+    this.showForm.set(false);
   }
 
-  onLogoError(project: Project) {
-  const updatedProject = {
-    ...project,
-    logo: ''
-  };
+  viewProject(projectId: number): void {
+    this.router.navigate(['/dashboard/project-detail', projectId]);
+  }
 
-  // Mise à jour via service
-  this.portfolio.updateProject(project.id, updatedProject);
+  onLogoError(project: Project): void {
+    this.portfolio.updateProject(project.id, { ...project, logo: '' });
+    console.warn(`Logo introuvable pour: ${project.name}`);
+  }
 
-  console.warn(`Logo introuvable pour: ${project.name}`);
-}
+  onLogoUpload(event: Event, project: Project): void {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) return;
 
-onLogoUpload(event: Event, project: Project) {
-  const input = event.target as HTMLInputElement;
-
-  if (!input.files || input.files.length === 0) return;
-
-  const file = input.files[0];
-
-  const reader = new FileReader();
-
-  reader.onload = () => {
-    const updatedProject: Project = {
-      ...project,
-      logo: reader.result as string
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.portfolio.updateProject(project.id, { ...project, logo: reader.result as string });
     };
-
-    this.portfolio.updateProject(project.id, updatedProject);
-  };
-
-  reader.readAsDataURL(file);
-}
+    reader.readAsDataURL(input.files[0]);
+  }
 
   get completedCount(): number { return this.projects().filter(p => p.pct === 100).length; }
   get inProgressCount(): number { return this.projects().filter(p => p.pct < 100).length; }

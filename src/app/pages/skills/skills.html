@@ -1,105 +1,133 @@
-<div class="skills-page">
-
-  <!-- En-tête de page -->
-  <div class="skills-header">
-    <div class="skills-header__left">
-      <h2 class="skills-header__title">Compétences</h2>
-      <p class="skills-header__count">{{ skills().length }} compétence(s)</p>
-    </div>
-    <button class="btn-add" (click)="openAdd()">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-           stroke="currentColor" stroke-width="2.5"
-           stroke-linecap="round" stroke-linejoin="round">
-        <line x1="12" y1="5" x2="12" y2="19"/>
-        <line x1="5" y1="12" x2="19" y2="12"/>
-      </svg>
-      Ajouter
-    </button>
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Compétences</h1>
+    <p class="page-sub">{{ skills().length }} compétence(s)</p>
   </div>
-
-  <!-- Groupes par catégorie -->
-  <div class="skills-groups">
-    <div class="skill-group" *ngFor="let entry of groupEntries">
-      <div class="skill-group__header">
-        <span class="skill-group__dot"></span>
-        <span class="skill-group__name">{{ entry[0] }}</span>
-        <span class="skill-group__count">({{ entry[1].length }})</span>
-      </div>
-
-      <div class="skill-tags">
-        <div class="skill-tag" *ngFor="let skill of entry[1]">
-          <span class="skill-tag__name">{{ skill.name }}</span>
-          <span class="skill-tag__pct" [style.background-color]="pctColor(skill.pct) + '22'" [style.color]="pctColor(skill.pct)">
-            {{ skill.pct }}%
-          </span>
-          <button class="skill-tag__edit" (click)="openEdit(skill)" title="Modifier">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-            </svg>
-          </button>
-          <button class="skill-tag__remove" (click)="delete(skill.id)" title="Supprimer">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="18" y1="6" x2="6" y2="18"/>
-              <line x1="6" y1="6" x2="18" y2="18"/>
-            </svg>
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- État vide -->
-    <div class="skills-empty" *ngIf="skills().length === 0">
-      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" stroke-width="1.5">
-        <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
-      </svg>
-      <p>Aucune compétence pour l'instant.</p>
-      <button class="btn-add" (click)="openAdd()">+ Ajouter une compétence</button>
-    </div>
-  </div>
+  <button class="btn btn-primary" (click)="openAdd()">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <line x1="12" y1="5" x2="12" y2="19"></line>
+      <line x1="5" y1="12" x2="19" y2="12"></line>
+    </svg>
+    Ajouter
+  </button>
 </div>
 
-<!-- Modal formulaire -->
-<div class="modal-overlay" *ngIf="showForm()" (click)="cancel()">
-  <div class="modal" (click)="$event.stopPropagation()">
-    <div class="modal__header">
-      <h3 class="modal__title">{{ editingId() !== null ? 'Modifier la compétence' : 'Nouvelle compétence' }}</h3>
-      <button class="modal__close" (click)="cancel()">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-        </svg>
-      </button>
-    </div>
+<!-- Filtres -->
+<div class="category-filters">
+  <button class="filter-btn" [class.filter-btn--active]="activeCategory() === 'Tous'" (click)="setCategory('Tous')">
+    Tous <span class="filter-count">{{ skills().length }}</span>
+  </button>
+  @for (cat of categories; track cat) {
+    <button class="filter-btn" [class.filter-btn--active]="activeCategory() === cat" (click)="setCategory(cat)">
+      <span class="filter-dot" [style.background]="getCategoryColor(cat)"></span>
+      {{ cat }}
+      <span class="filter-count">{{ countByCategory(cat) }}</span>
+    </button>
+  }
+</div>
 
-    <div class="modal__body">
+<!-- MODAL -->
+@if (showForm()) {
+  <div class="modal-overlay" (click)="cancel()">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <h2 class="modal-title">{{ editingId() !== null ? 'Modifier' : 'Nouvelle compétence' }}</h2>
+
       <div class="form-group">
-        <label class="form-label">Nom de la compétence *</label>
-        <input class="form-input" [(ngModel)]="form.name" placeholder="ex: React, Docker, Python…" />
+        <label>Nom</label>
+        <input type="text" [(ngModel)]="form.name" placeholder="Ex: Angular" />
       </div>
 
       <div class="form-group">
-        <label class="form-label">Catégorie *</label>
-        <select class="form-input" [(ngModel)]="form.category">
-          <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
+        <label>Catégorie</label>
+        <select [(ngModel)]="form.category">
+          @for (cat of categories; track cat) {
+            <option [value]="cat">{{ cat }}</option>
+          }
         </select>
       </div>
 
       <div class="form-group">
-        <label class="form-label">Niveau : <strong>{{ form.pct }}%</strong></label>
-        <input class="form-range" type="range" [(ngModel)]="form.pct" min="1" max="100" />
-        <div class="range-labels">
-          <span>Débutant</span>
-          <span>Intermédiaire</span>
-          <span>Expert</span>
-        </div>
+        <label>Niveau ({{ form.pct }}%)</label>
+        <input type="range" min="0" max="100" [(ngModel)]="form.pct" />
+      </div>
+
+      <div class="form-group">
+        <label>Couleur</label>
+        <input type="color" [(ngModel)]="form.color" />
+      </div>
+
+      <div class="form-group">
+        <label>Logo (URL)</label>
+        <input type="url" [(ngModel)]="form.logo" placeholder="https://.../logo.png" />
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn btn-ghost" (click)="cancel()">Annuler</button>
+        <button class="btn btn-primary" (click)="save()">Enregistrer</button>
       </div>
     </div>
-
-    <div class="modal__footer">
-      <button class="btn-cancel" (click)="cancel()">Annuler</button>
-      <button class="btn-save" (click)="save()" [disabled]="!form.name.trim()">
-        {{ editingId() !== null ? 'Enregistrer' : 'Ajouter' }}
-      </button>
-    </div>
   </div>
+}
+
+<!-- Liste -->
+<div class="skills-list">
+  @for (entry of filteredGroupEntries; track entry[0]) {
+    <div class="skill-group">
+      <div class="skill-group__header">
+        <span class="skill-group__dot" [style.background]="getCategoryColor(entry[0])"></span>
+        <span class="skill-group__name">{{ entry[0] }}</span>
+        <span class="skill-group__count">({{ entry[1].length }})</span>
+      </div>
+
+      <div class="skill-cards">
+        @for (s of entry[1]; track s.id) {
+          <div class="skill-card">
+
+            <div class="skill-card__left">
+              <!-- Icône / Logo -->
+              <div class="skill-card__icon"
+                   [style.background]="s.logo ? 'transparent' : s.color + '20'"
+                   [style.color]="s.color">
+                @if (s.logo) {
+                  <img [src]="s.logo" [alt]="s.name" class="skill-card__logo-img" (error)="onLogoError(s)" />
+                } @else {
+                  {{ s.name.charAt(0) }}
+                }
+                <label class="skill-logo-overlay">
+                  <span>+</span>
+                  <input type="file" (change)="onLogoUpload($event, s)" accept="image/*" style="display:none" />
+                </label>
+              </div>
+
+              <div class="skill-card__info">
+                <span class="skill-card__name">{{ s.name }}</span>
+                <div class="skill-card__bar-wrap">
+                  <div class="skill-card__bar-bg">
+                    <div class="skill-card__bar-fill"
+                         [style.width.%]="s.pct"
+                         [style.background]="s.color">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="skill-card__right">
+              <span class="skill-card__pct" [style.color]="pctColor(s.pct)">{{ s.pct }}%</span>
+              <button class="icon-btn" (click)="openEdit(s)">✏️</button>
+              <button class="icon-btn" (click)="delete(s.id)">🗑</button>
+            </div>
+
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  @if (filteredGroupEntries.length === 0) {
+    <div class="empty-state">
+      <p>Aucune compétence dans cette catégorie.</p>
+      <button class="btn btn-primary" (click)="openAdd()">Ajouter une compétence</button>
+    </div>
+  }
 </div>

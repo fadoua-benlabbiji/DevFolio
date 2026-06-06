@@ -1,23 +1,36 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed, inject } from '@angular/core';
 import { Profile } from './profile.model';
+import { UserService } from './user';
 
 @Injectable({ providedIn: 'root' })
 export class ProfileService {
+  private userService = inject(UserService);
   private _profiles = signal<Profile[]>(MOCK_PROFILES);
   readonly profiles = this._profiles.asReadonly();
 
-  readonly myProfile = computed(
-    () => this._profiles().find(p => p.id === 1) || MOCK_PROFILES[0]
-  );
+  // ✅ myProfile basé sur l'utilisateur connecté (plus hardcodé sur id=1)
+  readonly myProfile = computed(() => {
+    const u = this.userService.currentUser();
+    if (!u) return MOCK_PROFILES[0];
+    return this._profiles().find(p => p.id === u.profileId) ?? MOCK_PROFILES[0];
+  });
 
-  // ── Ajouter un nouveau profil (appelé depuis l'inscription) ───────────────
+  // ── Ajouter un nouveau profil (appelé depuis l'inscription) ──
   addProfile(profile: Profile): void {
     this._profiles.update(list => [...list, profile]);
   }
 
+  // ✅ updateProfile existant (conservé)
   updateProfile(updatedProfile: Profile): void {
     this._profiles.update(list =>
       list.map(p => p.id === updatedProfile.id ? updatedProfile : p)
+    );
+  }
+
+  // ✅ update(id, changes) — appelé depuis vue-ensemble pour l'avatar
+  update(id: number, changes: Partial<Profile>): void {
+    this._profiles.update(list =>
+      list.map(p => p.id === id ? { ...p, ...changes } : p)
     );
   }
 

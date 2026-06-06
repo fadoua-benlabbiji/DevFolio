@@ -30,8 +30,8 @@ export class ProjectDetail implements OnInit {
 
   private loadProject(): void {
     if (this.projectId !== null) {
-      const projects = this.portfolio.projects();
-      this.project = projects.find(p => p.id === this.projectId) || null;
+      const projects = this.portfolio.myProjects(); // ← myProjects
+      this.project = projects.find((p: Project) => p.id === this.projectId) || null; // ← type
       if (!this.project) {
         this.router.navigate(['/projects']);
       }

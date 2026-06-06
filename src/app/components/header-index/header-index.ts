@@ -31,20 +31,27 @@ export class HeaderIndex implements OnInit {
 
     this.updateActiveSection();
   }
+updateActiveSection(): void {
+  const sections = ['footer', 'features', 'hero'];
+  let found = false;
 
-  updateActiveSection(): void {
-    const sections = ['footer', 'features', 'hero'];
-    for (const id of sections) {
-      const el = document.getElementById(id);
-      if (el) {
-        const rect = el.getBoundingClientRect();
-        if (rect.top <= 100) {
-          this.activeSection = id;
-          break;
-        }
+  for (const id of sections) {
+    const el = document.getElementById(id);
+    if (el) {
+      const rect = el.getBoundingClientRect();
+      if (rect.top <= 100) {
+        this.activeSection = id;
+        found = true;
+        break;
       }
     }
   }
+
+  // Si on est tout en haut de la page → Accueil actif par défaut
+  if (!found) {
+    this.activeSection = 'hero';
+  }
+}
 
   @HostListener('window:resize')
   onResize(): void {

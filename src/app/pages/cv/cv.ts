@@ -15,8 +15,8 @@ export class CV {
   private portfolio = inject(PortfolioService);
 
   readonly user = this.auth.currentUser;
-  readonly projects = this.portfolio.projects;
-  readonly skills = this.portfolio.skills;
+readonly projects = this.portfolio.myProjects;
+readonly skills   = this.portfolio.mySkills;
 
   accentColor = signal('#2563eb');
   downloading = signal(false);

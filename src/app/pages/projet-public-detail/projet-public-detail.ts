@@ -1,7 +1,7 @@
 import { Component, inject, computed, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { PortfolioService } from '../../portfolio';
+import { PortfolioService, Project } from '../../portfolio';
 import { ProfileService } from '../../profile';
 
 @Component({
@@ -22,13 +22,13 @@ export class ProjetPublicDetail implements OnInit {
 
   readonly project = computed(() => {
     const id = Number(this.route.snapshot.paramMap.get('id'));
-    return this.portfolio.projects().find(p => p.id === id) ?? null;
+    return this.portfolio.myProjects().find((p: Project) => p.id === id) ?? null; // ← myProjects + type
   });
 
   readonly otherProjects = computed(() => {
     const current = this.project();
-    return this.portfolio.projects()
-      .filter(p => p.id !== current?.id)
+    return this.portfolio.myProjects()
+      .filter((p: Project) => p.id !== current?.id) // ← myProjects + type
       .slice(0, 3);
   });
 
@@ -36,7 +36,7 @@ export class ProjetPublicDetail implements OnInit {
     const p = this.project();
     if (!p) return [];
     if (p.technologies && p.technologies.length > 0) return p.technologies;
-    return p.stack.split(/[·,]/).map(t => t.trim()).filter(Boolean);
+    return p.stack.split(/[·,]/).map((t: string) => t.trim()).filter(Boolean); // ← type string
   });
 
   ngOnInit(): void {
@@ -73,4 +73,7 @@ export class ProjetPublicDetail implements OnInit {
     if (pct >= 50)   return 'mid';
     return 'early';
   }
+  viewProject(projectId: number): void {
+  this.router.navigate(['/dashboard/project-detail', projectId]);
+}
 }

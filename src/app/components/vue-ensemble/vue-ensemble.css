@@ -489,8 +489,8 @@ app-vue-ensemble {
   color: #1a1a1a;
 }
 .welcome-card__avatar {
-  width: 125px;
-  height: 125px;
+  width: 135px;
+  height: 135px;
   border-radius: 50%;
   border: 3px solid rgba(255, 255, 255, 0.7);
   object-fit: cover;
@@ -520,3 +520,26 @@ app-vue-ensemble {
   color: #1a1a1a;
   flex-shrink: 0;
 }
+/* ── Avatar modifiable — colle à la fin de vue-ensemble.css ── */
+.welcome-card__avatar-wrap {
+  cursor: pointer;
+}
+
+.avatar-container {
+  display: inline-block;
+  position: relative;
+}
+
+.avatar-container .welcome-card__avatar,
+.avatar-container .welcome-card__avatar--initials {
+  transition: border 0.2s ease, box-shadow 0.2s ease;
+}
+
+.avatar-container:hover .welcome-card__avatar,
+.avatar-container:hover .welcome-card__avatar--initials {
+  border: 3px solid #fff;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.8);
+}
+
+/* Cacher l'overlay — on ne veut pas de fond sombre */
+.avatar-overlay { display: none; }

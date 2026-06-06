@@ -1,171 +1,430 @@
-/* ── Page wrapper ────────────────────────────────────── */
-.skills-page {
+/* ── Variables ───────────────────────────────────────────── */
+:root {
+  --yellow: #F5C518;
+  --yellow-dark: #d4a017;
+  --yellow-glow: rgba(245, 197, 24, 0.25);
+  --bg: #f7f8fc;
+  --surface: #ffffff;
+  --surface-2: #f0f2f8;
+  --border: #e8eaf0;
+  --text: #0f1117;
+  --text-muted: #8b92a5;
+  --radius: 14px;
+  --shadow-sm: 0 2px 8px rgba(15,17,23,0.06);
+  --shadow-md: 0 8px 24px rgba(15,17,23,0.10);
+  --shadow-lg: 0 16px 48px rgba(15,17,23,0.14);
+}
+
+/* ── Header ──────────────────────────────────────────────── */
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.page-header__left {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.page-title {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--text);
+  margin: 0;
+  letter-spacing: -0.03em;
+}
+
+.page-sub {
+  font-size: 0.83rem;
+  color: var(--text-muted);
+  margin: 0;
+  font-weight: 500;
+}
+
+/* ── Bouton Ajouter ──────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+  letter-spacing: 0.01em;
+}
+
+.btn-primary {
+  background: var(--yellow);
+  color: var(--text);
+  box-shadow: 0 4px 12px var(--yellow-glow);
+}
+
+.btn-primary:hover {
+  background: var(--yellow-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px var(--yellow-glow);
+}
+
+.btn-ghost {
+  background: var(--surface-2);
+  color: var(--text-muted);
+  border: 1.5px solid var(--border);
+}
+
+.btn-ghost:hover {
+  background: var(--border);
+  color: var(--text);
+}
+
+/* ── Filtres ─────────────────────────────────────────────── */
+.category-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 28px;
+  padding: 16px 20px;
+  background: var(--surface);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+}
+
+.filter-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 16px;
+  border-radius: 30px;
+  border: 1.5px solid var(--border);
+  background: var(--bg);
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  letter-spacing: 0.01em;
+}
+
+.filter-btn:hover {
+  border-color: var(--yellow);
+  color: var(--text);
+  background: var(--surface);
+  box-shadow: 0 2px 8px var(--yellow-glow);
+}
+
+.filter-btn--active {
+  background: var(--yellow);
+  border-color: var(--yellow);
+  color: var(--text);
+  font-weight: 700;
+  box-shadow: 0 4px 12px var(--yellow-glow);
+}
+
+.filter-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.filter-count {
+  background: rgba(15,17,23,0.08);
+  border-radius: 10px;
+  padding: 1px 7px;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.filter-btn--active .filter-count {
+  background: rgba(15,17,23,0.15);
+}
+
+/* ── Liste des groupes ───────────────────────────────────── */
+.skills-list {
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
 
-/* ── En-tête ─────────────────────────────────────────── */
-.skills-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-}
-
-.skills-header__title {
-  font-size: 22px;
-  font-weight: 700;
-  color: #111;
-  margin: 0 0 4px;
-}
-
-.skills-header__count {
-  font-size: 13px;
-  color: #6b7280;
-  margin: 0;
-}
-
-/* ── Bouton Ajouter ──────────────────────────────────── */
-.btn-add {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  background: #F5C518;
-  color: #111;
-  border: none;
-  border-radius: 24px;
-  padding: 10px 20px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.18s, transform 0.12s;
-}
-
-.btn-add:hover {
-  background: #e6b800;
-  transform: translateY(-1px);
-}
-
-/* ── Groupes de compétences ──────────────────────────── */
-.skills-groups {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
+/* ── Groupe ──────────────────────────────────────────────── */
 .skill-group {
-  background: #fff;
-  border: 1px solid #e5e7eb;
-  border-radius: 14px;
-  padding: 18px 22px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.2s;
+}
+
+.skill-group:hover {
+  box-shadow: var(--shadow-md);
 }
 
 .skill-group__header {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 14px;
+  gap: 10px;
+  padding: 16px 22px;
+  background: linear-gradient(135deg, var(--surface) 0%, var(--surface-2) 100%);
+  border-bottom: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+}
+
+.skill-group__header::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: var(--cat-color, var(--yellow));
+  border-radius: 0 4px 4px 0;
 }
 
 .skill-group__dot {
-  width: 9px;
-  height: 9px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
-  background: #F5C518;
   flex-shrink: 0;
+  box-shadow: 0 0 0 3px rgba(0,0,0,0.06);
 }
 
 .skill-group__name {
-  font-size: 14px;
-  font-weight: 700;
-  color: #111;
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .skill-group__count {
-  font-size: 13px;
-  color: #9ca3af;
-}
-
-/* ── Tags de compétences ─────────────────────────────── */
-.skill-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.skill-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  border: 1.5px solid #e5e7eb;
-  border-radius: 20px;
-  padding: 6px 12px;
-  background: #fff;
-  font-size: 14px;
-  transition: border-color 0.15s;
-}
-
-.skill-tag:hover {
-  border-color: #d1d5db;
-}
-
-.skill-tag__name {
-  color: #111;
+  font-size: 0.78rem;
+  color: var(--text-muted);
   font-weight: 500;
 }
 
-.skill-tag__pct {
-  font-size: 12px;
-  font-weight: 700;
-  padding: 2px 8px;
-  border-radius: 10px;
+/* ── Cards container ─────────────────────────────────────── */
+.skill-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
 }
 
-.skill-tag__edit,
-.skill-tag__remove {
+/* ── Card individuelle ───────────────────────────────────── */
+.skill-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 22px;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.15s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.skill-card:last-child {
+  border-bottom: none;
+}
+
+.skill-card::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 0;
+  background: linear-gradient(90deg, var(--yellow-glow), transparent);
+  transition: width 0.3s ease;
+}
+
+.skill-card:hover {
+  background: var(--surface-2);
+}
+
+.skill-card:hover::after {
+  width: 100%;
+}
+
+/* ── Gauche ──────────────────────────────────────────────── */
+.skill-card__left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 1;
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Icône / Logo ────────────────────────────────────────── */
+.skill-card__icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: none;
-  border: none;
+  font-size: 1.05rem;
+  font-weight: 800;
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
   cursor: pointer;
-  padding: 2px;
-  border-radius: 50%;
-  color: #9ca3af;
-  transition: color 0.15s, background 0.15s;
+  border: 1.5px solid rgba(255,255,255,0.6);
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.skill-tag__edit:hover {
-  color: #6b7280;
-  background: #f3f4f6;
+.skill-card__icon:hover {
+  transform: scale(1.08);
+  box-shadow: var(--shadow-md);
 }
 
-.skill-tag__remove:hover {
-  color: #ef4444;
-  background: #fee2e2;
+.skill-card__logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 10px;
+  padding: 4px;
 }
 
-/* ── État vide ───────────────────────────────────────── */
-.skills-empty {
+.skill-logo-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(15,17,23,0.55);
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 14px;
-  padding: 48px;
-  color: #9ca3af;
-  font-size: 14px;
+  justify-content: center;
+  color: #fff;
+  font-size: 1.2rem;
+  font-weight: 700;
+  opacity: 0;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  border-radius: 12px;
 }
 
-/* ── Modal ───────────────────────────────────────────── */
+.skill-card__icon:hover .skill-logo-overlay {
+  opacity: 1;
+}
+
+/* ── Info ────────────────────────────────────────────────── */
+.skill-card__info {
+  flex: 1;
+  min-width: 0;
+}
+
+.skill-card__name {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--text);
+  display: block;
+  margin-bottom: 10px;
+  letter-spacing: -0.01em;
+}
+
+.skill-card__bar-wrap {
+  width: 260px;
+  max-width: 100%;
+}
+
+.skill-card__bar-bg {
+  height: 7px;
+  background: var(--surface-2);
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.skill-card__bar-fill {
+  height: 100%;
+  border-radius: 10px;
+  transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+}
+
+.skill-card__bar-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: rgba(255,255,255,0.3);
+  border-radius: 10px 10px 0 0;
+}
+
+/* ── Droite ──────────────────────────────────────────────── */
+.skill-card__right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: 20px;
+  position: relative;
+  z-index: 1;
+}
+
+.skill-card__pct {
+  font-size: 0.9rem;
+  font-weight: 800;
+  min-width: 44px;
+  text-align: right;
+  letter-spacing: -0.02em;
+}
+
+.icon-btn {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  font-size: 0.85rem;
+  padding: 6px 9px;
+  border-radius: 8px;
+  transition: all 0.15s;
+  line-height: 1;
+}
+
+.icon-btn:hover {
+  background: var(--yellow);
+  border-color: var(--yellow);
+  transform: scale(1.1);
+}
+
+/* ── Empty ───────────────────────────────────────────────── */
+.empty-state {
+  text-align: center;
+  padding: 60px 24px;
+  color: var(--text-muted);
+  background: var(--surface);
+  border-radius: 18px;
+  border: 2px dashed var(--border);
+}
+
+.empty-state p {
+  margin-bottom: 16px;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+/* ── Modal ───────────────────────────────────────────────── */
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.35);
+  background: rgba(15,17,23,0.5);
+  backdrop-filter: blur(6px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  animation: fadeIn 0.18s ease;
+  animation: fadeIn 0.2s ease;
 }
 
 @keyframes fadeIn {
@@ -173,147 +432,94 @@
   to   { opacity: 1; }
 }
 
-.modal {
-  background: #fff;
-  border-radius: 16px;
+.modal-card {
+  background: var(--surface);
+  border-radius: 20px;
+  padding: 32px;
   width: 100%;
-  max-width: 460px;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.18);
-  animation: slideUp 0.22s ease;
-  overflow: hidden;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border);
+  animation: slideUp 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 @keyframes slideUp {
-  from { transform: translateY(20px); opacity: 0; }
-  to   { transform: translateY(0);    opacity: 1; }
+  from { opacity: 0; transform: translateY(20px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-.modal__header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 20px 24px 0;
-}
-
-.modal__title {
-  font-size: 17px;
-  font-weight: 700;
-  color: #111;
+.modal-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--text);
   margin: 0;
+  letter-spacing: -0.02em;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
 }
 
-.modal__close {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: #9ca3af;
-  display: flex;
-  align-items: center;
-  padding: 4px;
-  border-radius: 6px;
-  transition: color 0.15s, background 0.15s;
-}
-
-.modal__close:hover {
-  color: #374151;
-  background: #f3f4f6;
-}
-
-.modal__body {
-  padding: 20px 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.modal__footer {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  padding: 16px 24px;
-  border-top: 1px solid #f3f4f6;
-  background: #fafafa;
-}
-
-/* ── Formulaire ──────────────────────────────────────── */
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 7px;
 }
 
-.form-label {
-  font-size: 13px;
-  font-weight: 600;
-  color: #374151;
+.form-group label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
 }
 
-.form-input {
-  border: 1.5px solid #e5e7eb;
-  border-radius: 10px;
+.form-group input,
+.form-group select,
+.form-group textarea {
   padding: 10px 14px;
-  font-size: 14px;
-  color: #111;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  font-size: 0.88rem;
   outline: none;
-  transition: border-color 0.15s;
-  background: #fff;
-  width: 100%;
-  box-sizing: border-box;
+  transition: all 0.2s;
+  background: var(--bg);
+  color: var(--text);
+  font-family: inherit;
 }
 
-.form-input:focus {
-  border-color: #F5C518;
+.form-group input:focus,
+.form-group select:focus {
+  border-color: var(--yellow);
+  background: var(--surface);
+  box-shadow: 0 0 0 3px var(--yellow-glow);
 }
 
-.form-range {
-  width: 100%;
-  accent-color: #F5C518;
-  cursor: pointer;
-}
-
-.range-labels {
-  display: flex;
-  justify-content: space-between;
-  font-size: 11px;
-  color: #9ca3af;
-  margin-top: 2px;
-}
-
-/* ── Boutons de formulaire ───────────────────────────── */
-.btn-cancel {
-  padding: 9px 20px;
-  border: 1.5px solid #e5e7eb;
-  border-radius: 10px;
-  background: #fff;
-  color: #374151;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background 0.15s;
-}
-
-.btn-cancel:hover {
-  background: #f9fafb;
-}
-
-.btn-save {
-  padding: 9px 20px;
+.form-group input[type="range"] {
+  padding: 0;
   border: none;
-  border-radius: 10px;
-  background: #F5C518;
-  color: #111;
-  font-size: 14px;
-  font-weight: 600;
+  background: none;
+  box-shadow: none;
+  accent-color: var(--yellow);
+  height: 6px;
   cursor: pointer;
-  transition: background 0.15s, transform 0.12s;
 }
 
-.btn-save:hover:not(:disabled) {
-  background: #e6b800;
-  transform: translateY(-1px);
+.form-group input[type="color"] {
+  height: 42px;
+  padding: 3px 5px;
+  cursor: pointer;
+  border-radius: 10px;
 }
 
-.btn-save:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 6px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
 }

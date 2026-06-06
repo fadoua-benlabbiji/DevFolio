@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProfileService } from '../../profile';
 import { Profile } from '../../profile.model';
-import { PortfolioService } from '../../portfolio';
+import { PortfolioService, Project, Skill } from '../../portfolio';
 
 @Component({
   selector: 'app-mon-devfolio',
@@ -21,8 +21,8 @@ export class MonDevfolio implements OnInit, AfterViewInit {
   private el          = inject(ElementRef);
 
   readonly profile    = this.profileSvc.myProfile;
-  readonly skills     = this.portfolio.skills;
-  readonly projects   = this.portfolio.projects;
+  readonly skills     = this.portfolio.mySkills;    // ← corrigé
+  readonly projects   = this.portfolio.myProjects;  // ← corrigé
 
   saved              = signal(false);
   activeSection      = signal<'identite' | 'liens' | 'apparence'>('identite');
@@ -41,19 +41,17 @@ export class MonDevfolio implements OnInit, AfterViewInit {
   ];
 
   readonly completedProjects = computed(() =>
-    this.projects().filter(p => p.pct === 100).length
+    this.projects().filter((p: Project) => p.pct === 100).length // ← type
   );
 
   readonly topSkills = computed(() =>
-    [...this.skills()].sort((a, b) => b.pct - a.pct).slice(0, 5)
+    [...this.skills()].sort((a: Skill, b: Skill) => b.pct - a.pct).slice(0, 5) // ← type
   );
 
   ngOnInit(): void {
-    // Lire le queryParam ?highlight=id envoyé depuis la page détail
     const highlightId = this.route.snapshot.queryParamMap.get('highlight');
     if (highlightId) {
       this.highlightedId.set(Number(highlightId));
-      // Nettoyer l'URL sans recharger
       this.router.navigate([], {
         relativeTo: this.route,
         queryParams: {},
@@ -65,7 +63,6 @@ export class MonDevfolio implements OnInit, AfterViewInit {
   ngAfterViewInit(): void {
     const id = this.highlightedId();
     if (id !== null) {
-      // Scroll vers la carte du projet puis retirer le highlight après 3s
       setTimeout(() => {
         const card = this.el.nativeElement.querySelector(`[data-project-id="${id}"]`);
         if (card) {
