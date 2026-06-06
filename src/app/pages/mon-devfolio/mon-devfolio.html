@@ -1,0 +1,263 @@
+<div class="mdf-shell" [style.--accent]="accentColor()">
+
+  <!-- ══ TOP BAR ══ -->
+  <header class="mdf-topbar">
+    <div class="mdf-topbar__left">
+      <span class="mdf-topbar__icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/>
+        </svg>
+      </span>
+      <span class="mdf-topbar__title">Mon DevFolio</span>
+      <span class="mdf-topbar__badge">Live</span>
+    </div>
+    <button class="mdf-save-btn" (click)="save()" [class.mdf-save-btn--done]="saved()">
+      <svg *ngIf="!saved()" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+        <polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/>
+      </svg>
+      <svg *ngIf="saved()" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="20 6 9 17 4 12"/>
+      </svg>
+      {{ saved() ? 'Enregistré !' : 'Publier' }}
+    </button>
+  </header>
+
+  <!-- ══ SPLIT LAYOUT ══ -->
+  <div class="mdf-split">
+
+    <!-- ─── ÉDITEUR (gauche) ─── -->
+    <aside class="mdf-editor">
+
+      <!-- Tabs -->
+      <nav class="mdf-editor__tabs">
+        <button class="mdf-tab" [class.mdf-tab--active]="activeSection() === 'identite'"   (click)="setSection('identite')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          Identité
+        </button>
+        <button class="mdf-tab" [class.mdf-tab--active]="activeSection() === 'liens'"     (click)="setSection('liens')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+          Liens
+        </button>
+        <button class="mdf-tab" [class.mdf-tab--active]="activeSection() === 'apparence'" (click)="setSection('apparence')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="10.5" r="2.5"/><circle cx="8.5" cy="7.5" r="2.5"/><circle cx="6.5" cy="12.5" r="2.5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>
+          Style
+        </button>
+      </nav>
+
+      <!-- ─ Section IDENTITÉ ─ -->
+      <div class="mdf-editor__body" *ngIf="activeSection() === 'identite'">
+        <div class="mdf-field mdf-field--avatar">
+          <label class="mdf-label">Photo de profil</label>
+          <div class="mdf-avatar-row">
+            <img class="mdf-avatar-preview" [src]="profile().avatar" alt="avatar" />
+            <div class="mdf-avatar-actions">
+              <input class="mdf-input" placeholder="URL de l'image…" [value]="profile().avatar" (input)="patch({avatar: $any($event.target).value})" />
+              <span class="mdf-hint">Colle l'URL d'une image publique</span>
+            </div>
+          </div>
+        </div>
+        <div class="mdf-field">
+          <label class="mdf-label">Nom complet</label>
+          <input class="mdf-input" [value]="profile().nom" (input)="patch({nom: $any($event.target).value})" placeholder="Prénom Nom" />
+        </div>
+        <div class="mdf-field">
+          <label class="mdf-label">Titre professionnel</label>
+          <input class="mdf-input" [value]="profile().titre" (input)="patch({titre: $any($event.target).value})" placeholder="ex. Développeur Full-Stack" />
+        </div>
+        <div class="mdf-field">
+          <label class="mdf-label">Bio</label>
+          <textarea class="mdf-textarea" rows="4" [value]="profile().bio" (input)="patch({bio: $any($event.target).value})" placeholder="Décris-toi en quelques phrases…"></textarea>
+        </div>
+        <div class="mdf-field">
+          <label class="mdf-label">Ville</label>
+          <input class="mdf-input" [value]="profile().ville" (input)="patch({ville: $any($event.target).value})" placeholder="ex. Casablanca, Maroc" />
+        </div>
+        <div class="mdf-field">
+          <label class="mdf-label">Email public</label>
+          <input class="mdf-input" type="email" [value]="profile().email" (input)="patch({email: $any($event.target).value})" placeholder="tu@exemple.com" />
+        </div>
+      </div>
+
+      <!-- ─ Section LIENS ─ -->
+      <div class="mdf-editor__body" *ngIf="activeSection() === 'liens'">
+        <div class="mdf-field">
+          <label class="mdf-label">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+            GitHub
+          </label>
+          <input class="mdf-input" [value]="profile().github" (input)="patch({github: $any($event.target).value})" placeholder="github.com/ton-profil" />
+        </div>
+        <div class="mdf-field">
+          <label class="mdf-label">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+            LinkedIn
+          </label>
+          <input class="mdf-input" [value]="profile().linkedin" (input)="patch({linkedin: $any($event.target).value})" placeholder="linkedin.com/in/ton-profil" />
+        </div>
+        <div class="mdf-field">
+          <label class="mdf-label">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            Site web
+          </label>
+          <input class="mdf-input" [value]="profile().website" (input)="patch({website: $any($event.target).value})" placeholder="ton-site.dev" />
+        </div>
+        <div class="mdf-links-preview">
+          <p class="mdf-label mdf-label--sm">Aperçu des liens actifs</p>
+          <div class="mdf-links-chips">
+            <span class="mdf-chip" *ngIf="profile().github">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+              GitHub
+            </span>
+            <span class="mdf-chip" *ngIf="profile().linkedin">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+              LinkedIn
+            </span>
+            <span class="mdf-chip" *ngIf="profile().website">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+              Site web
+            </span>
+            <span class="mdf-chip mdf-chip--empty" *ngIf="!profile().github && !profile().linkedin && !profile().website">
+              Aucun lien configuré
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─ Section STYLE ─ -->
+      <div class="mdf-editor__body" *ngIf="activeSection() === 'apparence'">
+        <div class="mdf-field">
+          <label class="mdf-label">Couleur accent</label>
+          <p class="mdf-hint">Définit la teinte principale de ton folio</p>
+          <div class="mdf-colors">
+            <button
+              *ngFor="let c of accentColors"
+              class="mdf-color-btn"
+              [class.mdf-color-btn--active]="accentColor() === c.value"
+              [style.background]="c.value"
+              [title]="c.label"
+              (click)="accentColor.set(c.value)"
+            >
+              <svg *ngIf="accentColor() === c.value" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+            </button>
+          </div>
+          <div class="mdf-color-current">
+            <span class="mdf-color-swatch" [style.background]="accentColor()"></span>
+            <span class="mdf-color-hex">{{ accentColor() }}</span>
+          </div>
+        </div>
+        <div class="mdf-style-preview">
+          <p class="mdf-label mdf-label--sm">Aperçu de l'accent</p>
+          <div class="mdf-style-demo">
+            <div class="mdf-demo-bar" [style.background]="accentColor()"></div>
+            <button class="mdf-demo-btn" [style.background]="accentColor()">Bouton exemple</button>
+            <div class="mdf-demo-tag" [style.color]="accentColor()" [style.border-color]="accentColor()">Tag</div>
+          </div>
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- ─── PREVIEW (droite) ─── -->
+    <main class="mdf-preview">
+
+      <!-- Label + sélecteur couleur visible -->
+      <div class="mdf-preview__topbar">
+        <div class="mdf-preview__label">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          Aperçu en direct
+        </div>
+        <!-- Sélecteur de couleur inline dans la preview -->
+        <div class="mdf-preview__colors">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="10.5" r="2.5"/><circle cx="8.5" cy="7.5" r="2.5"/><circle cx="6.5" cy="12.5" r="2.5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>
+          <span class="mdf-preview__colors-label">Couleur</span>
+          <button
+            *ngFor="let c of accentColors"
+            class="mdf-preview__color-dot"
+            [class.mdf-preview__color-dot--active]="accentColor() === c.value"
+            [style.background]="c.value"
+            [title]="c.label"
+            (click)="accentColor.set(c.value)"
+          ></button>
+        </div>
+      </div>
+
+      <!-- ══ FOLIO CARD (fond sombre) ══ -->
+      <div class="folio-card" [style.--accent]="accentColor()">
+
+        <!-- ── HERO SOMBRE ── -->
+        <div class="folio-hero">
+          <div class="folio-hero__inner">
+            <img class="folio-avatar" [src]="profile().avatar" [alt]="profile().nom" />
+            <div class="folio-hero__text">
+              <h1 class="folio-name">{{ profile().nom || 'Votre Nom' }}</h1>
+              <p class="folio-titre" [style.color]="accentColor()">{{ profile().titre || 'Votre titre professionnel' }}</p>
+              <p class="folio-bio" *ngIf="profile().bio">{{ profile().bio }}</p>
+              <div class="folio-meta">
+                <span class="folio-meta__item" *ngIf="profile().email">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                  {{ profile().email }}
+                </span>
+                <span class="folio-meta__item" *ngIf="profile().ville">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                  {{ profile().ville }}
+                </span>
+              </div>
+              <!-- Icônes réseaux sociaux -->
+              <div class="folio-socials">
+                <a class="folio-social" *ngIf="profile().github" href="#" title="GitHub">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+                </a>
+                <a class="folio-social" *ngIf="profile().linkedin" href="#" title="LinkedIn">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+                </a>
+                <a class="folio-social" *ngIf="profile().website" href="#" title="Site web">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── PROJETS EN GRILLE ── -->
+        <div class="folio-projects-section" *ngIf="projects().length">
+          <h2 class="folio-section-title">Projets</h2>
+          <div class="folio-projects-grid">
+            <div
+              class="folio-proj-card"
+              *ngFor="let p of projects()"
+              [attr.data-project-id]="p.id"
+              [class.folio-proj-card--highlighted]="highlightedId() === p.id"
+              (click)="goToProjectDetail(p.id)"
+            >
+              <div class="folio-proj-card__top">
+                <span class="folio-proj-card__name">{{ p.name }}</span>
+                <a class="folio-proj-card__ext" (click)="$event.stopPropagation(); goToProjectDetail(p.id)" title="Voir le détail">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                    <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
+                  </svg>
+                </a>
+              </div>
+              <p class="folio-proj-card__desc">{{ p.description }}</p>
+              <!-- Tags stack -->
+              <div class="folio-proj-card__tags">
+                <span
+                  class="folio-proj-card__tag"
+                  *ngFor="let tech of p.stack.split('·')"
+                  [style.color]="accentColor()"
+                  [style.background]="accentColor() + '22'"
+                  [style.border-color]="accentColor() + '44'"
+                >{{ tech.trim() }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+
+  </div>
+</div>
