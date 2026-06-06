@@ -23,15 +23,15 @@ export class Projects {
   form: Omit<Project, 'id'> = this.emptyForm();
 
   private emptyForm(): Omit<Project, 'id'> {
-    return { 
-      name: '', 
-      stack: '', 
-      pct: 0, 
-      color: '#F5C518', 
-      description: '', 
-      readme: '', 
-      logo: '', 
-      github: '', 
+    return {
+      name: '',
+      stack: '',
+      pct: 0,
+      color: '#F5C518',
+      description: '',
+      readme: '',
+      logo: '',
+      github: '',
       demo: '',
       startDate: '',
       endDate: '',
@@ -50,15 +50,15 @@ export class Projects {
   }
 
   openEdit(p: Project): void {
-    this.form = { 
-      name: p.name, 
-      stack: p.stack, 
-      pct: p.pct, 
-      color: p.color, 
-      description: p.description, 
-      readme: p.readme ?? '', 
+    this.form = {
+      name: p.name,
+      stack: p.stack,
+      pct: p.pct,
+      color: p.color,
+      description: p.description,
+      readme: p.readme ?? '',
       logo: p.logo ?? '',
-      github: p.github ?? '', 
+      github: p.github ?? '',
       demo: p.demo ?? '',
       startDate: p.startDate ?? '',
       endDate: p.endDate ?? '',
@@ -92,38 +92,32 @@ export class Projects {
     this.router.navigate(['/portfolio/projetDetail', projectId]);
   }
 
-  onLogoError(project: Project) {
-  const updatedProject = {
-    ...project,
-    logo: ''
-  };
-
-  // Mise à jour via service
-  this.portfolio.updateProject(project.id, updatedProject);
-
-  console.warn(`Logo introuvable pour: ${project.name}`);
-}
-
-onLogoUpload(event: Event, project: Project) {
-  const input = event.target as HTMLInputElement;
-
-  if (!input.files || input.files.length === 0) return;
-
-  const file = input.files[0];
-
-  const reader = new FileReader();
-
-  reader.onload = () => {
-    const updatedProject: Project = {
-      ...project,
-      logo: reader.result as string
+  /** Appelé quand l'image du modal change — met à jour form.logo */
+  onLogoUpload(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) return;
+    const file = input.files[0];
+    if (file.size > 2 * 1024 * 1024) {
+      alert('L\'image ne doit pas dépasser 2 Mo.');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.form.logo = reader.result as string;
+      // Si on édite un projet existant, on met aussi à jour en direct
+      const id = this.editingId();
+      if (id !== null) {
+        this.portfolio.updateProject(id, { logo: this.form.logo });
+      }
     };
+    reader.readAsDataURL(file);
+    // Reset input pour permettre re-upload du même fichier
+    input.value = '';
+  }
 
-    this.portfolio.updateProject(project.id, updatedProject);
-  };
-
-  reader.readAsDataURL(file);
-}
+  onLogoError(project: Project): void {
+    this.portfolio.updateProject(project.id, { logo: '' });
+  }
 
   get completedCount(): number { return this.projects().filter(p => p.pct === 100).length; }
   get inProgressCount(): number { return this.projects().filter(p => p.pct < 100).length; }

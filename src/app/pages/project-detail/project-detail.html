@@ -1,0 +1,42 @@
+<div class="project-detail" *ngIf="project(); else notFound">
+  <button class="btn-back" (click)="goBack()">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="19" y1="12" x2="5" y2="12"/>
+      <polyline points="12 19 5 12 12 5"/>
+    </svg>
+    Retour aux projets
+  </button>
+
+  <div class="detail-card">
+    <div class="detail-header">
+      <div class="detail-dot" [style.background]="project()!.color"></div>
+      <div>
+        <h2 class="detail-title">{{ project()!.name }}</h2>
+        <p class="detail-stack">{{ project()!.stack }}</p>
+      </div>
+      <div class="detail-actions">
+        <a *ngIf="project()!.github" [href]="project()!.github" class="btn-link" target="_blank">GitHub</a>
+        <a *ngIf="project()!.demo" [href]="project()!.demo" class="btn-link btn-link--yellow" target="_blank">Demo</a>
+      </div>
+    </div>
+
+    <p class="detail-desc">{{ project()!.description }}</p>
+
+    <div class="detail-progress">
+      <span class="detail-progress__label">Avancement : {{ project()!.pct }}%</span>
+      <div class="detail-progress__bar">
+        <div class="detail-progress__fill"
+             [style.width.%]="project()!.pct"
+             [style.background]="project()!.color">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #notFound>
+  <div class="not-found">
+    <p>Projet introuvable.</p>
+    <button class="btn-back" (click)="goBack()">Retour</button>
+  </div>
+</ng-template>

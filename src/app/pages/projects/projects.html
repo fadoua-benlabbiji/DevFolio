@@ -1,0 +1,116 @@
+<div class="projects-page">
+  <div class="projects-header">
+    <div>
+      <h2 class="projects-header__title">Projets</h2>
+      <p class="projects-header__count">
+        {{ completedCount }} terminé(s) · {{ inProgressCount }} en cours
+      </p>
+    </div>
+    <button class="btn-add" (click)="openAdd()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+      </svg>
+      Ajouter
+    </button>
+  </div>
+
+  <!-- Grille de projets -->
+  <div class="projects-grid">
+    <div class="project-card" *ngFor="let p of projects()">
+      <div class="project-card__top">
+        <div class="project-card__dot" [style.background]="p.color"></div>
+        <span class="project-card__name">{{ p.name }}</span>
+        <div class="project-card__actions">
+          <button class="icon-btn" (click)="openEdit(p)" title="Modifier">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+            </svg>
+          </button>
+          <button class="icon-btn icon-btn--danger" (click)="delete(p.id)" title="Supprimer">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <p class="project-card__stack">{{ p.stack }}</p>
+      <p class="project-card__desc">{{ p.description | tronquer:90 }}</p>
+
+      <div class="project-card__progress">
+        <div class="progress-bar">
+          <div class="progress-fill" [style.width.%]="p.pct" [style.background]="p.color"></div>
+        </div>
+        <span class="progress-pct">{{ p.pct }}%</span>
+      </div>
+
+      <div class="project-card__links">
+        <a *ngIf="p.github" [href]="p.github" class="link-btn" target="_blank">GitHub</a>
+        <a *ngIf="p.demo"   [href]="p.demo"   class="link-btn link-btn--yellow" target="_blank">Demo</a>
+        <button class="link-btn" (click)="viewProject(p.id)">Détails</button>
+      </div>
+    </div>
+
+    <!-- État vide -->
+    <div class="projects-empty" *ngIf="projects().length === 0">
+      <p>Aucun projet. Commencez par en ajouter un !</p>
+    </div>
+  </div>
+</div>
+
+<!-- Modal formulaire -->
+<div class="modal-overlay" *ngIf="showForm()" (click)="cancel()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal__header">
+      <h3 class="modal__title">{{ editingId() !== null ? 'Modifier le projet' : 'Nouveau projet' }}</h3>
+      <button class="modal__close" (click)="cancel()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="modal__body">
+      <div class="form-group">
+        <label class="form-label">Nom du projet *</label>
+        <input class="form-input" [(ngModel)]="form.name" placeholder="ex: Portfolio, API Gateway…" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Stack technique</label>
+        <input class="form-input" [(ngModel)]="form.stack" placeholder="ex: Angular · Node.js · MongoDB" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Description</label>
+        <textarea class="form-input form-textarea" [(ngModel)]="form.description" placeholder="Décrivez votre projet…"></textarea>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Avancement : <strong>{{ form.pct }}%</strong></label>
+          <input class="form-range" type="range" [(ngModel)]="form.pct" min="0" max="100" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Couleur</label>
+          <input class="form-input form-color" type="color" [(ngModel)]="form.color" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Lien GitHub</label>
+          <input class="form-input" [(ngModel)]="form.github" placeholder="https://github.com/…" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Lien Demo</label>
+          <input class="form-input" [(ngModel)]="form.demo" placeholder="https://…" />
+        </div>
+      </div>
+    </div>
+
+    <div class="modal__footer">
+      <button class="btn-cancel" (click)="cancel()">Annuler</button>
+      <button class="btn-save" (click)="save()" [disabled]="!form.name.trim()">
+        {{ editingId() !== null ? 'Enregistrer' : 'Ajouter' }}
+      </button>
+    </div>
+  </div>
+</div>

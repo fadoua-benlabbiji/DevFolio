@@ -1,0 +1,172 @@
+<div class="ppd-shell" *ngIf="project(); else notFound" [style.--proj-color]="project()!.color">
+
+  <!-- ══ AMBIENT BACKGROUND ══ -->
+  <div class="ppd-ambient"></div>
+
+  <!-- ══ NAV ══ -->
+  <nav class="ppd-nav">
+    <button class="ppd-nav__back" (click)="goBackToFolio()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
+      </svg>
+      Retour au DevFolio
+    </button>
+
+    <div class="ppd-nav__profile">
+      <img class="ppd-nav__avatar" [src]="profile()?.avatar" [alt]="profile()?.nom" />
+      <span class="ppd-nav__name">{{ profile()?.nom }}</span>
+    </div>
+  </nav>
+
+  <!-- ══ HERO ══ -->
+  <header class="ppd-hero">
+    <div class="ppd-hero__inner">
+
+      <!-- Badge statut -->
+      <div class="ppd-status" [class]="'ppd-status--' + getStatusClass(project()!.pct)">
+        <span class="ppd-status__dot"></span>
+        {{ getStatusLabel(project()!.pct) }}
+      </div>
+
+      <!-- Titre -->
+      <h1 class="ppd-title">{{ project()!.name }}</h1>
+
+      <!-- Stack tags -->
+      <div class="ppd-tags">
+        <span class="ppd-tag" *ngFor="let tech of techTags()">{{ tech }}</span>
+      </div>
+
+      <!-- Actions -->
+      <div class="ppd-hero__actions">
+        <a *ngIf="project()!.github" [href]="project()!.github" class="ppd-btn ppd-btn--outline" target="_blank">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+          </svg>
+          Code source
+        </a>
+        <a *ngIf="project()!.demo" [href]="project()!.demo" class="ppd-btn ppd-btn--primary" target="_blank">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+            <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
+          Voir la démo
+        </a>
+      </div>
+    </div>
+
+    <!-- Progress ring -->
+    <div class="ppd-ring-wrap">
+      <svg class="ppd-ring" viewBox="0 0 120 120">
+        <circle class="ppd-ring__track" cx="60" cy="60" r="52" />
+        <circle class="ppd-ring__fill" cx="60" cy="60" r="52"
+          [style.stroke-dashoffset]="327 - (327 * project()!.pct / 100)"
+          [style.stroke]="project()!.color" />
+      </svg>
+      <div class="ppd-ring__center">
+        <span class="ppd-ring__pct">{{ project()!.pct }}</span>
+        <span class="ppd-ring__unit">%</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ══ BODY ══ -->
+  <div class="ppd-body">
+
+    <!-- ─ Description ─ -->
+    <section class="ppd-card ppd-card--desc">
+      <div class="ppd-card__label">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+        </svg>
+        À propos du projet
+      </div>
+      <p class="ppd-desc">{{ project()!.description }}</p>
+
+      <!-- Features si disponibles -->
+      <ul class="ppd-features" *ngIf="project()!.features && project()!.features!.length">
+        <li class="ppd-feature" *ngFor="let f of project()!.features">
+          <span class="ppd-feature__dot"></span>
+          {{ f }}
+        </li>
+      </ul>
+    </section>
+
+    <!-- ─ Sidebar ─ -->
+    <aside class="ppd-sidebar">
+
+      <!-- Info card -->
+      <div class="ppd-info-card">
+        <div class="ppd-info-row" *ngIf="project()!.role">
+          <span class="ppd-info-row__label">Rôle</span>
+          <span class="ppd-info-row__val">{{ project()!.role }}</span>
+        </div>
+        <div class="ppd-info-row" *ngIf="project()!.startDate">
+          <span class="ppd-info-row__label">Début</span>
+          <span class="ppd-info-row__val">{{ project()!.startDate }}</span>
+        </div>
+        <div class="ppd-info-row" *ngIf="project()!.endDate">
+          <span class="ppd-info-row__label">Fin</span>
+          <span class="ppd-info-row__val">{{ project()!.endDate }}</span>
+        </div>
+        <div class="ppd-info-row">
+          <span class="ppd-info-row__label">Statut</span>
+          <span class="ppd-status ppd-status--sm" [class]="'ppd-status--' + getStatusClass(project()!.pct)">
+            <span class="ppd-status__dot"></span>
+            {{ getStatusLabel(project()!.pct) }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Lien vers DevFolio -->
+      <button class="ppd-folio-link" (click)="goBackToFolio()">
+        <div class="ppd-folio-link__left">
+          <div class="ppd-folio-link__icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/>
+            </svg>
+          </div>
+          <div>
+            <p class="ppd-folio-link__title">Voir dans mon DevFolio</p>
+            <p class="ppd-folio-link__sub">Section projets → {{ project()!.name }}</p>
+          </div>
+        </div>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+        </svg>
+      </button>
+
+    </aside>
+  </div>
+
+  <!-- ══ AUTRES PROJETS ══ -->
+  <section class="ppd-others" *ngIf="otherProjects().length">
+    <h3 class="ppd-others__title">Autres projets</h3>
+    <div class="ppd-others__grid">
+      <button class="ppd-other-card" *ngFor="let op of otherProjects()" (click)="navigateProject(op.id)">
+        <div class="ppd-other-card__bar" [style.background]="op.color"></div>
+        <div class="ppd-other-card__body">
+          <div class="ppd-other-card__top">
+            <span class="ppd-other-card__name">{{ op.name }}</span>
+            <span class="ppd-other-card__pct" [style.color]="op.color">{{ op.pct }}%</span>
+          </div>
+          <span class="ppd-other-card__stack">{{ op.stack }}</span>
+          <p class="ppd-other-card__desc">{{ op.description }}</p>
+        </div>
+        <div class="ppd-other-card__arrow">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+          </svg>
+        </div>
+      </button>
+    </div>
+  </section>
+
+</div>
+
+<ng-template #notFound>
+  <div class="ppd-not-found">
+    <p>Projet introuvable.</p>
+    <button (click)="goBackToFolio()">← Retour au DevFolio</button>
+  </div>
+</ng-template>

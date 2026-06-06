@@ -10,7 +10,6 @@ export interface NavItem {
   route: string;
   badge?: number;
 }
-
 @Component({
   selector: 'app-sidebar',
   standalone: true,
@@ -34,13 +33,13 @@ export class Sidebar {
   readonly userAvatar = computed(() => this.currentUser()?.avatar ?? '');
 
   navItems: NavItem[] = [
-    { icon: 'grid',      label: 'Dashboard',   route: 'vue-ensemble' },
-    { icon: 'folder',    label: 'Projets',      route: 'projects' },
-    { icon: 'wrench',    label: 'Compétences',  route: 'skills' },
-    { icon: 'mail',      label: 'Messages',     route: 'messages', badge: 1 },
-    { icon: 'file-text', label: 'Générer CV',   route: 'cv' },
-    { icon: 'globe',     label: 'Mon DevFolio', route: 'devfolio' },
-    { icon: 'settings',  label: 'Paramètres',   route: 'Parametres' },
+    { icon: 'grid',      label: 'Dashboard',   route: '/vue-ensemble' },
+    { icon: 'folder',    label: 'Projets',      route: '/projects' },
+    { icon: 'wrench',    label: 'Compétences',  route: '/skills' },
+    { icon: 'mail',      label: 'Messages',     route: '/messages', badge: 1 },
+    { icon: 'file-text', label: 'Générer CV',   route: '/cv' },
+    { icon: 'globe',     label: 'Mon DevFolio', route: '/mon-devfolio' },
+    { icon: 'settings',  label: 'Paramètres',   route: '/parametres' },
   ];
 
   logout(): void {

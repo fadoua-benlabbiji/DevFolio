@@ -7,8 +7,11 @@ import { Explorer } from './components/explorer/explorer';
 import { VueEnsemble } from './components/vue-ensemble/vue-ensemble';
 import { Projects } from './pages/projects/projects';
 import { ProjectDetail } from './pages/project-detail/project-detail';
-import { authGuard } from './auth-guard';
 import { Parametres } from './pages/parametres/parametres';
+import { Skills } from './pages/skills/skills';
+import { CV } from './pages/cv/cv';
+import { MonDevfolio } from './pages/mon-devfolio/mon-devfolio';
+import { ProjetPublicDetail } from './pages/projet-public-detail/projet-public-detail';
 
 export const routes: Routes = [
   { path: 'connexion',   component: Connextion },
@@ -19,11 +22,15 @@ export const routes: Routes = [
     path: '',
     component: Dashboard,
     children: [
-      { path: '',              redirectTo: 'vue-ensemble', pathMatch: 'full' },
-      { path: 'vue-ensemble',  component: Parametres },
-      { path: 'projects',      component: Projects },
-      { path: 'portfolio/projetDetail/:id', component: ProjectDetail },
-      {path:'parametres' , component:Parametres},
+      { path: '',                              redirectTo: 'vue-ensemble', pathMatch: 'full' },
+      { path: 'vue-ensemble',                  component: VueEnsemble },
+      { path: 'projects',                      component: Projects },
+      { path: 'skills',                        component: Skills },
+      { path: 'portfolio/projetDetail/:id',    component: ProjectDetail },
+      { path: 'portfolio/projet-public/:id',   component: ProjetPublicDetail },
+      { path: 'parametres',                    component: Parametres },
+      { path: 'cv',                            component: CV },
+      { path: 'mon-devfolio',                  component: MonDevfolio },
     ]
   },
   { path: '**', redirectTo: '' }

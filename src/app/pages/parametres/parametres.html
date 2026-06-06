@@ -1,0 +1,260 @@
+<div class="param-page">
+
+  <!-- ── Header ── -->
+  <div class="param-header">
+    <div>
+      <h1 class="param-title">⚙ Paramètres</h1>
+      <p class="param-subtitle">Personnalise ton expérience DevFolio</p>
+    </div>
+    <button class="param-save-btn" (click)="save()" [class.param-save-btn--done]="saved()">
+      <svg *ngIf="!saved()" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+      <svg *ngIf="saved()" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      {{ saved() ? 'Enregistré !' : 'Enregistrer' }}
+    </button>
+  </div>
+
+  <div class="param-layout">
+
+    <!-- ── Tabs sidebar ── -->
+    <nav class="param-nav">
+      <button
+        *ngFor="let tab of tabs"
+        class="param-nav-item"
+        [class.param-nav-item--active]="activeTab() === tab.id"
+        (click)="setTab(tab.id)"
+      >
+        <!-- User icon -->
+        <svg *ngIf="tab.icon === 'user'" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <!-- Shield icon -->
+        <svg *ngIf="tab.icon === 'shield'" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <!-- Bell icon -->
+        <svg *ngIf="tab.icon === 'bell'" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <span>{{ tab.label }}</span>
+      </button>
+    </nav>
+
+    <!-- ── Content ── -->
+    <div class="param-content">
+
+      <!-- ─ PROFIL ─ -->
+      <div *ngIf="activeTab() === 'profil'" class="param-section">
+
+        <!-- Profil complétude -->
+        <div class="param-card param-completion-card">
+          <div class="param-completion-header">
+            <div>
+              <h3 class="param-card__title">Complétude du profil</h3>
+              <p class="param-card__desc">{{ profileCompleteness() }}% complété</p>
+            </div>
+            <span class="param-completion-badge" [class.param-completion-badge--full]="profileCompleteness() === 100">
+              {{ profileCompleteness() === 100 ? '✦ Parfait' : '→ En cours' }}
+            </span>
+          </div>
+          <div class="param-progress-bar">
+            <div class="param-progress-fill" [style.width.%]="profileCompleteness()"></div>
+          </div>
+          <div class="param-completion-tips" *ngIf="profileCompleteness() < 100">
+            <span>💡 Ajoute ton titre et ta bio pour atteindre 100%</span>
+          </div>
+        </div>
+
+        <!-- Informations -->
+        <div class="param-card">
+          <h3 class="param-card__title">Informations du profil</h3>
+          <div class="param-avatar-section">
+            <img class="param-avatar" [src]="currentUser()?.avatar ?? ''" [alt]="currentUser()?.prenom ?? ''" />
+            <div class="param-avatar-info">
+              <p class="param-avatar-name">{{ currentUser()?.prenom }} {{ currentUser()?.nom }}</p>
+              <button class="param-avatar-change-btn">Changer la photo</button>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Prénom</label>
+              <input class="form-input" [value]="currentUser()?.prenom ?? ''" readonly />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Nom</label>
+              <input class="form-input" [value]="currentUser()?.nom ?? ''" readonly />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input class="form-input" [value]="currentUser()?.email ?? ''" readonly />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Nom d'utilisateur</label>
+            <input class="form-input" [value]="currentUser()?.username ?? ''" readonly />
+          </div>
+        </div>
+
+        <!-- Liens sociaux -->
+        <div class="param-card">
+          <h3 class="param-card__title">Liens & Réseaux</h3>
+          <div class="param-links-grid">
+            <div class="param-link-item">
+              <span class="param-link-icon param-link-icon--github">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+              </span>
+              <input class="form-input" placeholder="github.com/ton-profil" />
+            </div>
+            <div class="param-link-item">
+              <span class="param-link-icon param-link-icon--linkedin">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+              </span>
+              <input class="form-input" placeholder="linkedin.com/in/ton-profil" />
+            </div>
+            <div class="param-link-item">
+              <span class="param-link-icon param-link-icon--web">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+              </span>
+              <input class="form-input" placeholder="ton-site.dev" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─ CONFIDENTIALITÉ ─ -->
+      <div *ngIf="activeTab() === 'confidentialite'" class="param-section">
+        <div class="param-card">
+          <h3 class="param-card__title">Visibilité du profil</h3>
+          <p class="param-card__desc">Contrôle qui peut voir ton DevFolio.</p>
+          <div class="param-visibility-options">
+            <label class="param-radio-item" [class.param-radio-item--active]="profileVisibility() === 'public'">
+              <input type="radio" name="visibility" value="public" [checked]="profileVisibility() === 'public'" (change)="profileVisibility.set('public')" />
+              <div class="param-radio-content">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                <div>
+                  <p class="param-radio-label">Public</p>
+                  <p class="param-radio-desc">Visible par tous les visiteurs</p>
+                </div>
+              </div>
+            </label>
+            <label class="param-radio-item" [class.param-radio-item--active]="profileVisibility() === 'connections'">
+              <input type="radio" name="visibility" value="connections" [checked]="profileVisibility() === 'connections'" (change)="profileVisibility.set('connections')" />
+              <div class="param-radio-content">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                <div>
+                  <p class="param-radio-label">Connexions</p>
+                  <p class="param-radio-desc">Visible par tes contacts seulement</p>
+                </div>
+              </div>
+            </label>
+            <label class="param-radio-item" [class.param-radio-item--active]="profileVisibility() === 'private'">
+              <input type="radio" name="visibility" value="private" [checked]="profileVisibility() === 'private'" (change)="profileVisibility.set('private')" />
+              <div class="param-radio-content">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                <div>
+                  <p class="param-radio-label">Privé</p>
+                  <p class="param-radio-desc">Invisible au public</p>
+                </div>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div class="param-card">
+          <h3 class="param-card__title">Données affichées</h3>
+          <div class="param-toggle-list">
+            <div class="param-toggle-item">
+              <div>
+                <p class="param-toggle-label">Afficher mon email</p>
+                <p class="param-toggle-desc">Visible dans ton profil public.</p>
+              </div>
+              <button class="param-toggle" [class.param-toggle--on]="showEmail()" (click)="showEmail.set(!showEmail())">
+                <span class="param-toggle-thumb"></span>
+              </button>
+            </div>
+            <div class="param-toggle-item">
+              <div>
+                <p class="param-toggle-label">Afficher GitHub</p>
+                <p class="param-toggle-desc">Lien GitHub visible sur ton profil.</p>
+              </div>
+              <button class="param-toggle" [class.param-toggle--on]="showGithub()" (click)="showGithub.set(!showGithub())">
+                <span class="param-toggle-thumb"></span>
+              </button>
+            </div>
+            <div class="param-toggle-item">
+              <div>
+                <p class="param-toggle-label">Indexation par les moteurs</p>
+                <p class="param-toggle-desc">Permet à Google d'indexer ton portfolio.</p>
+              </div>
+              <button class="param-toggle" [class.param-toggle--on]="indexSearchEngines()" (click)="indexSearchEngines.set(!indexSearchEngines())">
+                <span class="param-toggle-thumb"></span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Zone danger -->
+        <div class="param-card param-danger-card">
+          <h3 class="param-card__title param-danger-title">⚠ Zone dangereuse</h3>
+          <p class="param-card__desc">Ces actions sont irréversibles.</p>
+          <div class="param-danger-actions">
+            <button class="param-danger-btn param-danger-btn--warn">Exporter mes données</button>
+            <button class="param-danger-btn param-danger-btn--delete">Supprimer le compte</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─ NOTIFICATIONS ─ -->
+      <div *ngIf="activeTab() === 'notifications'" class="param-section">
+        <div class="param-card">
+          <h3 class="param-card__title">Préférences de notifications</h3>
+          <p class="param-card__desc">Choisis comment et quand tu souhaites être alerté.</p>
+          <div class="param-toggle-list">
+            <div class="param-toggle-item">
+              <div class="param-toggle-with-icon">
+                <span class="param-notif-icon">📬</span>
+                <div>
+                  <p class="param-toggle-label">Notifications par email</p>
+                  <p class="param-toggle-desc">Reçois les alertes importantes par mail.</p>
+                </div>
+              </div>
+              <button class="param-toggle" [class.param-toggle--on]="emailNotifs()" (click)="emailNotifs.set(!emailNotifs())">
+                <span class="param-toggle-thumb"></span>
+              </button>
+            </div>
+            <div class="param-toggle-item">
+              <div class="param-toggle-with-icon">
+                <span class="param-notif-icon">💬</span>
+                <div>
+                  <p class="param-toggle-label">Nouveaux messages</p>
+                  <p class="param-toggle-desc">Alerte quand quelqu'un te contacte.</p>
+                </div>
+              </div>
+              <button class="param-toggle" [class.param-toggle--on]="messageNotifs()" (click)="messageNotifs.set(!messageNotifs())">
+                <span class="param-toggle-thumb"></span>
+              </button>
+            </div>
+            <div class="param-toggle-item">
+              <div class="param-toggle-with-icon">
+                <span class="param-notif-icon">📊</span>
+                <div>
+                  <p class="param-toggle-label">Résumé hebdomadaire</p>
+                  <p class="param-toggle-desc">Stats de vues et visites chaque lundi.</p>
+                </div>
+              </div>
+              <button class="param-toggle" [class.param-toggle--on]="weeklyDigest()" (click)="weeklyDigest.set(!weeklyDigest())">
+                <span class="param-toggle-thumb"></span>
+              </button>
+            </div>
+            <div class="param-toggle-item">
+              <div class="param-toggle-with-icon">
+                <span class="param-notif-icon">👁</span>
+                <div>
+                  <p class="param-toggle-label">Vues de projets</p>
+                  <p class="param-toggle-desc">Notifie quand un projet est consulté.</p>
+                </div>
+              </div>
+              <button class="param-toggle" [class.param-toggle--on]="projectViews()" (click)="projectViews.set(!projectViews())">
+                <span class="param-toggle-thumb"></span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
