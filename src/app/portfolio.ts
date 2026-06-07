@@ -1,25 +1,35 @@
 import { Injectable, signal, computed } from '@angular/core';
 import { UserService } from './user'; // ← ajustez le chemin
 
+/* ===================== TYPES ===================== */
+
 export interface Project {
   id: number;
   userId: number; // ← lien vers l'utilisateur
   name: string;
-  stack: string;
+  description: string;
   pct: number;
   color: string;
-  description: string;
+
   readme?: string;
-  logo?: string;
+  tech?: string[];
+  technologies?: string[];
+
+  url?: string;
   github?: string;
   demo?: string;
+
+  image?: string;
+  images?: string[];
+  logo?: string;
+
   startDate?: string;
   endDate?: string;
   role?: string;
-  technologies?: string[];
+
   features?: string[];
-  images?: string[];
   impact?: string;
+  stack: string; 
 }
 
 export interface Skill {
@@ -35,12 +45,14 @@ export interface Skill {
 export interface Message {
   id: number;
   from: string;
-  avatar: string;
   subject: string;
-  preview: string;
-  date: string;
+  preview?: string;
+  avatar?: string;
   read: boolean;
+  date: string;
 }
+
+/* ===================== SERVICE ===================== */
 
 @Injectable({ providedIn: 'root' })
 export class PortfolioService {
@@ -100,12 +112,33 @@ export class PortfolioService {
     this._projects.update(list => [...list, { ...p, id: Date.now(), userId: uid }]);
   }
 
-  updateProject(id: number, changes: Partial<Project>): void {
-    this._projects.update(list => list.map(p => p.id === id ? { ...p, ...changes } : p));
+  removeExperience(id: string) {
+    this.experiences.update(list =>
+      list.filter(e => e.id !== id)
+    );
   }
 
-  deleteProject(id: number): void {
-    this._projects.update(list => list.filter(p => p.id !== id));
+  /* ---------- MESSAGES ---------- */
+  readonly messages = signal<Message[]>([
+    {
+      id: 1,
+      from: 'TechCorp RH',
+      subject: 'Opportunité Angular',
+      preview: 'Nous avons vu votre portfolio...',
+      avatar: 'https://i.pravatar.cc/40?img=1',
+      read: false,
+      date: '2026-06-03',
+    }
+  ]);
+
+  readonly unreadCount = computed(
+    () => this.messages().filter(m => !m.read).length
+  );
+
+  markAsRead(id: number) {
+    this.messages.update(list =>
+      list.map(m => m.id === id ? { ...m, read: true } : m)
+    );
   }
 
   // ── Compétences ───────────────────────────────────────────────────────────

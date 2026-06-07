@@ -54,7 +54,7 @@ export class ProjetPublicDetail implements OnInit {
     }
   }
 
-  navigateProject(id: number): void {
+  navigateProject(id: string): void {  // string
     this.router.navigate(['/portfolio/projet-public', id]);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }

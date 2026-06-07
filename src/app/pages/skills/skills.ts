@@ -63,7 +63,7 @@ export class Skills {
     for (const s of filtered) {
       const list = map.get(s.category) ?? [];
       list.push(s);
-      map.set(s.category, list);
+      map.set(cat, list);
     }
     return map;
   });

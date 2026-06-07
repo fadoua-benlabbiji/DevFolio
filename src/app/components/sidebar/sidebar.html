@@ -1,3 +1,4 @@
+<!-- sidebar.html -->
 <aside class="sidebar">
 
   <!-- Logo -->
@@ -36,7 +37,11 @@
         >
           <span class="sidebar__nav-icon" [innerHTML]="getIcon(item.icon)"></span>
           <span class="sidebar__nav-label">{{ item.label }}</span>
-          <span *ngIf="item.badge" class="sidebar__nav-badge">{{ item.badge }}</span>
+          <!-- Badge dynamique -->
+          <span
+            *ngIf="item.badgeFn && item.badgeFn() > 0"
+            class="sidebar__nav-badge"
+          >{{ item.badgeFn() }}</span>
         </button>
       </li>
     </ul>
@@ -56,5 +61,4 @@
       <span>Déconnexion</span>
     </button>
   </div>
-
 </aside>

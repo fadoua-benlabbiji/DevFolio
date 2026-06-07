@@ -97,6 +97,8 @@ body {
   background: rgba(0,0,0,0.6);
   display: flex; align-items: center; justify-content: center;
   z-index: 1000;
+  padding: 20px;
+  animation: overlayIn 0.18s var(--ease) both;
 }
 .modal-card { 
   background: white; padding: 24px; border-radius: 20px; 

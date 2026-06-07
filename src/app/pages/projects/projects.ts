@@ -79,7 +79,7 @@ export class Projects {
       images: p.images ?? [],
       impact: p.impact ?? ''
     };
-    this.editingId.set(p.id);
+    this.editingId.set(p.id);  // p.id est string
     this.showForm.set(true);
   }
 
@@ -93,8 +93,8 @@ export class Projects {
     this.showForm.set(false);
   }
 
-  delete(id: number): void {
-    if (confirm('Supprimer ce projet ?')) this.portfolio.deleteProject(id);
+  delete(id: string): void {  // string
+    if (confirm('Supprimer ce projet ?')) this.portfolio.removeProject(id);
   }
 
   cancel(): void {

@@ -1,4 +1,5 @@
-import { Component, inject, signal, computed, OnInit, AfterViewInit, ElementRef } from '@angular/core';
+// mon-devfolio.component.ts
+import { Component, inject, signal, computed, effect, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -9,36 +10,28 @@ import { PortfolioService, Project, Skill } from '../../portfolio';
 @Component({
   selector: 'app-mon-devfolio',
   standalone: true,
-  imports: [CommonModule, FormsModule],
-  templateUrl: './mon-devfolio.html',
-  styleUrl: './mon-devfolio.css'
+  imports: [CommonModule, FormsModule, RouterModule],
+  templateUrl:'./mon-devfolio.html',
+  styleUrls: ['./mon-devfolio.css']
 })
-export class MonDevfolio implements OnInit, AfterViewInit {
-  private profileSvc  = inject(ProfileService);
-  private portfolio   = inject(PortfolioService);
-  private route       = inject(ActivatedRoute);
-  private router      = inject(Router);
-  private el          = inject(ElementRef);
+export class MonDevfolio {
+  private portfolioSvc = inject(PortfolioService);
+  private auth = inject(AuthService);
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
+  private sanitizer = inject(DomSanitizer);
 
   readonly profile    = this.profileSvc.myProfile;
   readonly skills     = this.portfolio.mySkills;    // ← corrigé
   readonly projects   = this.portfolio.myProjects;  // ← corrigé
 
-  saved              = signal(false);
-  activeSection      = signal<'identite' | 'liens' | 'apparence'>('identite');
-  accentColor        = signal('#6366f1');
-  highlightedId      = signal<number | null>(null);
 
-  readonly accentColors = [
-    { value: '#6366f1', label: 'Indigo'    },
-    { value: '#0ea5e9', label: 'Sky'       },
-    { value: '#10b981', label: 'Emeraude'  },
-    { value: '#f59e0b', label: 'Ambre'     },
-    { value: '#ef4444', label: 'Rouge'     },
-    { value: '#ec4899', label: 'Rose'      },
-    { value: '#8b5cf6', label: 'Violet'    },
-    { value: '#111827', label: 'Graphite'  },
-  ];
+  // Portfolio data
+  profile = this.portfolioSvc.profile;
+  projects = this.portfolioSvc.projects;
+  skills = this.portfolioSvc.skills;
+  experiences = this.portfolioSvc.experiences;
+  formations = signal<Formation[]>([]);
 
   readonly completedProjects = computed(() =>
     this.projects().filter((p: Project) => p.pct === 100).length // ← type
@@ -68,26 +61,53 @@ export class MonDevfolio implements OnInit, AfterViewInit {
         if (card) {
           card.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
-        setTimeout(() => this.highlightedId.set(null), 3000);
-      }, 300);
+        // Clean URL
+        this.router.navigate([], { queryParams: {}, replaceUrl: true });
+      }
+    });
+  }
+
+  private loadDraft() {
+    const draft = localStorage.getItem('portfolio-draft');
+    if (draft) {
+      const data = JSON.parse(draft);
+      if (data.profile && !this.profile().name) {
+        this.portfolioSvc.updateProfile(data.profile);
+        this.profileForm = { ...data.profile };
+      }
     }
   }
 
-  goToProjectDetail(projectId: number): void {
-    this.router.navigate(['/portfolio/projet-public', projectId]);
+  private loadFormations() {
+    const saved = localStorage.getItem('formations');
+    if (saved) {
+      this.formations.set(JSON.parse(saved));
+    }
   }
 
-  patch(changes: Partial<Profile>): void {
-    const current = this.profile();
-    if (current) this.profileSvc.updateProfile({ ...current, ...changes });
+  private saveFormations() {
+    localStorage.setItem('formations', JSON.stringify(this.formations()));
   }
 
-  setSection(s: 'identite' | 'liens' | 'apparence'): void {
-    this.activeSection.set(s);
+  getTabIcon(tab: string): string {
+    const icons: Record<string, string> = {
+      infos: 'ti ti-user',
+      competences: 'ti ti-tools',
+      projets: 'ti ti-folder',
+      experience: 'ti ti-briefcase',
+      formation: 'ti ti-school'
+    };
+    return icons[tab] || 'ti ti-circle';
   }
 
-  save(): void {
-    this.saved.set(true);
-    setTimeout(() => this.saved.set(false), 2500);
+  getTabLabel(tab: string): string {
+    const labels: Record<string, string> = {
+      infos: 'Infos',
+      competences: 'Compétences',
+      projets: 'Projets',
+      experience: 'Expérience',
+      formation: 'Formation'
+    };
+    return labels[tab] || tab;
   }
 }

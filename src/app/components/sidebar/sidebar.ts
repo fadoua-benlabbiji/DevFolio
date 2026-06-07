@@ -8,7 +8,7 @@ export interface NavItem {
   icon: string;
   label: string;
   route: string;
-  badge?: number;
+  badgeFn?: () => number;   // badge dynamique via signal
 }
 
 @Component({
