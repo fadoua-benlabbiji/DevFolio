@@ -21,7 +21,7 @@ export class ProjetPublicDetail implements OnInit {
   highlighted = signal(false);
 
   readonly project = computed(() => {
-    const id = Number(this.route.snapshot.paramMap.get('id'));
+    const id = this.route.snapshot.paramMap.get('id') ?? '';  // string directement
     return this.portfolio.projects().find(p => p.id === id) ?? null;
   });
 
@@ -54,7 +54,7 @@ export class ProjetPublicDetail implements OnInit {
     }
   }
 
-  navigateProject(id: number): void {
+  navigateProject(id: string): void {  // string
     this.router.navigate(['/portfolio/projet-public', id]);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }

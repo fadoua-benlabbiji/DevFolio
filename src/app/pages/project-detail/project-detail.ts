@@ -16,7 +16,7 @@ export class ProjectDetail {
   private portfolio = inject(PortfolioService);
 
   readonly project = computed(() => {
-    const id = Number(this.route.snapshot.paramMap.get('id'));
+    const id = this.route.snapshot.paramMap.get('id') ?? '';  // string directement
     return this.portfolio.projects().find(p => p.id === id) ?? null;
   });
 

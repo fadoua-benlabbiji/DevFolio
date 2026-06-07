@@ -16,7 +16,7 @@ export class Skills {
   readonly skills = this.portfolio.skills;
 
   showForm = signal(false);
-  editingId = signal<number | null>(null);
+  editingId = signal<string | null>(null);  // string, pas number
 
   readonly categories = ['Frontend', 'Backend', 'Langage', 'Base de données', 'DevOps', 'Autre'];
 
@@ -30,9 +30,10 @@ export class Skills {
   readonly grouped = computed(() => {
     const map = new Map<string, Skill[]>();
     for (const s of this.skills()) {
-      const list = map.get(s.category) ?? [];
+      const cat = s.category ?? 'Autre';  // valeur par défaut si undefined
+      const list = map.get(cat) ?? [];
       list.push(s);
-      map.set(s.category, list);
+      map.set(cat, list);
     }
     return map;
   });
@@ -48,8 +49,8 @@ export class Skills {
   }
 
   openEdit(s: Skill): void {
-    this.form = { name: s.name, pct: s.pct, color: s.color, category: s.category };
-    this.editingId.set(s.id);
+    this.form = { name: s.name, pct: s.pct, color: s.color, category: s.category ?? 'Autre' };
+    this.editingId.set(s.id);  // s.id est string
     this.showForm.set(true);
   }
 
@@ -63,9 +64,9 @@ export class Skills {
     this.showForm.set(false);
   }
 
-  delete(id: number): void {
+  delete(id: string): void {  // string
     if (confirm('Supprimer cette compétence ?')) {
-      this.portfolio.deleteSkill(id);
+      this.portfolio.removeSkill(id);
     }
   }
 

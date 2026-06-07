@@ -18,7 +18,7 @@ export class Projects {
   readonly projects = this.portfolio.projects;
 
   showForm = signal(false);
-  editingId = signal<number | null>(null);
+  editingId = signal<string | null>(null);  // string, pas number
 
   form: Omit<Project, 'id'> = this.emptyForm();
 
@@ -68,7 +68,7 @@ export class Projects {
       images: p.images ?? [],
       impact: p.impact ?? ''
     };
-    this.editingId.set(p.id);
+    this.editingId.set(p.id);  // p.id est string
     this.showForm.set(true);
   }
 
@@ -82,17 +82,16 @@ export class Projects {
     this.showForm.set(false);
   }
 
-  delete(id: number): void {
-    if (confirm('Supprimer ce projet ?')) this.portfolio.deleteProject(id);
+  delete(id: string): void {  // string
+    if (confirm('Supprimer ce projet ?')) this.portfolio.removeProject(id);
   }
 
   cancel(): void { this.showForm.set(false); }
 
-  viewProject(projectId: number): void {
-    this.router.navigate(['/portfolio/projetDetail', projectId]);
+  viewProject(projectId: string): void {  // string
+    this.router.navigate(['/mon-devfolio'], { queryParams: { highlight: projectId } });
   }
 
-  /** Appelé quand l'image du modal change — met à jour form.logo */
   onLogoUpload(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (!input.files || input.files.length === 0) return;
@@ -104,14 +103,12 @@ export class Projects {
     const reader = new FileReader();
     reader.onload = () => {
       this.form.logo = reader.result as string;
-      // Si on édite un projet existant, on met aussi à jour en direct
       const id = this.editingId();
       if (id !== null) {
         this.portfolio.updateProject(id, { logo: this.form.logo });
       }
     };
     reader.readAsDataURL(file);
-    // Reset input pour permettre re-upload du même fichier
     input.value = '';
   }
 

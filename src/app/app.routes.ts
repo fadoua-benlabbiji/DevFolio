@@ -6,12 +6,12 @@ import { Inscription } from './pages/inscription/inscription';
 import { Explorer } from './components/explorer/explorer';
 import { VueEnsemble } from './components/vue-ensemble/vue-ensemble';
 import { Projects } from './pages/projects/projects';
-import { ProjectDetail } from './pages/project-detail/project-detail';
 import { Parametres } from './pages/parametres/parametres';
 import { Skills } from './pages/skills/skills';
 import { CV } from './pages/cv/cv';
 import { MonDevfolio } from './pages/mon-devfolio/mon-devfolio';
 import { ProjetPublicDetail } from './pages/projet-public-detail/projet-public-detail';
+import { Messages } from './pages/messages/messages';
 
 export const routes: Routes = [
   { path: 'connexion',   component: Connextion },
@@ -26,7 +26,7 @@ export const routes: Routes = [
       { path: 'vue-ensemble',                  component: VueEnsemble },
       { path: 'projects',                      component: Projects },
       { path: 'skills',                        component: Skills },
-      { path: 'portfolio/projetDetail/:id',    component: ProjectDetail },
+      { path: 'messages',                      component: Messages },
       { path: 'portfolio/projet-public/:id',   component: ProjetPublicDetail },
       { path: 'parametres',                    component: Parametres },
       { path: 'cv',                            component: CV },

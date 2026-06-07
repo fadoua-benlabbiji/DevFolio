@@ -1,15 +1,18 @@
+// sidebar.ts
 import { Component, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../auth';
+import { MessageService } from '../../message';  // ← nouveau
 
 export interface NavItem {
   icon: string;
   label: string;
   route: string;
-  badge?: number;
+  badgeFn?: () => number;   // badge dynamique via signal
 }
+
 @Component({
   selector: 'app-sidebar',
   standalone: true,
@@ -18,13 +21,14 @@ export interface NavItem {
   styleUrls: ['./sidebar.css']
 })
 export class Sidebar {
-  private auth = inject(AuthService);
-  private router = inject(Router);
+  private auth      = inject(AuthService);
+  private router    = inject(Router);
   private sanitizer = inject(DomSanitizer);
+  readonly msgSvc   = inject(MessageService);   // ← nouveau
 
   readonly currentUser = this.auth.currentUser;
 
-  readonly userName = computed(() => {
+  readonly userName   = computed(() => {
     const u = this.currentUser();
     return u ? `${u.prenom} ${u.nom}` : '';
   });
@@ -36,7 +40,12 @@ export class Sidebar {
     { icon: 'grid',      label: 'Dashboard',   route: '/vue-ensemble' },
     { icon: 'folder',    label: 'Projets',      route: '/projects' },
     { icon: 'wrench',    label: 'Compétences',  route: '/skills' },
-    { icon: 'mail',      label: 'Messages',     route: '/messages', badge: 1 },
+    {
+      icon: 'mail',
+      label: 'Messages',
+      route: '/messages',
+      badgeFn: () => this.msgSvc.unreadCount()   // ← badge dynamique
+    },
     { icon: 'file-text', label: 'Générer CV',   route: '/cv' },
     { icon: 'globe',     label: 'Mon DevFolio', route: '/mon-devfolio' },
     { icon: 'settings',  label: 'Paramètres',   route: '/parametres' },
