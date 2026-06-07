@@ -93,7 +93,7 @@ export class Projects {
     this.showForm.set(false);
   }
 
-  delete(id: string): void {  // string
+  delete(id: number): void {  // string
     if (confirm('Supprimer ce projet ?')) this.portfolio.removeProject(id);
   }
 

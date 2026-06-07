@@ -1,35 +1,30 @@
 import { Injectable, signal, computed } from '@angular/core';
-import { UserService } from './user'; // ← ajustez le chemin
+import { UserService } from './user';
 
 /* ===================== TYPES ===================== */
 
 export interface Project {
   id: number;
-  userId: number; // ← lien vers l'utilisateur
+  userId: number;
   name: string;
   description: string;
   pct: number;
   color: string;
-
   readme?: string;
   tech?: string[];
   technologies?: string[];
-
   url?: string;
   github?: string;
   demo?: string;
-
   image?: string;
   images?: string[];
   logo?: string;
-
   startDate?: string;
   endDate?: string;
   role?: string;
-
   features?: string[];
   impact?: string;
-  stack: string; 
+  stack: string;
 }
 
 export interface Skill {
@@ -39,7 +34,7 @@ export interface Skill {
   pct: number;
   color: string;
   category: string;
-  logo?: string; // ← avec le ? obligatoire
+  logo?: string;
 }
 
 export interface Message {
@@ -56,6 +51,7 @@ export interface Message {
 
 @Injectable({ providedIn: 'root' })
 export class PortfolioService {
+
   private _projects = signal<Project[]>([
     { id: 1, userId: 1, name: 'E-commerce Platform', stack: 'Angular · Node.js · MongoDB', pct: 100, color: '#F5C518', description: 'Plateforme e-commerce complète avec panier, paiement et gestion des stocks.', github: '#', demo: '#' },
     { id: 2, userId: 1, name: 'Analytics Dashboard', stack: 'React · TypeScript · D3', pct: 100, color: '#3b82f6', description: 'Dashboard analytique avec graphiques interactifs et exports PDF.', github: '#', demo: '#' },
@@ -66,17 +62,17 @@ export class PortfolioService {
   ]);
 
   private _skills = signal<Skill[]>([
-    { id: 1, userId: 1, name: 'Angular',    pct: 92, color: '#F5C518', category: 'Frontend' },
-    { id: 2, userId: 1, name: 'TypeScript', pct: 88, color: '#3b82f6', category: 'Langage' },
-    { id: 3, userId: 1, name: 'Node.js',    pct: 75, color: '#22c55e', category: 'Backend' },
-    { id: 4, userId: 1, name: 'MongoDB',    pct: 60, color: '#34d399', category: 'Base de données' },
-    { id: 5, userId: 2, name: 'React',      pct: 70, color: '#60a5fa', category: 'Frontend' },
-    { id: 6, userId: 2, name: 'TypeScript', pct: 85, color: '#3b82f6', category: 'Langage' },
-    { id: 7, userId: 2, name: 'CSS',        pct: 90, color: '#e879f9', category: 'Frontend' },
-    { id: 8, userId: 3, name: 'NestJS',     pct: 72, color: '#e879f9', category: 'Backend' },
-    { id: 9, userId: 3, name: 'Docker',     pct: 58, color: '#fb923c', category: 'DevOps' },
-    { id: 10, userId: 3, name: 'PostgreSQL',pct: 65, color: '#a78bfa', category: 'Base de données' },
-    { id: 11, userId: 3, name: 'AWS',       pct: 55, color: '#F5C518', category: 'DevOps' },
+    { id: 1, userId: 1, name: 'Angular',     pct: 92, color: '#F5C518', category: 'Frontend' },
+    { id: 2, userId: 1, name: 'TypeScript',  pct: 88, color: '#3b82f6', category: 'Langage' },
+    { id: 3, userId: 1, name: 'Node.js',     pct: 75, color: '#22c55e', category: 'Backend' },
+    { id: 4, userId: 1, name: 'MongoDB',     pct: 60, color: '#34d399', category: 'Base de données' },
+    { id: 5, userId: 2, name: 'React',       pct: 70, color: '#60a5fa', category: 'Frontend' },
+    { id: 6, userId: 2, name: 'TypeScript',  pct: 85, color: '#3b82f6', category: 'Langage' },
+    { id: 7, userId: 2, name: 'CSS',         pct: 90, color: '#e879f9', category: 'Frontend' },
+    { id: 8, userId: 3, name: 'NestJS',      pct: 72, color: '#e879f9', category: 'Backend' },
+    { id: 9, userId: 3, name: 'Docker',      pct: 58, color: '#fb923c', category: 'DevOps' },
+    { id: 10, userId: 3, name: 'PostgreSQL', pct: 65, color: '#a78bfa', category: 'Base de données' },
+    { id: 11, userId: 3, name: 'AWS',        pct: 55, color: '#F5C518', category: 'DevOps' },
   ]);
 
   private _messages = signal<Message[]>([
@@ -87,7 +83,7 @@ export class PortfolioService {
 
   constructor(private userService: UserService) {}
 
-  // ── Getters filtrés par utilisateur connecté ─────────────────────────────
+  // ── Getters filtrés par utilisateur connecté ──────────────────────────────
 
   readonly myProjects = computed(() => {
     const uid = this.userService.currentUser()?.id;
@@ -101,7 +97,7 @@ export class PortfolioService {
     return this._skills().filter(s => s.userId === uid);
   });
 
-  readonly messages = this._messages.asReadonly();
+  readonly messages    = this._messages.asReadonly();
   readonly unreadCount = computed(() => this._messages().filter(m => !m.read).length);
 
   // ── Projets ───────────────────────────────────────────────────────────────
@@ -112,33 +108,12 @@ export class PortfolioService {
     this._projects.update(list => [...list, { ...p, id: Date.now(), userId: uid }]);
   }
 
-  removeExperience(id: string) {
-    this.experiences.update(list =>
-      list.filter(e => e.id !== id)
-    );
+  updateProject(id: number, changes: Partial<Project>): void {
+    this._projects.update(list => list.map(p => p.id === id ? { ...p, ...changes } : p));
   }
 
-  /* ---------- MESSAGES ---------- */
-  readonly messages = signal<Message[]>([
-    {
-      id: 1,
-      from: 'TechCorp RH',
-      subject: 'Opportunité Angular',
-      preview: 'Nous avons vu votre portfolio...',
-      avatar: 'https://i.pravatar.cc/40?img=1',
-      read: false,
-      date: '2026-06-03',
-    }
-  ]);
-
-  readonly unreadCount = computed(
-    () => this.messages().filter(m => !m.read).length
-  );
-
-  markAsRead(id: number) {
-    this.messages.update(list =>
-      list.map(m => m.id === id ? { ...m, read: true } : m)
-    );
+  removeProject(id: number): void {
+    this._projects.update(list => list.filter(p => p.id !== id));
   }
 
   // ── Compétences ───────────────────────────────────────────────────────────

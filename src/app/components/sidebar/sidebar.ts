@@ -53,7 +53,7 @@ this.user = computed(() => {
     { icon: 'grid',      label: 'Dashboard',    route: '/dashboard/vue-ensemble' },
     { icon: 'folder',    label: 'Projets',       route: '/dashboard/projects' },
     { icon: 'wrench',    label: 'Compétences',   route: '/dashboard/skills' },
-    { icon: 'mail',      label: 'Messages',      route: '/dashboard/messages', badge: 1 },
+    { icon: 'mail',      label: 'Messages',      route: '/dashboard/messages', badgeFn: () => 1  },
     { icon: 'file-text', label: 'Générer CV',    route: '/dashboard/cv' },
     { icon: 'globe',     label: 'Mon DevFolio',  route: '/dashboard/devfolio' },
     { icon: 'settings',  label: 'Paramètres',    route: '/dashboard/settings' },

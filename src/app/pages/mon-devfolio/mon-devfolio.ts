@@ -1,92 +1,90 @@
-// mon-devfolio.component.ts
-import { Component, inject, signal, computed, effect, HostListener } from '@angular/core';
+import { Component, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { ProfileService } from '../../profile';
-import { Profile } from '../../profile.model';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { PortfolioService, Project, Skill } from '../../portfolio';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-mon-devfolio',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
-  templateUrl:'./mon-devfolio.html',
+  imports: [CommonModule, FormsModule, RouterLink],
+  templateUrl: './mon-devfolio.html',
   styleUrls: ['./mon-devfolio.css']
 })
 export class MonDevfolio {
   private portfolioSvc = inject(PortfolioService);
-  private auth = inject(AuthService);
-  private router = inject(Router);
-  private route = inject(ActivatedRoute);
-  private sanitizer = inject(DomSanitizer);
+  private router       = inject(Router);
+  private route        = inject(ActivatedRoute);
+  private sanitizer    = inject(DomSanitizer);
+  activeTab = signal<string>('infos');
+  readonly projects = this.portfolioSvc.myProjects;
+  readonly skills   = this.portfolioSvc.mySkills;
+  setTab(tab: string): void {
+  this.activeTab.set(tab);
+}
+  // profile signal vide par défaut
+  readonly profile = signal<any>({
+    name: '', title: '', bio: '', email: '',
+    location: '', github: '', linkedin: '', website: '', avatar: ''
+  });
 
-  readonly profile    = this.profileSvc.myProfile;
-  readonly skills     = this.portfolio.mySkills;    // ← corrigé
-  readonly projects   = this.portfolio.myProjects;  // ← corrigé
+  // experiences vide
+  readonly experiences = signal<any[]>([]);
 
+  // formations
+  formations = signal<any[]>([]);
+  newFormation: any = { description: '' };
 
-  // Portfolio data
-  profile = this.portfolioSvc.profile;
-  projects = this.portfolioSvc.projects;
-  skills = this.portfolioSvc.skills;
-  experiences = this.portfolioSvc.experiences;
-  formations = signal<Formation[]>([]);
+  // profileForm
+  profileForm: any = { accentColor: '#F5C518' };
+
+  // preview
+  previewView = signal<string>('portfolio');
+  fullPreview = signal<boolean>(false);
+  slug = signal<string>('mon-devfolio');
+
+  // projet actif
+  activeProject = signal<Project | null>(null);
 
   readonly completedProjects = computed(() =>
-    this.projects().filter((p: Project) => p.pct === 100).length // ← type
+    this.projects().filter((p: Project) => p.pct === 100).length
   );
 
   readonly topSkills = computed(() =>
-    [...this.skills()].sort((a: Skill, b: Skill) => b.pct - a.pct).slice(0, 5) // ← type
+    [...this.skills()].sort((a: Skill, b: Skill) => b.pct - a.pct).slice(0, 5)
   );
 
-  ngOnInit(): void {
-    const highlightId = this.route.snapshot.queryParamMap.get('highlight');
-    if (highlightId) {
-      this.highlightedId.set(Number(highlightId));
-      this.router.navigate([], {
-        relativeTo: this.route,
-        queryParams: {},
-        replaceUrl: true
-      });
-    }
+  readonly hasContent = computed(() =>
+    this.projects().length > 0 || this.skills().length > 0 || this.experiences().length > 0
+  );
+
+  addFormation(): void {
+    if (!this.newFormation.description) return;
+    this.formations.update(list => [...list, { id: Date.now(), ...this.newFormation }]);
+    this.newFormation = { description: '' };
   }
 
-  ngAfterViewInit(): void {
-    const id = this.highlightedId();
-    if (id !== null) {
-      setTimeout(() => {
-        const card = this.el.nativeElement.querySelector(`[data-project-id="${id}"]`);
-        if (card) {
-          card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-        // Clean URL
-        this.router.navigate([], { queryParams: {}, replaceUrl: true });
-      }
-    });
+  removeFormation(id: number): void {
+    this.formations.update(list => list.filter((f: any) => f.id !== id));
   }
 
-  private loadDraft() {
-    const draft = localStorage.getItem('portfolio-draft');
-    if (draft) {
-      const data = JSON.parse(draft);
-      if (data.profile && !this.profile().name) {
-        this.portfolioSvc.updateProfile(data.profile);
-        this.profileForm = { ...data.profile };
-      }
-    }
+  openProjectDetail(p: Project): void {
+    this.activeProject.set(p);
+    this.previewView.set('project-detail');
   }
 
-  private loadFormations() {
-    const saved = localStorage.getItem('formations');
-    if (saved) {
-      this.formations.set(JSON.parse(saved));
-    }
+  closeProjectDetail(): void {
+    this.activeProject.set(null);
+    this.previewView.set('portfolio');
   }
 
-  private saveFormations() {
-    localStorage.setItem('formations', JSON.stringify(this.formations()));
+  toggleFullPreview(): void {
+    this.fullPreview.update(v => !v);
+  }
+
+  parseReadme(readme?: string): SafeHtml {
+    return this.sanitizer.bypassSecurityTrustHtml(readme ?? '');
   }
 
   getTabIcon(tab: string): string {
@@ -110,4 +108,28 @@ export class MonDevfolio {
     };
     return labels[tab] || tab;
   }
+  removeExperience(id: number): void {
+  this.experiences.update((list: any[]) => list.filter(e => e.id !== id));
+}
+newExp: any = { description: '' };
+
+addExperience(): void {
+  if (!this.newExp.description) return;
+  this.experiences.update((list: any[]) => [...list, { id: Date.now(), ...this.newExp }]);
+  this.newExp = { description: '' };
+}
+removeProject(id: number): void {
+  this.portfolioSvc.removeProject(id);
+}
+newProject: any = { name: '', description: '', stack: '', pct: 0, color: '#F5C518' };
+
+addProject(): void {
+  if (!this.newProject.name) return;
+  this.portfolioSvc.addProject(this.newProject);
+  this.newProject = { name: '', description: '', stack: '', pct: 0, color: '#F5C518' };
+}
+removeSkill(id: number): void {
+  this.portfolioSvc.deleteSkill(id);
+}
+
 }
