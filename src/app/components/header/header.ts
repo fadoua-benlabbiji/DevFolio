@@ -2,6 +2,7 @@ import { Component, Input, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, NavigationEnd, RouterLink } from '@angular/router';
 import { filter } from 'rxjs/operators';
+import { UserService } from '../../user';
 
 @Component({
   selector: 'app-header',
@@ -14,7 +15,7 @@ export class Header implements OnInit {
   @Input() title: string = '';
 
   private router = inject(Router);
-
+ private userService = inject(UserService);
   displayTitle = '';
 
   private readonly routeTitles: Record<string, string> = {
@@ -41,5 +42,9 @@ export class Header implements OnInit {
   private updateTitle(): void {
     const segment = this.router.url.split('/').filter(Boolean).pop() ?? '';
     this.displayTitle = this.routeTitles[segment] ?? this.title ?? "Vue d'ensemble";
+  }
+    logout(): void {
+    this.userService.logout();
+    this.router.navigate(['/']);
   }
 }

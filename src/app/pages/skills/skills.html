@@ -1,22 +1,21 @@
 <div class="page-header">
-
+  <div></div>
   <button class="btn btn-primary" (click)="openAdd()">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
       <line x1="12" y1="5" x2="12" y2="19"></line>
       <line x1="5" y1="12" x2="19" y2="12"></line>
     </svg>
-    Ajouter
+    Ajouter une compétence
   </button>
 </div>
 
 <!-- Filtres -->
-<div class="category-filters">
+<div class="category-filters" style="margin-top: -9px;">
   <button class="filter-btn" [class.filter-btn--active]="activeCategory() === 'Tous'" (click)="setCategory('Tous')">
     Tous <span class="filter-count">{{ skills().length }}</span>
   </button>
   @for (cat of categories; track cat) {
     <button class="filter-btn" [class.filter-btn--active]="activeCategory() === cat" (click)="setCategory(cat)">
-      <span class="filter-dot" [style.background]="getCategoryColor(cat)"></span>
       {{ cat }}
       <span class="filter-count">{{ countByCategory(cat) }}</span>
     </button>
@@ -69,56 +68,47 @@
 <!-- Liste -->
 <div class="skills-list">
   @for (entry of filteredGroupEntries; track entry[0]) {
-    <div class="skill-group">
-      <div class="skill-group__header">
-        <span class="skill-group__dot" [style.background]="getCategoryColor(entry[0])"></span>
-        <span class="skill-group__name">{{ entry[0] }}</span>
-        <span class="skill-group__count">({{ entry[1].length }})</span>
-      </div>
+    @for (s of entry[1]; track s.id) {
+      <div class="skill-group">
+        <div class="skill-card">
 
-      <div class="skill-cards">
-        @for (s of entry[1]; track s.id) {
-          <div class="skill-card">
+          <div class="skill-card__left">
+            <div class="skill-card__icon"
+                 [style.background]="s.logo ? 'transparent' : s.color + '20'"
+                 [style.color]="s.color">
+              @if (s.logo) {
+                <img [src]="s.logo" [alt]="s.name" class="skill-card__logo-img" (error)="onLogoError(s)" />
+              } @else {
+                {{ s.name.charAt(0) }}
+              }
+              <label class="skill-logo-overlay">
+                <span>+</span>
+                <input type="file" (change)="onLogoUpload($event, s)" accept="image/*" style="display:none" />
+              </label>
+            </div>
 
-            <div class="skill-card__left">
-              <!-- Icône / Logo -->
-              <div class="skill-card__icon"
-                   [style.background]="s.logo ? 'transparent' : s.color + '20'"
-                   [style.color]="s.color">
-                @if (s.logo) {
-                  <img [src]="s.logo" [alt]="s.name" class="skill-card__logo-img" (error)="onLogoError(s)" />
-                } @else {
-                  {{ s.name.charAt(0) }}
-                }
-                <label class="skill-logo-overlay">
-                  <span>+</span>
-                  <input type="file" (change)="onLogoUpload($event, s)" accept="image/*" style="display:none" />
-                </label>
-              </div>
-
-              <div class="skill-card__info">
-                <span class="skill-card__name">{{ s.name }}</span>
-                <div class="skill-card__bar-wrap">
-                  <div class="skill-card__bar-bg">
-                    <div class="skill-card__bar-fill"
-                         [style.width.%]="s.pct"
-                         [style.background]="s.color">
-                    </div>
+            <div class="skill-card__info">
+              <span class="skill-card__name">{{ s.name }}</span>
+              <div class="skill-card__bar-wrap">
+                <div class="skill-card__bar-bg">
+                  <div class="skill-card__bar-fill"
+                       [style.width.%]="s.pct"
+                       [style.background]="s.color">
                   </div>
                 </div>
               </div>
             </div>
-
-            <div class="skill-card__right">
-              <span class="skill-card__pct" [style.color]="pctColor(s.pct)">{{ s.pct }}%</span>
-              <button class="icon-btn" (click)="openEdit(s)">✏️</button>
-              <button class="icon-btn" (click)="delete(s.id)">🗑</button>
-            </div>
-
           </div>
-        }
+
+          <div class="skill-card__right">
+            <span class="skill-card__pct" [style.color]="pctColor(s.pct)">{{ s.pct }}%</span>
+            <button class="icon-btn" (click)="openEdit(s)">✏️</button>
+            <button class="icon-btn" (click)="delete(s.id)">🗑</button>
+          </div>
+
+        </div>
       </div>
-    </div>
+    }
   }
 
   @if (filteredGroupEntries.length === 0) {

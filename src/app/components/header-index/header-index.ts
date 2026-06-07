@@ -14,30 +14,39 @@ export class HeaderIndex implements OnInit {
   private userService = inject(UserService);
   private router      = inject(Router);
 
-  // ✅ Permet de forcer l'affichage depuis le parent (ex: explorer)
   @Input() forceLoggedIn: boolean | null = null;
 
   isScrolled    = false;
   menuOpen      = false;
   activeSection = 'hero';
 
-  private isManualScroll   = false;
+  private isManualScroll    = false;
   private manualScrollTimer: any = null;
 
-  // ✅ Utilise le forceLoggedIn si fourni, sinon détecte depuis UserService
+  get currentUser() { return this.userService.currentUser(); }
+
   isLoggedIn(): boolean {
+    const onExplorer = this.router.url.startsWith('/explorer');
+    if (!onExplorer) return false;
     if (this.forceLoggedIn !== null) return this.forceLoggedIn;
     return this.userService.isLoggedIn();
   }
 
-  ngOnInit(): void {
+  logout(): void {
+    this.menuOpen = false;
+    this.userService.logout();
+    this.router.navigate(['/']);
+  }
+
+   ngOnInit(): void {
     this.activeSection = 'hero';
       const fakeEvent = new Event('click');
   fakeEvent.preventDefault = () => {};
   this.scrollToSection('hero', fakeEvent);
     
   }
-  get currentUser() { return this.userService.currentUser(); }
+
+
 
   @HostListener('window:scroll')
   onScroll(): void {
@@ -76,8 +85,8 @@ export class HeaderIndex implements OnInit {
 
   scrollToSection(id: string, event: Event): void {
     event.preventDefault();
-    this.menuOpen      = false;
-    this.activeSection = id;
+    this.menuOpen       = false;
+    this.activeSection  = id;
     this.isManualScroll = true;
     if (this.manualScrollTimer) clearTimeout(this.manualScrollTimer);
     this.manualScrollTimer = setTimeout(() => { this.isManualScroll = false; }, 900);
