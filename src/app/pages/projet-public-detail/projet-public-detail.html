@@ -150,7 +150,11 @@
             <span class="ppd-other-card__name">{{ op.name }}</span>
             <span class="ppd-other-card__pct" [style.color]="op.color">{{ op.pct }}%</span>
           </div>
-          <span class="ppd-other-card__stack">{{ op.stack }}</span>
+                    <div class="tags-list">
+            @for (s of (project().technologies ?? []); track s) {
+              <span class="tag">{{ s.trim() }}</span>
+            }
+          </div>
           <p class="ppd-other-card__desc">{{ op.description }}</p>
         </div>
         <div class="ppd-other-card__arrow">
