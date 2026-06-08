@@ -461,3 +461,15 @@
   .cv-projects-grid { grid-template-columns: 1fr 1fr; }
   .cv-preview-wrap { padding: 16px; }
 }
+.cv-avatar--fallback {
+  background: #ffffff;
+  color: #111827;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 26px;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}

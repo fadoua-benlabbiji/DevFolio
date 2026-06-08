@@ -39,7 +39,7 @@ export class ProjectDetail implements OnInit {
   }
 
   goBack(): void {
-    this.router.navigate(['/projects']);
+    this.router.navigate(['/dashboard/projects']);
   }
 
   get progressStatus(): string {

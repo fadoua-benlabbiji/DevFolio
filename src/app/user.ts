@@ -9,6 +9,7 @@ export interface User {
   email: string;
   password: string;
   profileId: number;
+  avatar?: string;
 }
 
 const MOCK_USERS: User[] = [

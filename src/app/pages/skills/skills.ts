@@ -19,14 +19,15 @@ export class Skills {
   editingId      = signal<number | null>(null);
   activeCategory = signal<string>('Tous');
 
-  readonly categories = [
-    'Frontend',
-    'Backend',
-    'Langage',
-    'Base de données',
-    'DevOps',
-    'Autre'
-  ];
+  categories = computed(() => {
+    const fromSkills = [...new Set(this.skills().map(s => s.category))];
+    const defaults = ['Frontend', 'Backend', 'Langage', 'Base de données', 'DevOps', 'Autre'];
+    const all = [...defaults, ...fromSkills.filter(c => !defaults.includes(c))];
+    return all;
+  });
+
+  showCustomCategory = false;
+  customCategory     = '';
 
   getCategoryColor(cat: string): string {
     const map: Record<string, string> = {
@@ -46,6 +47,17 @@ export class Skills {
 
   setCategory(cat: string): void {
     this.activeCategory.set(cat);
+  }
+
+  onCategoryChange(val: string): void {
+    if (val === '__custom__') {
+      this.showCustomCategory = true;
+      this.form.category = '';
+    } else {
+      this.showCustomCategory = false;
+      this.customCategory = '';
+      this.form.category = val;
+    }
   }
 
   form: Omit<Skill, 'id'> = this.emptyForm();
@@ -75,6 +87,8 @@ export class Skills {
   openAdd(): void {
     this.form = this.emptyForm();
     this.editingId.set(null);
+    this.showCustomCategory = false;
+    this.customCategory = '';
     this.showForm.set(true);
   }
 
@@ -88,6 +102,9 @@ export class Skills {
       logo: s.logo ?? ''
     };
     this.editingId.set(s.id);
+    const isKnown = this.categories().includes(s.category);
+    this.showCustomCategory = !isKnown;
+    this.customCategory = isKnown ? '' : s.category;
     this.showForm.set(true);
   }
 
@@ -98,6 +115,8 @@ export class Skills {
     } else {
       this.portfolio.addSkill(this.form);
     }
+    this.showCustomCategory = false;
+    this.customCategory = '';
     this.showForm.set(false);
   }
 
@@ -105,7 +124,11 @@ export class Skills {
     if (confirm('Supprimer cette compétence ?')) this.portfolio.deleteSkill(id);
   }
 
-  cancel(): void { this.showForm.set(false); }
+  cancel(): void {
+    this.showCustomCategory = false;
+    this.customCategory = '';
+    this.showForm.set(false);
+  }
 
   pctColor(pct: number): string {
     if (pct >= 85) return '#22c55e';

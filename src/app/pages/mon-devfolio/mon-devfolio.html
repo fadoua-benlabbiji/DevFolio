@@ -257,12 +257,15 @@
           </div>
           <div class="dv-form-group">
             <label class="dv-label">Description courte</label>
-            <textarea class="dv-input dv-textarea" [(ngModel)]="newProject.description" placeholder="Décrivez votre projet…"></textarea>
+            <textarea class="dv-input dv-textarea" [(ngModel)]="newProject.description"
+                      placeholder="Décrivez votre projet…"></textarea>
           </div>
           <div class="dv-form-row">
             <div class="dv-form-group">
-              <label class="dv-label">Technologies (virgule)</label>
-              <input class="dv-input" [(ngModel)]="newProject.tech" placeholder="Angular, Node.js, MongoDB">
+              <label class="dv-label">Technologies (séparées par virgule)</label>
+              <!-- ✅ était newProject.tech -->
+              <input class="dv-input" [(ngModel)]="newProject.technologiesText"
+                     placeholder="Angular, Node.js, MongoDB">
             </div>
             <div class="dv-form-group">
               <label class="dv-label">Avancement : <strong>{{ newProject.pct }}%</strong></label>
@@ -282,7 +285,8 @@
           <div class="dv-form-row">
             <div class="dv-form-group">
               <label class="dv-label">Mon rôle dans le projet</label>
-              <input class="dv-input" [(ngModel)]="newProject.role" placeholder="Ex: Lead Dev, Full-Stack, Designer…">
+              <input class="dv-input" [(ngModel)]="newProject.role"
+                     placeholder="Ex: Lead Dev, Full-Stack, Designer…">
             </div>
             <div class="dv-form-group">
               <label class="dv-label">Couleur du projet</label>
@@ -292,11 +296,13 @@
           <div class="dv-form-row">
             <div class="dv-form-group">
               <label class="dv-label">Date de début</label>
-              <input class="dv-input" [(ngModel)]="newProject.startDate" placeholder="Ex: Jan 2024" type="text">
+              <input class="dv-input" [(ngModel)]="newProject.startDate"
+                     placeholder="Ex: Jan 2024" type="text">
             </div>
             <div class="dv-form-group">
               <label class="dv-label">Date de fin</label>
-              <input class="dv-input" [(ngModel)]="newProject.endDate" placeholder="Ex: Mars 2024 / En cours" type="text">
+              <input class="dv-input" [(ngModel)]="newProject.endDate"
+                     placeholder="Ex: Mars 2024 / En cours" type="text">
             </div>
           </div>
 
@@ -335,12 +341,13 @@
           </button>
         </div>
 
+        <!-- Liste projets ✅ p.technologies -->
         <div class="dv-projects-list" *ngIf="projects().length">
           <div *ngFor="let p of projects()" class="dv-project-item">
             <div class="dv-project-item__dot" [style.background]="p.color || profileForm.accentColor"></div>
             <div class="dv-project-item__info">
               <span class="dv-project-item__name">{{ p.name }}</span>
-              <span class="dv-project-item__tech">{{ (p.tech || []).join(' · ') }}</span>
+              <span class="dv-project-item__tech">{{ (p.technologies || []).join(' · ') }}</span>
             </div>
             <div class="dv-project-item__pct">{{ p.pct }}%</div>
             <button class="dv-btn-remove" (click)="removeProject(p.id)">
@@ -418,7 +425,8 @@
             </div>
             <div class="dv-form-group">
               <label class="dv-label">Établissement</label>
-              <input class="dv-input" [(ngModel)]="newFormation.institution" placeholder="Ex: Université Hassan II">
+              <input class="dv-input" [(ngModel)]="newFormation.institution"
+                     placeholder="Ex: Université Hassan II">
             </div>
           </div>
           <div class="dv-form-row">
@@ -462,13 +470,10 @@
 
     <!-- ── RIGHT PANEL — PREVIEW ── -->
     <div class="dv-panel-right">
-
-      <!-- ══ PORTFOLIO PREVIEW CARD ══ -->
       <div class="dv-portfolio-card" [style.--accent]="profileForm.accentColor">
         <ng-container *ngTemplateOutlet="previewContent"></ng-container>
       </div>
-
-    </div><!-- /panel-right -->
+    </div>
 
   </div><!-- /main -->
 
@@ -478,33 +483,27 @@
     <!-- ── VUE PORTFOLIO ── -->
     <div *ngIf="previewView() === 'portfolio'" class="dv-pf-view">
 
-      <!-- HERO : avatar + infos côte à côte -->
+      <!-- HERO -->
       <div class="dv-pf-hero">
-
-        <!-- Décoration fond -->
         <div class="dv-pf-hero__deco"></div>
-
         <div class="dv-pf-hero__inner">
 
-          <!-- Avatar -->
           <div class="dv-pf-avatar-wrap">
             <img class="dv-pf-avatar"
                  [src]="profile().avatar || 'https://ui-avatars.com/api/?background=' + (profileForm.accentColor?.slice(1) || 'F5C518') + '&color=111&name=' + (profile().name || 'U') + '&size=120'"
                  [alt]="profile().name || 'Avatar'">
-            <!-- Badge disponibilité -->
-            <span class="dv-pf-avail-badge" *ngIf="profileForm.availability === 'open' || profileForm.availability === 'freelance'">
+            <span class="dv-pf-avail-badge"
+                  *ngIf="profileForm.availability === 'open' || profileForm.availability === 'freelance'">
               <span class="dv-pf-avail-dot"></span> Disponible
             </span>
           </div>
 
-          <!-- Infos -->
           <div class="dv-pf-hero__info">
             <p class="dv-pf-tag-label">{{ profileForm.specialization || 'Développeur' }}</p>
             <h1 class="dv-pf-name">{{ profile().name || 'Votre Nom' }}</h1>
             <p class="dv-pf-title">{{ profile().title || 'Votre titre professionnel' }}</p>
             <p class="dv-pf-bio">{{ profile().bio || 'Votre bio apparaîtra ici…' }}</p>
 
-            <!-- Méta : email + localisation -->
             <div class="dv-pf-meta">
               <span *ngIf="profile().email" class="dv-pf-meta__item">
                 <i class="ti ti-mail"></i> {{ profile().email }}
@@ -517,24 +516,23 @@
               </span>
             </div>
 
-            <!-- Liens sociaux -->
             <div class="dv-pf-links">
-              <a *ngIf="profile().github" [href]="profile().github" target="_blank" class="dv-pf-link">
+              <a *ngIf="profile().github"   [href]="profile().github"   target="_blank" class="dv-pf-link">
                 <i class="ti ti-brand-github"></i>
               </a>
               <a *ngIf="profile().linkedin" [href]="profile().linkedin" target="_blank" class="dv-pf-link">
                 <i class="ti ti-brand-linkedin"></i>
               </a>
-              <a *ngIf="profile().website" [href]="profile().website" target="_blank" class="dv-pf-link">
+              <a *ngIf="profile().website"  [href]="profile().website"  target="_blank" class="dv-pf-link">
                 <i class="ti ti-world"></i>
               </a>
             </div>
           </div>
 
-        </div><!-- /hero__inner -->
+        </div>
 
-        <!-- Stats bar -->
-        <div class="dv-pf-hero-bottom" *ngIf="projects().length || skills().length || experiences().length">
+        <div class="dv-pf-hero-bottom"
+             *ngIf="projects().length || skills().length || experiences().length">
           <div class="dv-pf-hero-stat" *ngIf="projects().length">
             <span class="dv-pf-hero-stat__num">{{ projects().length }}</span>
             <span class="dv-pf-hero-stat__label">Projets</span>
@@ -555,20 +553,18 @@
             <span class="dv-pf-hero-stat__label">Années d'exp.</span>
           </div>
         </div>
-
-      </div><!-- /hero -->
+      </div>
 
       <!-- BODY -->
       <div class="dv-pf-body">
 
-        <!-- ── Projets ── -->
+        <!-- Projets ✅ p.technologies -->
         <div class="dv-pf-section" *ngIf="projects().length">
           <h2 class="dv-pf-section__title">Projets</h2>
           <div class="dv-pf-proj-grid">
             <div *ngFor="let p of projects()" class="dv-pf-proj-card"
                  [style.--proj-color]="p.color || profileForm.accentColor"
                  (click)="openProjectDetail(p)">
-              <!-- Barre couleur top -->
               <div class="dv-pf-proj-card__color-bar"></div>
               <div class="dv-pf-proj-card__top">
                 <span class="dv-pf-proj-card__name">{{ p.name }}</span>
@@ -577,7 +573,8 @@
               <p class="dv-pf-proj-card__desc">{{ p.description }}</p>
               <div class="dv-pf-proj-card__footer">
                 <div class="dv-pf-proj-card__tags">
-                  <span *ngFor="let t of (p.tech || []).slice(0, 3)" class="dv-pf-tag">{{ t }}</span>
+                  <!-- ✅ était p.tech -->
+                  <span *ngFor="let t of (p.technologies || []).slice(0, 3)" class="dv-pf-tag">{{ t }}</span>
                 </div>
                 <span class="dv-pf-proj-card__pct" [style.color]="p.color || profileForm.accentColor">
                   {{ p.pct }}%
@@ -587,7 +584,7 @@
           </div>
         </div>
 
-        <!-- ── Compétences : barres de progression ── -->
+        <!-- Compétences -->
         <div class="dv-pf-section" *ngIf="skills().length">
           <h2 class="dv-pf-section__title">Compétences</h2>
           <div class="dv-pf-skills-grid">
@@ -604,7 +601,7 @@
           </div>
         </div>
 
-        <!-- ── Expériences : timeline ── -->
+        <!-- Expériences -->
         <div class="dv-pf-section" *ngIf="experiences().length">
           <h2 class="dv-pf-section__title">Expériences</h2>
           <div class="dv-pf-exp-list">
@@ -620,7 +617,7 @@
           </div>
         </div>
 
-        <!-- ── Formations ── -->
+        <!-- Formations -->
         <div class="dv-pf-section" *ngIf="formations().length">
           <h2 class="dv-pf-section__title">Formation</h2>
           <div class="dv-pf-exp-list">
@@ -636,15 +633,14 @@
           </div>
         </div>
 
-      </div><!-- /dv-pf-body -->
+      </div>
 
-      <!-- Empty state -->
       <div class="dv-pf-empty" *ngIf="!hasContent()">
         <div class="dv-pf-empty__icon">✦</div>
         <p>Remplissez le formulaire pour voir votre portfolio ici en direct !</p>
       </div>
 
-    </div><!-- /portfolio view -->
+    </div>
 
     <!-- ── VUE DÉTAIL PROJET ── -->
     <div *ngIf="previewView() === 'project-detail' && activeProject()" class="dv-pf-view dv-pf-detail-view">
@@ -655,59 +651,63 @@
 
       <div class="dv-pf-detail-card">
 
-        <!-- Bandeau couleur accent -->
-        <div class="dv-pf-detail-banner" [style.background]="activeProject()!.color || profileForm.accentColor"></div>
+        <div class="dv-pf-detail-banner"
+             [style.background]="activeProject()!.color || profileForm.accentColor"></div>
 
-        <!-- Header : badge icône + titre + actions -->
         <div class="dv-pf-detail-header">
           <div class="dv-pf-detail-dot"
                [style.background]="(activeProject()!.color || profileForm.accentColor) + '20'"
                [style.border-color]="(activeProject()!.color || profileForm.accentColor) + '50'">
-            <i class="ti ti-code" style="font-size:20px" [style.color]="activeProject()!.color || profileForm.accentColor"></i>
+            <i class="ti ti-code" style="font-size:20px"
+               [style.color]="activeProject()!.color || profileForm.accentColor"></i>
           </div>
           <div class="dv-pf-detail-header__text">
             <h2 class="dv-pf-detail-title">{{ activeProject()!.name }}</h2>
-            <p class="dv-pf-detail-stack">{{ (activeProject()!.tech || []).join(' · ') }}</p>
+            <!-- ✅ était activeProject()!.tech -->
+            <p class="dv-pf-detail-stack">{{ (activeProject()!.technologies || []).join(' · ') }}</p>
             <div class="dv-pf-detail-actions">
-              <a *ngIf="activeProject()!.github" [href]="activeProject()!.github" class="dv-link-btn" target="_blank">
+              <a *ngIf="activeProject()!.github" [href]="activeProject()!.github"
+                 class="dv-link-btn" target="_blank">
                 <i class="ti ti-brand-github"></i> GitHub
               </a>
-              <a *ngIf="activeProject()!.url" [href]="activeProject()!.url" class="dv-link-btn dv-link-btn--accent" target="_blank">
+              <a *ngIf="activeProject()!.url" [href]="activeProject()!.url"
+                 class="dv-link-btn dv-link-btn--accent" target="_blank">
                 <i class="ti ti-external-link"></i> Demo
               </a>
             </div>
           </div>
         </div>
 
-        <!-- Méta : rôle + dates -->
-        <div class="dv-pf-detail-meta" *ngIf="activeProject()!.role || activeProject()!.startDate">
+        <div class="dv-pf-detail-meta"
+             *ngIf="activeProject()!.role || activeProject()!.startDate">
           <span *ngIf="activeProject()!.role" class="dv-pf-meta-chip">
             <i class="ti ti-user"></i> {{ activeProject()!.role }}
           </span>
           <span *ngIf="activeProject()!.startDate" class="dv-pf-meta-chip">
             <i class="ti ti-calendar"></i>
-            {{ activeProject()!.startDate }}{{ activeProject()!.endDate ? ' → ' + activeProject()!.endDate : ' → En cours' }}
+            {{ activeProject()!.startDate }}
+            {{ activeProject()!.endDate ? ' → ' + activeProject()!.endDate : ' → En cours' }}
           </span>
         </div>
 
-        <!-- Description -->
         <p class="dv-pf-detail-desc">{{ activeProject()!.description }}</p>
 
-        <!-- Grille sections : Fonctionnalités + Impact côte à côte -->
         <div class="dv-pf-detail-body">
-          <div class="dv-pf-detail-section" *ngIf="activeProject()!.features && activeProject()!.features!.length">
+          <div class="dv-pf-detail-section"
+               *ngIf="activeProject()!.features && activeProject()!.features!.length">
             <div class="dv-pf-detail-section__title"><i class="ti ti-check"></i> Fonctionnalités</div>
             <ul class="dv-pf-features-list">
               <li *ngFor="let f of activeProject()!.features">{{ f }}</li>
             </ul>
           </div>
           <div class="dv-pf-detail-section" *ngIf="activeProject()!.impact">
-            <div class="dv-pf-detail-section__title"><i class="ti ti-trending-up"></i> Impact & Résultats</div>
+            <div class="dv-pf-detail-section__title">
+              <i class="ti ti-trending-up"></i> Impact & Résultats
+            </div>
             <p class="dv-pf-detail-section__text">{{ activeProject()!.impact }}</p>
           </div>
         </div>
 
-        <!-- Avancement -->
         <div class="dv-pf-detail-progress">
           <div class="dv-pf-detail-progress-top">
             <span class="dv-pf-detail-progress__label">Avancement</span>
@@ -721,16 +721,14 @@
           </div>
         </div>
 
-        <!-- README -->
         <div class="dv-pf-detail-readme" *ngIf="activeProject()!.readme"
              [innerHTML]="parseReadme(activeProject()!.readme)">
         </div>
 
-      </div><!-- /detail-card -->
+      </div>
+    </div>
 
-    </div><!-- /project-detail view -->
-
-  </ng-template><!-- /previewContent -->
+  </ng-template>
 
   <!-- ══ FULLSCREEN OVERLAY ══ -->
   <div class="dv-fullscreen-overlay" *ngIf="fullPreview()">
@@ -754,4 +752,4 @@
     </div>
   </div>
 
-</div><!-- /dv-root -->
+</div>

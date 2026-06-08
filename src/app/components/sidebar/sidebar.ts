@@ -2,13 +2,14 @@ import { Component, computed, Signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { Router, RouterModule } from '@angular/router';
-import { UserService, User } from '../../user';           // ← ajustez le chemin
+import { UserService, User } from '../../user';
 import { ProfileService } from '../../profile';
+
 export interface NavItem {
   icon: string;
   label: string;
   route: string;
-  badgeFn?: () => number;   // badge dynamique via signal
+  badgeFn?: () => number;
 }
 
 @Component({
@@ -36,27 +37,35 @@ export class Sidebar {
   ) {
     this.currentUser = this.userService.currentUser;
 
-this.user = computed(() => {
-  const u = this.currentUser();
-  const profile = u ? this.profileService.getById(u.profileId) : null;
-  return {
-    name: `${u?.prenom ?? ''} ${u?.nom ?? ''}`.trim(),
-    username: profile?.username ? `@${profile.username}` : `@${u?.prenom?.toLowerCase() ?? ''}`,
-    email: profile?.email ?? u?.email ?? '',
-    avatar: profile?.avatar || null,
-    initials: `${u?.prenom?.charAt(0) ?? ''}${u?.nom?.charAt(0) ?? ''}`.toUpperCase(),
-  };
-});
+    this.user = computed(() => {
+      const u = this.currentUser();
+      const profile = u ? this.profileService.getById(u.profileId) : null;
+      return {
+        name: `${u?.prenom ?? ''} ${u?.nom ?? ''}`.trim(),
+        username: profile?.username ? `@${profile.username}` : `@${u?.prenom?.toLowerCase() ?? ''}`,
+        email: profile?.email ?? u?.email ?? '',
+        avatar: profile?.avatar || null,
+        initials: `${u?.prenom?.charAt(0) ?? ''}${u?.nom?.charAt(0) ?? ''}`.toUpperCase(),
+      };
+    });
+  }
+
+  isActive(route: string): boolean {
+    const url = this.router.url;
+    if (route === '/dashboard/projects') {
+      return url.startsWith('/dashboard/projects') || url.startsWith('/dashboard/project-detail');
+    }
+    return url.startsWith(route);
   }
 
   navItems: NavItem[] = [
-    { icon: 'grid',      label: 'Dashboard',    route: '/dashboard/vue-ensemble' },
-    { icon: 'folder',    label: 'Projets',       route: '/dashboard/projects' },
-    { icon: 'wrench',    label: 'Compétences',   route: '/dashboard/skills' },
-    { icon: 'mail',      label: 'Messages',      route: '/dashboard/messages', badgeFn: () => 1  },
-    { icon: 'file-text', label: 'Générer CV',    route: '/dashboard/cv' },
-    { icon: 'globe',     label: 'Mon DevFolio',  route: '/dashboard/devfolio' },
-    { icon: 'settings',  label: 'Paramètres',    route: '/dashboard/settings' },
+    { icon: 'grid',      label: "Vue d'ensemble", route: '/dashboard/vue-ensemble' },
+    { icon: 'folder',    label: 'Projets',         route: '/dashboard/projects' },
+    { icon: 'wrench',    label: 'Compétences',     route: '/dashboard/skills' },
+    { icon: 'mail',      label: 'Messages',        route: '/dashboard/messages', badgeFn: () => 1 },
+    { icon: 'file-text', label: 'Générer CV',      route: '/dashboard/cv' },
+    { icon: 'globe',     label: 'Mon DevFolio',    route: '/dashboard/devfolio' },
+    { icon: 'settings',  label: 'Paramètres',      route: '/dashboard/settings' },
   ];
 
   logout(): void {

@@ -36,13 +36,13 @@ export class MonDevfolio {
   private sanitizer    = inject(DomSanitizer);
 
   // State
-  activeTab    = signal<Tab>('infos');
-  previewView  = signal<View>('portfolio');
+  activeTab     = signal<Tab>('infos');
+  previewView   = signal<View>('portfolio');
   activeProject = signal<Project | null>(null);
-  saved        = signal(false);
-  colors       = COLORS;
-  isLoading    = signal(false);
-  fullPreview  = signal(false);
+  saved         = signal(false);
+  colors        = COLORS;
+  isLoading     = signal(false);
+  fullPreview   = signal(false);
   tabsList: Tab[] = ['infos', 'competences', 'projets', 'experience', 'formation'];
 
   // Portfolio data
@@ -58,7 +58,7 @@ export class MonDevfolio {
   newSkill = { name: '', category: 'technique', pct: 80 };
 
   newProject: any = {
-    name: '', description: '', readme: '', tech: '',
+    name: '', description: '', readme: '', technologiesText: '',  // ✅ était 'tech'
     url: '', github: '', pct: 0, color: '#3B82F6',
     role: '', startDate: '', endDate: '',
     objectives: '', challenges: '', featuresText: '', impact: ''
@@ -94,9 +94,19 @@ export class MonDevfolio {
     this.projects().filter((p: Project) => p.pct < 100 && p.pct > 0)
   );
 
+  private handleFullscreen() {
+    this.route.queryParams.subscribe(params => {
+      if (params['fullscreen'] === 'true') {
+        this.fullPreview.set(true);
+        this.router.navigate([], { queryParams: {}, replaceUrl: true });
+      }
+    });
+  }
+
   constructor() {
     this.loadFormations();
     this.handleHighlight();
+    this.handleFullscreen();
   }
 
   private handleHighlight() {
@@ -162,26 +172,36 @@ export class MonDevfolio {
   // Projects
   addProject() {
     if (!this.newProject.name) return;
-    const tech = this.newProject.tech?.split(',').map((t: string) => t.trim()).filter(Boolean) ?? [];
+
+    // ✅ technologiesText → technologies[]
+    const technologies = this.newProject.technologiesText
+      ?.split(',')
+      .map((t: string) => t.trim())
+      .filter(Boolean) ?? [];
+
     this.portfolioSvc.addProject({
-      name: this.newProject.name.trim(),
-      description: this.newProject.description.trim(),
-      stack: tech.join(' · '),
-      tech,
-      pct: this.newProject.pct,
-      color: this.newProject.color || this.profileForm.accentColor,
-      github: this.newProject.github,
-      url: this.newProject.url,
-      role: this.newProject.role,
-      startDate: this.newProject.startDate,
-      endDate: this.newProject.endDate,
-      impact: this.newProject.impact,
-      features: this.newProject.featuresText
-        ? this.newProject.featuresText.split('\n').map((l: string) => l.replace(/^-\s*/, '').trim()).filter(Boolean)
+      name:         this.newProject.name.trim(),
+      description:  this.newProject.description.trim(),
+      technologies,                                        // ✅ unique champ
+      pct:          this.newProject.pct,
+      color:        this.newProject.color || this.profileForm.accentColor,
+      github:       this.newProject.github,
+      url:          this.newProject.url,
+      readme:       this.newProject.readme,
+      role:         this.newProject.role,
+      startDate:    this.newProject.startDate,
+      endDate:      this.newProject.endDate,
+      impact:       this.newProject.impact,
+      features:     this.newProject.featuresText
+        ? this.newProject.featuresText
+            .split('\n')
+            .map((l: string) => l.replace(/^-\s*/, '').trim())
+            .filter(Boolean)
         : []
     });
+
     this.newProject = {
-      name: '', description: '', readme: '', tech: '',
+      name: '', description: '', readme: '', technologiesText: '',
       url: '', github: '', pct: 0, color: '#3B82F6',
       role: '', startDate: '', endDate: '',
       objectives: '', challenges: '', featuresText: '', impact: ''
@@ -253,27 +273,26 @@ export class MonDevfolio {
   parseReadme(text?: string): SafeHtml {
     if (!text) return '';
     const html = text
-      .replace(/^# (.+)$/gm, '<h1>$1</h1>')
-      .replace(/^## (.+)$/gm, '<h2>$1</h2>')
-      .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+      .replace(/^# (.+)$/gm,    '<h1>$1</h1>')
+      .replace(/^## (.+)$/gm,   '<h2>$1</h2>')
+      .replace(/^### (.+)$/gm,  '<h3>$1</h3>')
       .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-      .replace(/\*(.+?)\*/g, '<em>$1</em>')
-      .replace(/`([^`]+)`/g, '<code>$1</code>')
-      .replace(/^- (.+)$/gm, '<li>$1</li>')
+      .replace(/\*(.+?)\*/g,     '<em>$1</em>')
+      .replace(/`([^`]+)`/g,     '<code>$1</code>')
+      .replace(/^- (.+)$/gm,    '<li>$1</li>')
       .replace(/(<li>.*<\/li>\n?)+/gs, m => `<ul>${m}</ul>`)
       .replace(/\n{2,}/g, '</p><p>');
     return this.sanitizer.bypassSecurityTrustHtml(html);
   }
 
-  getTech(p: Project): string[] { return p.tech || []; }
-
   getStats() {
     return {
-      projects: this.projects().length,
-      skills: this.skills().length,
-      experience: this.experiences().length,
+      projects:       this.projects().length,
+      skills:         this.skills().length,
+      experience:     this.experiences().length,
       completionRate: Math.round(
-        this.projects().reduce((acc: number, p: Project) => acc + p.pct, 0) / (this.projects().length || 1)
+        this.projects().reduce((acc: number, p: Project) => acc + p.pct, 0) /
+        (this.projects().length || 1)
       )
     };
   }
@@ -286,15 +305,15 @@ export class MonDevfolio {
 
   async exportPortfolio() {
     const data = {
-      projects: this.projects(),
-      skills: this.skills(),
-      formations: this.formations(),
-      exportedAt: new Date().toISOString()
+      projects:    this.projects(),
+      skills:      this.skills(),
+      formations:  this.formations(),
+      exportedAt:  new Date().toISOString()
     };
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href     = url;
     a.download = `portfolio-${this.slug()}.json`;
     a.click();
     URL.revokeObjectURL(url);

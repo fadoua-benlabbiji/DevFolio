@@ -74,10 +74,7 @@ export class Inscription {
       this.errorMsg = 'Le mot de passe doit contenir au moins 8 caractères.';
       return;
     }
-    if (!this.acceptTerms) {
-      this.errorMsg = "Vous devez accepter les conditions d'utilisation.";
-      return;
-    }
+
  
     // Vérifier si l'email existe déjà
     const existingUser = this.userService.getByEmail(this.email);
