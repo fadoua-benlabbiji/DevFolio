@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
-import { UserService } from '../../user';
-import { ProfileService } from '../../profile';
-import { PortfolioService } from '../../portfolio';
+import { UserService } from '../../data/user';
+import { ProfileService } from '../../data/profile';
+import { PortfolioService } from '../../data/portfolio';
 
 @Component({
   selector: 'app-vue-ensemble',

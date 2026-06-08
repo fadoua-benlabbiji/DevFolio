@@ -1,7 +1,7 @@
 import { Component, HostListener, OnInit, Input, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { UserService } from '../../user';
+import { UserService } from '../../data/user';
 
 @Component({
   selector: 'app-header-index',

@@ -6,8 +6,8 @@ import { RouterLink } from '@angular/router';
 import { Profile } from '../../pages/acceuil/acceuil';
 import { Footer } from '../footer/footer';
 import { HeaderIndex } from '../header-index/header-index';
-import { UserService } from '../../user';
-import { ProfileService } from '../../profile';
+import { UserService } from '../../data/user';
+import { ProfileService } from '../../data/profile';
 
 @Component({
   selector: 'app-explorer',

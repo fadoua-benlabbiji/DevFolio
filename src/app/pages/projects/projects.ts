@@ -2,7 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { PortfolioService, Project } from '../../portfolio';
+import { PortfolioService, Project } from'../../data/portfolio';
 import { TronquerPipe } from '../../tronquer-pipe';
 
 @Component({

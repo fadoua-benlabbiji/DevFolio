@@ -12,7 +12,7 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MessageService, ChatMessage } from '../../message';
+import { MessageService, ChatMessage } from '../../data/message';
 
 // ─── Pipe tronquer pour les previews ─────────────────────────
 @Pipe({

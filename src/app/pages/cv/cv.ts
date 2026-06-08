@@ -1,10 +1,10 @@
 import { Component, inject, signal, computed, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AuthService } from '../../auth';
-import { PortfolioService } from '../../portfolio';
-import { UserService } from '../../user';
+import { AuthService } from '../../data/auth';
+import { PortfolioService } from '../../data/portfolio';
+import { UserService } from '../../data/user';
 import { ActivatedRoute } from '@angular/router';
-import { ProfileService } from '../../profile';
+import { ProfileService } from '../../data/profile';
 
 @Component({
   selector: 'app-cv',

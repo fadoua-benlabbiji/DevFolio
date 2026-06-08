@@ -1,8 +1,8 @@
 import { Component, inject, computed, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { PortfolioService, Project } from '../../portfolio';
-import { ProfileService } from '../../profile';
+import { PortfolioService, Project } from '../../data/portfolio';
+import { ProfileService } from '../../data/profile';
 
 @Component({
   selector: 'app-projet-public-detail',

@@ -1,7 +1,7 @@
 import { Component, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { PortfolioService, Skill } from '../../portfolio';
+import { PortfolioService,Skill } from '../../data/portfolio';
 
 @Component({
   selector: 'app-skills',

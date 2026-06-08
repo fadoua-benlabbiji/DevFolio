@@ -1,7 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { PortfolioService, Project } from '../../portfolio';
+import { PortfolioService, Project } from '../../data/portfolio';
 
 @Component({
   selector: 'app-project-detail',

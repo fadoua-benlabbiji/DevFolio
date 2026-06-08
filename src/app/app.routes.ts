@@ -7,7 +7,7 @@ import { Explorer } from './components/explorer/explorer';
 import { VueEnsemble } from './components/vue-ensemble/vue-ensemble';
 import { ProjectDetail } from './pages/project-detail/project-detail';
 import { Projects } from './pages/projects/projects';
-import { authGuard } from './auth-guard';
+import { authGuard } from './data/auth-guard';
 import { Skills } from './pages/skills/skills';
 import { CV } from './pages/cv/cv';
 import { Parametres } from './pages/parametres/parametres';

@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { PortfolioService, Project, Skill, Experience } from '../../portfolio';
+import { PortfolioService, Project, Skill, Experience } from '../../data/portfolio';
 
 type View = 'portfolio' | 'project-detail';
 type Tab = 'infos' | 'competences' | 'projets' | 'experience' | 'formation';
