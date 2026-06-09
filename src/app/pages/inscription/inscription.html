@@ -55,7 +55,7 @@
             id="password"
             [type]="showPassword ? 'text' : 'password'"
             class="form-input"
-            placeholder="8 caractères minimum"
+            placeholder="saisie de mot de passe "
             [(ngModel)]="password"
           />
           <button class="toggle-pw" type="button" (click)="togglePassword()">
@@ -63,12 +63,7 @@
           </button>
         </div>
         <!-- Indicateur de force du mot de passe -->
-        <div class="pw-strength" *ngIf="password.length > 0">
-          <div class="pw-strength-bar">
-            <div class="pw-strength-fill" [style.width]="pwStrengthWidth" [class]="pwStrengthClass"></div>
-          </div>
-          <span class="pw-strength-label" [class]="pwStrengthClass">{{ pwStrengthLabel }}</span>
-        </div>
+
       </div>
 
       <div class="form-group">

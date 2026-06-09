@@ -151,7 +151,7 @@
           }
         </div>
         <div class="proj-card__info">
-          <p class="proj-card__desc">{{ p.description | tronquer:90 }}</p>
+          <p class="proj-card__desc">{{ p.description  }}</p>
           <div class="proj-card__stack">
             @for (t of (p.technologies ?? []); track t) {
               <span class="tech-tag">{{ t }}</span>

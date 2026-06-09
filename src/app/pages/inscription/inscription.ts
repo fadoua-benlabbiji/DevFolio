@@ -18,7 +18,6 @@ export class Inscription {
   password = '';
   confirmPassword = '';
   showPassword = false;
-  acceptTerms = false;
   errorMsg = '';
 
   constructor(
@@ -26,32 +25,7 @@ export class Inscription {
     private userService: UserService,
   ) {}
 
-  get pwStrength(): number {
-    const p = this.password;
-    let score = 0;
-    if (p.length >= 8) score++;
-    if (/[A-Z]/.test(p)) score++;
-    if (/[0-9]/.test(p)) score++;
-    if (/[^A-Za-z0-9]/.test(p)) score++;
-    return score;
-  }
 
-  get pwStrengthWidth(): string {
-    const map = [0, 33, 66, 100, 100];
-    return map[this.pwStrength] + '%';
-  }
-
-  get pwStrengthClass(): string {
-    if (this.pwStrength <= 1) return 'weak';
-    if (this.pwStrength <= 2) return 'medium';
-    return 'strong';
-  }
-
-  get pwStrengthLabel(): string {
-    if (this.pwStrength <= 1) return 'Faible';
-    if (this.pwStrength <= 2) return 'Moyen';
-    return 'Fort';
-  }
 
   togglePassword(): void {
     this.showPassword = !this.showPassword;
@@ -59,7 +33,7 @@ export class Inscription {
 
   register(): void {
     this.errorMsg = '';
-
+    //remplissage des champs
     if (!this.prenom || !this.nom || !this.email || !this.password) {
       this.errorMsg = 'Veuillez remplir tous les champs.';
       return;
@@ -68,18 +42,13 @@ export class Inscription {
       this.errorMsg = 'Les mots de passe ne correspondent pas.';
       return;
     }
-    if (this.password.length < 8) {
-      this.errorMsg = 'Le mot de passe doit contenir au moins 8 caractères.';
-      return;
-    }
 
-    const existingUser = this.userService.getByEmail(this.email);
-    if (existingUser) {
+    const existUser = this.userService.getByEmail(this.email);
+    if (existUser) {
       this.errorMsg = 'Un compte avec cet email existe déjà.';
       return;
     }
 
-    // register() crée l'utilisateur ET son profil vide dans UserService
     const newUser = this.userService.register({
       prenom: this.prenom,
       nom: this.nom,
@@ -87,7 +56,7 @@ export class Inscription {
       password: this.password,
     });
 
-    // Connexion automatique
+    // Connexion pour storage
     this.userService.login(newUser.email, newUser.password);
 
     // Redirection vers le dashboard

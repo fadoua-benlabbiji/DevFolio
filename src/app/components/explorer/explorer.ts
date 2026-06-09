@@ -20,37 +20,49 @@ export class Explorer implements OnInit {
   profiles: UserProfile[] = [];
   searchQuery = '';
   activeSkill = '';
-
-  readonly isLoggedIn = this.userSvc.isLoggedIn;
+  Skills: string[] = [];   //liste de tout les skills
+  filters: UserProfile[] = [];   
+  public isLoggedIn = this.userSvc.isLoggedIn;
 
   ngOnInit(): void {
     this.profiles = this.userSvc.getAllProfiles();
+    this.getSkills();
+    this.updateFilters();
   }
 
-  get allSkills(): string[] {
-    const skills = this.profiles.flatMap(p => p.skills);
-    return [...new Set(skills)].sort();
+  getSkills(): void {
+    for (const p of this.profiles) {
+      for (const s of p.skills) {
+        if (!this.Skills.includes(s)) {  //eviter doublons
+          this.Skills.push(s);
+        }
+      }
+    }
   }
 
-  get filteredProfiles(): UserProfile[] {
-    return this.profiles.filter(p => {
+  updateFilters(): void {
+    this.filters = [];
+    for (const p of this.profiles) {
+
       const q = this.searchQuery.toLowerCase();
-      const matchSearch = !q ||
+       //recherche vide
+      const trouveR = !q ||
         p.username.toLowerCase().includes(q) ||
         p.titre.toLowerCase().includes(q) ||
         p.ville.toLowerCase().includes(q) ||
         p.skills.some(s => s.toLowerCase().includes(q));
-      const matchSkill = !this.activeSkill || p.skills.includes(this.activeSkill);
-      return matchSearch && matchSkill;
-    });
+        //skill vide 
+      const trouveS = !this.activeSkill || p.skills.includes(this.activeSkill);
+
+      if (trouveR && trouveS) {
+        this.filters.push(p);
+      }
+    }
   }
 
-  filterBySkill(skill: string): void {
-    this.activeSkill = this.activeSkill === skill ? '' : skill;
+  changerSkill(skill: string): void {
+    this.activeSkill = skill;
+    this.updateFilters();
   }
 
-  resetFilters(): void {
-    this.searchQuery = '';
-    this.activeSkill = '';
-  }
 }

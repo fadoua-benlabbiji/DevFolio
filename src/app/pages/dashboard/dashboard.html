@@ -1,7 +1,7 @@
 <div class="layout">
-  <app-sidebar></app-sidebar>
+  <app-sidebar (titleChange)="changer($event)"></app-sidebar>
   <div class="layout__right">
-    <app-header ></app-header>
+    <app-header  [title]="pagetitre" ></app-header>
     <main class="main-content">
       <router-outlet></router-outlet>
     </main>

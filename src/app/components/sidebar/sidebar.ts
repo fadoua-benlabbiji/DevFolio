@@ -1,20 +1,21 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, EventEmitter, inject, Output } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { Router, RouterModule } from '@angular/router';
 import { UserService } from '../../data/user';
 import { PortfolioService } from '../../data/portfolio';
+import { TronquerPipe } from '../../tronquer-pipe';
 
 export interface NavItem {
   icon: string;
   label: string;
   route: string;
-  badgeFn?: () => number;
+  notif?: number;
 }
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [RouterModule],
+  imports: [RouterModule ,TronquerPipe],
   templateUrl: './sidebar.html',
   styleUrls: ['./sidebar.css'],
 })
@@ -24,33 +25,35 @@ export class Sidebar {
   private portfolioSvc = inject(PortfolioService);
   private sanitizer    = inject(DomSanitizer);
   private router       = inject(Router);
-
-  readonly user = computed(() => {
+  //pour l envoi du titre 
+  @Output() titleChange = new EventEmitter<string>();
+  public user = computed(() => {
     const u = this.userSvc.currentUser();
     const p = this.userSvc.myProfile();
     return {
-      name:     u ? `${u.prenom} ${u.nom}`.trim() : '',
-      username: p?.username ? `@${p.username}` : `@${u?.prenom?.toLowerCase() ?? ''}`,
-      email:    u?.email ?? '',
-      avatar:   p?.avatar || null,
-      initials: u ? `${u.prenom.charAt(0)}${u.nom.charAt(0)}`.toUpperCase() : '',
+      name:     u ? `${u.prenom} ${u.nom}` : '',
+      username: p?.username ? `@${p.username}` : '',
+      email:    u && u.email ? u.email : '',
+      avatar:   p && p.avatar ? p.avatar : null
     };
   });
 
+   nb : number= this.portfolioSvc.unreadCount();
+
   isActive(route: string): boolean {
+    //recupere page actuel
     const url = this.router.url;
     if (route === '/dashboard/projects') {
       return url.startsWith('/dashboard/projects') || url.startsWith('/dashboard/project-detail');
     }
     return url.startsWith(route);
   }
-
-  readonly navItems: NavItem[] = [
+  
+  public Items: NavItem[] = [
     { icon: 'grid',      label: "Vue d'ensemble", route: '/dashboard/vue-ensemble' },
     { icon: 'folder',    label: 'Projets',         route: '/dashboard/projects' },
     { icon: 'wrench',    label: 'Compétences',     route: '/dashboard/skills' },
-    { icon: 'mail',      label: 'Messages',        route: '/dashboard/messages',
-      badgeFn: () => this.portfolioSvc.unreadCount() },
+    { icon: 'mail',      label: 'Messages',        route: '/dashboard/messages', notif: this.nb },
     { icon: 'file-text', label: 'Générer CV',      route: '/dashboard/cv' },
     { icon: 'globe',     label: 'Mon DevFolio',    route: '/dashboard/devfolio' },
     { icon: 'settings',  label: 'Paramètres',      route: '/dashboard/settings' },
@@ -62,7 +65,7 @@ export class Sidebar {
   }
 
   getIcon(name: string): SafeHtml {
-    const icons: Record<string, string> = {
+    const icons: any = {
       grid:        `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>`,
       folder:      `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>`,
       wrench:      `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>`,

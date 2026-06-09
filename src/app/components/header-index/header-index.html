@@ -1,65 +1,24 @@
-<nav class="navbar" [class.scrolled]="isScrolled">
+<nav class="navbar">
   <div class="container nav-inner">
-
-    <!-- Logo -->
-    <a (click)="logout()" class="logo" style="cursor:pointer">
+    <a routerLink="/" class="logo">
       <div class="logo-icon">
-        <img src="logo2.png" class="logo-img" >
+        <img src="logo2.png" class="logo-img">
       </div>
       <span class="logo-text">
         Dev<span class="logo-accent">Folio</span>
       </span>
     </a>
 
-    <!-- Nav Links desktop (colonne centrale) -->
     <ul class="nav-links">
-      <li>
-        <a [class.active]="activeSection === 'hero'" (click)="scrollToSection('hero', $event)" href="#">Accueil</a>
-      </li>
-      <li>
-        <a [class.active]="activeSection === 'features'" (click)="scrollToSection('features', $event)" href="#">Fonctionnalités</a>
-      </li>
-      <li>
-        <a [class.active]="activeSection === 'footer'" (click)="scrollToSection('footer', $event)" href="#">Contact</a>
-      </li>
+      <li><a href="#"></a></li>
+      <li><a href="#"></a></li>
+      <li><a href="#"></a></li>
     </ul>
 
-    <!-- Actions desktop + hamburger -->
     <div class="nav-actions">
-
-      <!-- ✅ AJOUT : change selon la session -->
-      <ng-container *ngIf="isLoggedIn(); else loginBtn">
-<button class="btn btn-outline btn-sm" (click)="goDashboard()">
-  Mon espace
-</button>
-      </ng-container>
-      <ng-template #loginBtn>
-        <button class="btn btn-outline btn-sm" (click)="goLogin()">Connexion</button>
-      </ng-template>
-
-      <button class="hamburger" (click)="toggleMenu()" aria-label="Menu">
-        <span></span><span></span><span></span>
-      </button>
+      <button class="btn btn-outline btn-sm" routerLink="/connexion">Connexion</button>
     </div>
 
-  </div>
-
-  <!-- Menu mobile déroulant -->
-  <div class="mobile-menu" [class.open]="menuOpen">
-    <ul class="mobile-nav-links">
-      <li><a [class.active]="activeSection === 'hero'" (click)="scrollToSection('hero', $event)" href="#">Accueil</a></li>
-      <li><a [class.active]="activeSection === 'features'" (click)="scrollToSection('features', $event)" href="#">Fonctionnalités</a></li>
-      <li><a [class.active]="activeSection === 'footer'" (click)="scrollToSection('footer', $event)" href="#">Contact</a></li>
-
-      <!-- ✅ AJOUT : mobile aussi -->
-      <li *ngIf="isLoggedIn(); else mobileLoginBtn">
-        <a href="#" (click)="goDashboard()">Mon espace </a>
-      </li>
-      <ng-template #mobileLoginBtn>
-        <li><a href="#" (click)="goLogin()">Connexion</a></li>
-      </ng-template>
-
-    </ul>
   </div>
 
 </nav>

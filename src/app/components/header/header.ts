@@ -7,42 +7,15 @@ import { UserService } from '../../data/user';
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, RouterLink], // ← RouterOutlet retiré, RouterLink ajouté
+  imports: [CommonModule, RouterLink], 
   templateUrl: './header.html',
   styleUrls: ['./header.css']
 })
-export class Header implements OnInit {
+export class Header {
   @Input() title: string = '';
 
   private router = inject(Router);
- private userService = inject(UserService);
-  displayTitle = '';
-
-  private readonly routeTitles: Record<string, string> = {
-    'vue-ensemble': "Vue d'ensemble",
-    'projects':     'Projets',
-    'skills':       'Compétences',
-    'messages':     'Messages',
-    'cv':           'Générer CV',
-    'devfolio':     'Mon DevFolio',
-    'settings':     'Paramètres',  // ← corrigé
-  };
-
-  ngOnInit(): void {
-    if (this.title) {
-      this.displayTitle = this.title;
-      return;
-    }
-    this.updateTitle();
-    this.router.events
-      .pipe(filter(e => e instanceof NavigationEnd))
-      .subscribe(() => this.updateTitle());
-  }
-
-  private updateTitle(): void {
-    const segment = this.router.url.split('/').filter(Boolean).pop() ?? '';
-    this.displayTitle = this.routeTitles[segment] ?? this.title ?? "Vue d'ensemble";
-  }
+  private userService = inject(UserService);
     logout(): void {
     this.userService.logout();
     this.router.navigate(['/']);

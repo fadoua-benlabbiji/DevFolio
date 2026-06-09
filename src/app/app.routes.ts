@@ -13,6 +13,7 @@ import { Messages } from './pages/messages/messages';
 import { MonDevfolio } from './pages/mon-devfolio/mon-devfolio';
 import { Parametres } from './pages/parametres/parametres';
 import { authGuard } from './data/auth-guard';
+import { ProfilPublic } from './pages/profil-public/profil-public';
 
 export const routes: Routes = [
   { path: '', component: Acceuil },
@@ -35,5 +36,10 @@ export const routes: Routes = [
       { path: 'settings', component: Parametres },
     ],
   },
+  {
+  path: 'profil/:username',
+  component:ProfilPublic
+   },
   { path: '**', redirectTo: '' },
+
 ];

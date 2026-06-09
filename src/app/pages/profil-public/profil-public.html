@@ -1,0 +1,325 @@
+<app-header-index></app-header-index>
+
+<div class="pp-page" *ngIf="profile; else notFound">
+  <div class="pp-wrap">
+    <div class="dv-portfolio-card" [style.--accent]="profile.accentColor || '#F5C518'">
+
+      <!-- ── VUE PORTFOLIO ── -->
+      <div *ngIf="previewView() === 'portfolio'" class="dv-pf-view">
+          <!-- BOUTON RETOUR -->
+<a routerLink="/explorer" class="pd-back-btn">
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+    <path d="M19 12H5M12 19l-7-7 7-7"/>
+  </svg>
+  Retour
+</a>
+        <!-- HERO -->
+        <div class="dv-pf-hero">
+          <div class="dv-pf-hero__deco"></div>
+          <div class="dv-pf-hero__inner">
+
+            <div class="dv-pf-avatar-wrap">
+              <img class="dv-pf-avatar"
+                   [src]="profile.avatar || 'https://ui-avatars.com/api/?background=' + (profile.accentColor?.slice(1) || 'F5C518') + '&color=111&name=' + profile.username + '&size=120'"
+                   [alt]="profile.username">
+            </div>
+
+            <div class="dv-pf-hero__info">
+              <p class="dv-pf-tag-label">{{ profile.titre }}</p>
+              <h1 class="dv-pf-name">{{ profile.username }}</h1>
+              <p class="dv-pf-bio">{{ profile.bio }}</p>
+
+              <div class="dv-pf-meta">
+                <span *ngIf="profile.ville" class="dv-pf-meta__item">
+                  <i class="ti ti-map-pin"></i> {{ profile.ville }}
+                </span>
+                <span *ngFor="let l of languages" class="dv-pf-meta__item">
+                  <i class="ti ti-language"></i> {{ l.nom }}
+                </span>
+              </div>
+
+              <div class="dv-pf-links">
+                <a *ngIf="profile.github"   [href]="profile.github"   target="_blank" class="dv-pf-link">
+                  <i class="ti ti-brand-github"></i>
+                </a>
+                <a *ngIf="profile.linkedin" [href]="profile.linkedin" target="_blank" class="dv-pf-link">
+                  <i class="ti ti-brand-linkedin"></i>
+                </a>
+                <a *ngIf="profile.website"  [href]="profile.website"  target="_blank" class="dv-pf-link">
+                  <i class="ti ti-world"></i>
+                </a>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Stats bar -->
+          <div class="dv-pf-hero-bottom"
+               *ngIf="projects.length || skills.length || experiences.length">
+            <div class="dv-pf-hero-stat" *ngIf="projects.length">
+              <span class="dv-pf-hero-stat__num">{{ projects.length }}</span>
+              <span class="dv-pf-hero-stat__label">Projets</span>
+            </div>
+            <div class="dv-pf-hero-stat-div" *ngIf="projects.length && skills.length"></div>
+            <div class="dv-pf-hero-stat" *ngIf="skills.length">
+              <span class="dv-pf-hero-stat__num">{{ skills.length }}</span>
+              <span class="dv-pf-hero-stat__label">Compétences</span>
+            </div>
+            <div class="dv-pf-hero-stat-div" *ngIf="skills.length && experiences.length"></div>
+            <div class="dv-pf-hero-stat" *ngIf="experiences.length">
+              <span class="dv-pf-hero-stat__num">{{ experiences.length }}</span>
+              <span class="dv-pf-hero-stat__label">Expériences</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- BODY -->
+        <div class="dv-pf-body">
+
+          <!-- Projets -->
+          <div class="dv-pf-section" *ngIf="projects.length">
+            <h2 class="dv-pf-section__title">Projets</h2>
+            <div class="dv-pf-proj-grid">
+              <div *ngFor="let p of projects" class="dv-pf-proj-card"
+                   [style.--proj-color]="p.color || profile.accentColor"
+                   (click)="openProjectDetail(p)">
+                <div class="dv-pf-proj-card__color-bar"></div>
+                <div class="dv-pf-proj-card__top">
+                  <span class="dv-pf-proj-card__name">{{ p.name }}</span>
+                  <i class="ti ti-external-link dv-pf-proj-card__ext" *ngIf="p.url"></i>
+                </div>
+                <p class="dv-pf-proj-card__desc">{{ p.description }}</p>
+                <div class="dv-pf-proj-card__footer">
+                  <div class="dv-pf-proj-card__tags">
+                    <span *ngFor="let t of (p.technologies || []).slice(0, 3)" class="dv-pf-tag">{{ t }}</span>
+                  </div>
+                  <span class="dv-pf-proj-card__pct" [style.color]="p.color || profile.accentColor">
+                    {{ p.pct }}%
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Compétences -->
+          <div class="dv-pf-section" *ngIf="skills.length">
+            <h2 class="dv-pf-section__title">Compétences</h2>
+            <div class="dv-pf-skills-grid">
+              <div *ngFor="let s of skills.slice(0, 12)" class="dv-pf-skill-chip">
+                <span class="dv-pf-skill-chip__name">{{ s.name }}</span>
+                <div class="dv-pf-skill-chip__track">
+                  <div class="dv-pf-skill-chip__fill"
+                       [style.width.%]="s.pct"
+                       [style.background]="s.color || profile.accentColor">
+                  </div>
+                </div>
+                <span class="dv-pf-skill-chip__pct">{{ s.pct }}%</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Expériences -->
+          <div class="dv-pf-section" *ngIf="experiences.length">
+            <h2 class="dv-pf-section__title">Expériences</h2>
+            <div class="dv-pf-exp-list">
+              <div *ngFor="let exp of experiences" class="dv-pf-exp-item">
+                <div class="dv-pf-exp-item__dot"></div>
+                <div class="dv-pf-exp-item__content">
+                  <div class="dv-pf-exp-item__role">{{ exp.role }}</div>
+                  <div class="dv-pf-exp-item__company">{{ exp.company }}</div>
+                  <span class="dv-pf-exp-item__date">{{ exp.start }} — {{ exp.end || 'Présent' }}</span>
+                  <div class="dv-pf-exp-item__desc">{{ exp.description }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Formations -->
+          <div class="dv-pf-section" *ngIf="educations.length">
+            <h2 class="dv-pf-section__title">Formation</h2>
+            <div class="dv-pf-exp-list">
+              <div *ngFor="let f of educations" class="dv-pf-exp-item">
+                <div class="dv-pf-exp-item__dot"></div>
+                <div class="dv-pf-exp-item__content">
+                  <div class="dv-pf-exp-item__role">{{ f.diplome }}</div>
+                  <div class="dv-pf-exp-item__company">{{ f.etablissement }}</div>
+                  <span class="dv-pf-exp-item__date">{{ f.debut }} — {{ f.fin }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ── VUE DÉTAIL PROJET ── -->
+      <div *ngIf="previewView() === 'project-detail' && activeProject()" class="dv-pf-view dv-pf-detail-view">
+
+        <button class="pd-back-btn" (click)="closeProjectDetail()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+          </svg>
+          Retour aux projets
+        </button>
+
+        <!-- HERO -->
+        <div class="pd-hero">
+          <div class="pd-hero__accent" [style.background]="activeProject()!.color || profile.accentColor"></div>
+          <div class="pd-hero__content">
+
+            <div class="pd-hero__top">
+              <div class="pd-logo-placeholder" [style.background]="activeProject()!.color || profile.accentColor">
+                {{ activeProject()!.name.charAt(0).toUpperCase() }}
+              </div>
+              <div class="pd-hero__title-block">
+                <h1 class="pd-title">{{ activeProject()!.name }}</h1>
+                <div class="pd-status">
+                  <span class="pd-badge pd-badge--done" *ngIf="activeProject()!.pct === 100">✓ Terminé</span>
+                  <span class="pd-badge pd-badge--wip"  *ngIf="activeProject()!.pct < 100">⏳ {{ activeProject()!.pct }}% · En cours</span>
+                </div>
+              </div>
+            </div>
+
+            <p class="pd-desc">{{ activeProject()!.description }}</p>
+
+            <div class="pd-stack-tags">
+              <span class="pd-stack-tag" *ngFor="let t of (activeProject()!.technologies || [])">{{ t }}</span>
+            </div>
+
+            <div *ngIf="activeProject()!.pct < 100" class="pd-progress-section">
+              <div class="pd-progress-header">
+                <span>Avancement</span>
+                <span>{{ activeProject()!.pct }}%</span>
+              </div>
+              <div class="pd-prog-bg">
+                <div class="pd-prog-fill"
+                     [style.width.%]="activeProject()!.pct"
+                     [style.background]="activeProject()!.color || profile.accentColor"></div>
+              </div>
+            </div>
+
+            <div class="pd-links">
+              <a *ngIf="activeProject()!.github" [href]="activeProject()!.github" target="_blank" class="pd-btn pd-btn--dark">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+                </svg>
+                Code source
+              </a>
+              <a *ngIf="activeProject()!.url || activeProject()!.demo" [href]="activeProject()!.url || activeProject()!.demo" target="_blank" class="pd-btn pd-btn--outline">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                  <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
+                </svg>
+                Voir la démo
+              </a>
+            </div>
+          </div>
+
+          <div class="pd-pct-circle" [style.border-color]="activeProject()!.color || profile.accentColor">
+            <span class="pd-pct-circle__num" [style.color]="activeProject()!.color || profile.accentColor">{{ activeProject()!.pct }}</span>
+            <span class="pd-pct-circle__label">%</span>
+          </div>
+        </div>
+
+        <!-- BODY -->
+        <div class="pd-body">
+          <div class="pd-main">
+
+            <div class="pd-section" *ngIf="activeProject()!.readme">
+              <div class="pd-section__header">
+                <span class="pd-section__icon">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                    <line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+                  </svg>
+                </span>
+                <span class="pd-section__label">À propos du projet</span>
+              </div>
+              <div class="pd-readme" [innerHTML]="parseReadme(activeProject()!.readme)"></div>
+            </div>
+
+            <div class="pd-section" *ngIf="activeProject()!.features?.length">
+              <div class="pd-section__header">
+                <span class="pd-section__icon">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                  </svg>
+                </span>
+                <span class="pd-section__label">Fonctionnalités clés</span>
+              </div>
+              <ul class="pd-features">
+                <li *ngFor="let f of activeProject()!.features">
+                  <span class="pd-feature-check">✓</span> {{ f }}
+                </li>
+              </ul>
+            </div>
+
+            <div class="pd-section" *ngIf="activeProject()!.impact">
+              <div class="pd-section__header">
+                <span class="pd-section__icon">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>
+                  </svg>
+                </span>
+                <span class="pd-section__label">Impact & Résultats</span>
+              </div>
+              <div class="pd-impact-box">{{ activeProject()!.impact }}</div>
+            </div>
+
+          </div>
+
+          <!-- Sidebar -->
+          <div class="pd-sidebar">
+
+            <div class="pd-sidebar-card">
+              <p class="pd-sidebar-card__label">Avancement</p>
+              <div class="pd-sidebar-progress">
+                <div class="pd-sidebar-progress__top">
+                  <span>{{ activeProject()!.pct === 100 ? 'Terminé' : 'En cours' }}</span>
+                  <strong [style.color]="activeProject()!.color || profile.accentColor">{{ activeProject()!.pct }}%</strong>
+                </div>
+                <div class="pd-prog-bg">
+                  <div class="pd-prog-fill"
+                       [style.width.%]="activeProject()!.pct"
+                       [style.background]="activeProject()!.color || profile.accentColor"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="pd-sidebar-card" *ngIf="activeProject()!.role || activeProject()!.startDate">
+              <p class="pd-sidebar-card__label">Infos</p>
+              <div class="pd-info-row" *ngIf="activeProject()!.role">
+                <span class="pd-info-label">Rôle</span>
+                <span class="pd-info-value">{{ activeProject()!.role }}</span>
+              </div>
+              <div class="pd-info-row" *ngIf="activeProject()!.startDate">
+                <span class="pd-info-label">Période</span>
+                <span class="pd-info-value">
+                  {{ activeProject()!.startDate }}{{ activeProject()!.endDate ? ' → ' + activeProject()!.endDate : ' → En cours' }}
+                </span>
+              </div>
+            </div>
+
+            <div class="pd-sidebar-card" *ngIf="(activeProject()!.technologies || []).length">
+              <p class="pd-sidebar-card__label">Technologies</p>
+              <div class="pd-tags-list">
+                <span class="pd-tag" *ngFor="let t of (activeProject()!.technologies || [])">{{ t }}</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<ng-template #notFound>
+  <div class="pp-not-found">
+    <p>Profil introuvable.</p>
+    <a routerLink="/explorer">← Retour à l'exploration</a>
+  </div>
+</ng-template>

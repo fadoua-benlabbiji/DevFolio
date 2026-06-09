@@ -15,14 +15,13 @@ import { UserService, UserProfile } from '../../data/user';
 export class Acceuil implements OnInit {
 
   private userSvc = inject(UserService);
-  private router  = inject(Router);
 
   profiles: UserProfile[] = [];
 
   features = [
     {
       icon: 'palette',
-      title: 'Design 100% personnalisable',
+      title: 'Design personnalisable',
       desc: 'Choisissez vos couleurs, polices et styles. Votre portfolio vous ressemble vraiment.'
     },
     {
@@ -53,11 +52,8 @@ export class Acceuil implements OnInit {
   ];
 
   ngOnInit(): void {
-    // Charge les profils featured depuis UserService (plus de dépendance JSON)
-    this.profiles = this.userSvc.getAllProfiles().filter(p => p.featured);
+    // Charge les profils 
+    this.profiles = this.userSvc.getAllProfiles();
   }
 
-  goRegister(): void {
-    this.router.navigate(['/inscription']);
-  }
 }

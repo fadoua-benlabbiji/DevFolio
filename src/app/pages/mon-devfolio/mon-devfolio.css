@@ -315,7 +315,7 @@ select.dv-input {
   
 }
 
-.dv-pf-view { display: flex; flex-direction: column; }
+.dv-pf-view { display: flex; flex-direction: column;height: auto; }
 
 /* ── HERO ────────────────────────────────────────────────── */
 .dv-pf-hero {

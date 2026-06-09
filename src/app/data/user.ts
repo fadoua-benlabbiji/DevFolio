@@ -21,7 +21,6 @@ export interface UserProfile {
   linkedin: string;
   website: string;
   accentColor: string;
-  featured: boolean;
   skills: string[];        
 }
 
@@ -53,7 +52,7 @@ const MOCK_PROFILES: UserProfile[] = [
     userId: 1, username: 'lina-dev',
     titre: 'Développeuse Full Stack',
     bio: 'Passionnée par Angular, Node.js et les architectures scalables.',
-    ville: 'Casablanca', featured: true,
+    ville: 'Casablanca', 
     avatar: 'https://i.pravatar.cc/80?img=12',
     skills: ['Angular', 'Node.js', 'MongoDB', 'TypeScript'],
     github: '#', linkedin: '#', website: '#', accentColor: '#F5C518',
@@ -62,7 +61,7 @@ const MOCK_PROFILES: UserProfile[] = [
     userId: 2, username: 'sara-bennani',
     titre: 'Frontend Engineer',
     bio: "Spécialisée en UI/UX et React. J'aime créer des interfaces accessibles.",
-    ville: 'Rabat', featured: false,
+    ville: 'Rabat', 
     avatar: 'https://i.pravatar.cc/80?img=32',
     skills: ['React', 'TypeScript', 'CSS', 'Figma'],
     github: '#', linkedin: '#', website: '#', accentColor: '#3b82f6',
@@ -71,7 +70,7 @@ const MOCK_PROFILES: UserProfile[] = [
     userId: 3, username: 'mehdi-tazi',
     titre: 'Backend Engineer',
     bio: 'Spécialiste NestJS, Docker et AWS.',
-    ville: 'Marrakech', featured: false,
+    ville: 'Marrakech',
     avatar: 'https://i.pravatar.cc/80?img=60',
     skills: ['NestJS', 'Docker', 'PostgreSQL', 'AWS'],
     github: '#', linkedin: '#', website: '#', accentColor: '#e879f9',
@@ -94,44 +93,50 @@ const MOCK_LANGUAGES: Language[] = [
 @Injectable({ providedIn: 'root' })
 export class UserService {
 
-  private _currentUser = signal<User | null>(this.chargerStorage());
+  public currentUser = signal<User | null>(this.chargerStorage());
 
-  readonly currentUser = this._currentUser.asReadonly();
-  readonly isLoggedIn  = computed(() => this._currentUser() !== null);
+  public isLoggedIn  = computed(() => this.currentUser() !== null);
 
   private chargerStorage(): User | null {
     try {
-      const stored = localStorage.getItem('currentUser');
-      return stored ? JSON.parse(stored) as User : null;
+      const userS= localStorage.getItem('currentUser');
+      return userS ? JSON.parse(userS) as User : null; //force le type
     } catch {
       return null;
     }
   }
 
   login(email: string, password: string): User | null {
-    const found = MOCK_USERS.find(
+    const trouve = MOCK_USERS.find(
       u => u.email.toLowerCase() === email.toLowerCase() && u.password === password
     );
-    if (found) {
-      this._currentUser.set(found);
-      localStorage.setItem('currentUser', JSON.stringify(found));
+    if (trouve) {
+      this.currentUser.set(trouve);
+      localStorage.setItem('currentUser', JSON.stringify(trouve));
     }
-    return found ?? null;
+    return trouve ?? null;  //trouve==undefined ou null
   }
 
   logout(): void {
-    this._currentUser.set(null);
+    this.currentUser.set(null);
     localStorage.removeItem('currentUser');
   }
 
   register(data: { prenom: string; nom: string; email: string; password: string }): User {
     const newUser: User = { id: Date.now(), ...data };
     MOCK_USERS.push(newUser);
-    // Créer un profil vide pour le nouvel utilisateur
+    //creation d un profile vide
     MOCK_PROFILES.push({
-      userId: newUser.id, username: data.prenom.toLowerCase(),
-      titre: '', bio: '', ville: '', featured: false,
-      avatar: '', skills: [], github: '', linkedin: '', website: '',
+      userId: newUser.id, 
+      username: data.prenom.toLowerCase(),
+      titre: '', 
+      bio: '', 
+      ville: '', 
+      avatar: '', 
+      skills: [], 
+      github: '', 
+      linkedin: '', 
+      website: '',
       accentColor: '#F5C518',
     });
     return newUser;
@@ -141,53 +146,52 @@ export class UserService {
     return MOCK_USERS.find(u => u.email.toLowerCase() === email.toLowerCase());
   }
 
-  // ── Profil public ─────────────────────────────────────────────────────────
-  private _profiles = signal<UserProfile[]>(MOCK_PROFILES);
+  public profiles = signal<UserProfile[]>(MOCK_PROFILES);
 
-  readonly profiles = this._profiles.asReadonly();
 
-  readonly myProfile = computed<UserProfile | null>(() => {
-    const u = this._currentUser();
-    return u ? (this._profiles().find(p => p.userId === u.id) ?? null) : null;
+  public myProfile = computed<UserProfile | null>(() => {
+    const u = this.currentUser();
+    return u ? (this.profiles().find(p => p.userId === u.id) ?? null) : null;
   });
 
-  updateMyProfile(changes: Partial<UserProfile>): void {
-    const u = this._currentUser();
-    if (!u) return;
-    this._profiles.update(list =>
-      list.map(p => p.userId === u.id ? { ...p, ...changes } : p)
+  updateMyProfile(changes: Partial<UserProfile>): void { //rend tout les champs optionnels
+    const u = this.currentUser();
+    if (!u) return;   
+    this.profiles.update(list =>
+      list.map(p => p.userId === u.id ? { ...p, ...changes } : p) //spread operator  {object,changement}
     );
   }
 
   getProfileByUserId(userId: number): UserProfile | undefined {
-    return this._profiles().find(p => p.userId === userId);
+    return this.profiles().find(p => p.userId === userId);
   }
 
   getAllProfiles(): UserProfile[] {
-    return this._profiles();
+    return this.profiles();
   }
 
-  searchProfiles(query: string): UserProfile[] {
-    const q = query.toLowerCase();
-    return this._profiles().filter(p =>
-      p.username.toLowerCase().includes(q) ||
+  searchProfiles(texttape: string): UserProfile[] {
+    const q = texttape.toLowerCase();
+    return this.profiles().filter(p =>
+      p.username.toLowerCase().includes(q) || //contains
       p.titre.toLowerCase().includes(q) ||
       p.ville.toLowerCase().includes(q) ||
-      p.skills.some(s => s.toLowerCase().includes(q))
+      p.skills.some(s => s.toLowerCase().includes(q))  //true si au moins une existe
     );
   }
 
-  // ── Formations ────────────────────────────────────────────────────────────
+  //formation
   private _educations = signal<Education[]>(MOCK_EDUCATIONS);
 
-  readonly myEducations = computed(() => {
-    const u = this._currentUser();
+  public myEducations = computed(() => {
+    const u = this.currentUser();  //user ou null
     return u ? this._educations().filter(e => e.userId === u.id) : [];
   });
-
+  //on prend l interface mais on supprime certains champs
   addEducation(edu: Omit<Education, 'id' | 'userId'>): void {
-    const u = this._currentUser();
+    const u = this.currentUser();
     if (!u) return;
+    //tableau ancien + objet
     this._educations.update(list => [...list, { ...edu, id: Date.now(), userId: u.id }]);
   }
 
@@ -199,16 +203,16 @@ export class UserService {
     this._educations.update(list => list.filter(e => e.id !== id));
   }
 
-  // ── Langues ───────────────────────────────────────────────────────────────
+  //language
   private _languages = signal<Language[]>(MOCK_LANGUAGES);
 
-  readonly myLanguages = computed(() => {
-    const u = this._currentUser();
+  public myLanguages = computed(() => {
+    const u = this.currentUser();
     return u ? this._languages().filter(l => l.userId === u.id) : [];
   });
 
   addLanguage(lang: Omit<Language, 'id' | 'userId'>): void {
-    const u = this._currentUser();
+    const u = this.currentUser();
     if (!u) return;
     this._languages.update(list => [...list, { ...lang, id: Date.now(), userId: u.id }]);
   }
@@ -221,17 +225,28 @@ export class UserService {
     this._languages.update(list => list.filter(l => l.id !== id));
   }
 
-  // ── Mot de passe ──────────────────────────────────────────────────────────
+  //mot de passe
   changePassword(currentPwd: string, newPwd: string): boolean {
-    const u = this._currentUser();
+    const u = this.currentUser();
     if (!u) return false;
-    const found = MOCK_USERS.find(mu => mu.id === u.id);
-    if (!found || found.password !== currentPwd) return false;
-    found.password = newPwd;
-    // Mettre à jour le signal utilisateur courant
+    const trouve = MOCK_USERS.find(mu => mu.id === u.id);
+    if (!trouve || trouve.password !== currentPwd) return false;
+    trouve.password = newPwd;
+    //mettre a jour le signal
     const updated = { ...u, password: newPwd };
-    this._currentUser.set(updated);
+    this.currentUser.set(updated);
     localStorage.setItem('currentUser', JSON.stringify(updated));
     return true;
+  }
+  getProfileByUsername(username: string): UserProfile | null {
+  return this.getAllProfiles().find(p => p.username === username) ?? null;
+
+ }
+ 
+   getEducationsByUserId(userId: number): Education[] {
+    return this._educations().filter(e => e.userId === userId);
+  }
+    getLanguagesByUserId(userId: number): Language[] {
+    return this._languages().filter(l => l.userId === userId);
   }
 }

@@ -14,11 +14,8 @@ import { UserService} from '../../data/user';
 export class Connexion {
   email = '';
   password = '';
-  rememberMe = false;
   showPassword = false;
   errorMsg = '';
-  isLoading = false;
-
   constructor(
     private router: Router,
     private userService: UserService
@@ -29,8 +26,7 @@ export class Connexion {
   }
 
   login(): void {
-  this.errorMsg = '';
-
+ 
   if (!this.email || !this.password) {
     this.errorMsg = 'Veuillez remplir tous les champs.';
     return;

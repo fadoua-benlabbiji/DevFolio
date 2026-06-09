@@ -17,7 +17,7 @@
       <img class="sidebar__avatar" [src]="user().avatar" [alt]="user().name" />
     } @else {
       <div class="sidebar__avatar sidebar__avatar--initials">
-        {{ user().initials }}
+        {{ user().name | initiales }}
       </div>
     }
     <div class="sidebar__user-info">
@@ -29,16 +29,17 @@
   <!-- Navigation -->
   <nav class="sidebar__nav">
     <ul class="sidebar__nav-list">
-      @for (item of navItems; track item.route) {
+      @for (item of Items; track item.route) {
         <li class="sidebar__nav-item">
           <button
             class="sidebar__nav-btn"
             [routerLink]="item.route"
             [class.sidebar__nav-btn--active]="isActive(item.route)"
+             (click)="titleChange.emit(item.label)"
           >
-            <span class="sidebar__nav-icon" [innerHTML]="getIcon(item.icon)"></span>
+            <span class="sidebar__nav-icon" [innerHTML]="getIcon(item.icon)">getIcon(item.icon)</span>
             <span class="sidebar__nav-label">{{ item.label }}</span>
-            @if (item.badgeFn && item.badgeFn() > 0) {
+            @if (item.badgeFn && item.notif > 0) {
               <span class="sidebar__nav-badge">{{ item.badgeFn() }}</span>
             }
           </button>
