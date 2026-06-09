@@ -1,8 +1,8 @@
 import { Component, inject, computed, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { PortfolioService, Project } from '../../portfolio';
-import { ProfileService } from '../../profile';
+import { PortfolioService, Project } from '../../data/portfolio';
+import { UserService } from '../../data/user';
 
 @Component({
   selector: 'app-projet-public-detail',
@@ -15,28 +15,27 @@ export class ProjetPublicDetail implements OnInit {
   private route      = inject(ActivatedRoute);
   private router     = inject(Router);
   private portfolio  = inject(PortfolioService);
-  private profileSvc = inject(ProfileService);
+  private userSvc    = inject(UserService);
 
-  readonly profile = this.profileSvc.myProfile;
+  readonly profile = this.userSvc.myProfile;
   highlighted = signal(false);
 
   readonly project = computed(() => {
     const id = Number(this.route.snapshot.paramMap.get('id'));
-    return this.portfolio.myProjects().find((p: Project) => p.id === id) ?? null; // ← myProjects + type
+    return this.portfolio.myProjects().find((p: Project) => p.id === id) ?? null;
   });
 
   readonly otherProjects = computed(() => {
     const current = this.project();
     return this.portfolio.myProjects()
-      .filter((p: Project) => p.id !== current?.id) // ← myProjects + type
+      .filter((p: Project) => p.id !== current?.id)
       .slice(0, 3);
   });
 
   readonly techTags = computed(() => {
     const p = this.project();
     if (!p) return [];
-    if (p.technologies && p.technologies.length > 0) return p.technologies;
-    return p.stack.split(/[·,]/).map((t: string) => t.trim()).filter(Boolean); // ← type string
+    return p.technologies ?? [];
   });
 
   ngOnInit(): void {
@@ -54,7 +53,7 @@ export class ProjetPublicDetail implements OnInit {
     }
   }
 
-  navigateProject(id: number): void {  // string
+  navigateProject(id: number): void {
     this.router.navigate(['/portfolio/projet-public', id]);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
@@ -73,7 +72,8 @@ export class ProjetPublicDetail implements OnInit {
     if (pct >= 50)   return 'mid';
     return 'early';
   }
+
   viewProject(projectId: number): void {
-  this.router.navigate(['/dashboard/project-detail', projectId]);
-}
+    this.router.navigate(['/dashboard/project-detail', projectId]);
+  }
 }

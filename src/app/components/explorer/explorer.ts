@@ -2,12 +2,9 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-
-import { Profile } from '../../pages/acceuil/acceuil';
 import { Footer } from '../footer/footer';
 import { HeaderIndex } from '../header-index/header-index';
-import { UserService } from '../../user';
-import { ProfileService } from '../../profile';
+import { UserService, UserProfile } from '../../data/user';
 
 @Component({
   selector: 'app-explorer',
@@ -17,19 +14,17 @@ import { ProfileService } from '../../profile';
   styleUrl: './explorer.css',
 })
 export class Explorer implements OnInit {
-  private userService    = inject(UserService);
-  private profileService = inject(ProfileService);
 
-  profiles: Profile[] = [];
+  private userSvc = inject(UserService);
+
+  profiles: UserProfile[] = [];
   searchQuery = '';
   activeSkill = '';
 
-  // ✅ Session
-  readonly isLoggedIn = this.userService.isLoggedIn;
+  readonly isLoggedIn = this.userSvc.isLoggedIn;
 
   ngOnInit(): void {
-    // ✅ Charger les profils depuis ProfileService au lieu du JSON
-    this.profiles = this.profileService.getAll() as any[];
+    this.profiles = this.userSvc.getAllProfiles();
   }
 
   get allSkills(): string[] {
@@ -37,11 +32,11 @@ export class Explorer implements OnInit {
     return [...new Set(skills)].sort();
   }
 
-  get filteredProfiles(): Profile[] {
+  get filteredProfiles(): UserProfile[] {
     return this.profiles.filter(p => {
       const q = this.searchQuery.toLowerCase();
       const matchSearch = !q ||
-        p.nom.toLowerCase().includes(q) ||
+        p.username.toLowerCase().includes(q) ||
         p.titre.toLowerCase().includes(q) ||
         p.ville.toLowerCase().includes(q) ||
         p.skills.some(s => s.toLowerCase().includes(q));

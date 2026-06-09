@@ -1,9 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject, signal } from '@angular/core';
-import { RouterModule } from '@angular/router';
-import { UserService } from '../../user';
-import { ProfileService } from '../../profile';
-import { PortfolioService } from '../../portfolio';
+import { Component, computed, inject } from '@angular/core';
+import { Router, RouterModule } from '@angular/router';
+import { UserService } from '../../data/user';
+import { PortfolioService } from '../../data/portfolio';
 
 @Component({
   selector: 'app-vue-ensemble',
@@ -12,75 +11,65 @@ import { PortfolioService } from '../../portfolio';
   templateUrl: './vue-ensemble.html',
   styleUrl: './vue-ensemble.css',
 })
-export class VueEnsemble implements OnInit {
-  private userService    = inject(UserService);
-  private profileService = inject(ProfileService);
-  private portfolio      = inject(PortfolioService);
+export class VueEnsemble {
 
-  today = '';
+  private userSvc      = inject(UserService);
+  private portfolioSvc = inject(PortfolioService);
+  private router       = inject(Router);
 
-  user: { name: string; initials: string; avatar: string | null } = {
-    name: '', initials: '', avatar: null,
-  };
+  readonly today = new Date().toLocaleDateString('fr-FR', {
+    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
+  });
 
-  // ✅ Données réelles depuis PortfolioService
-  readonly skills   = this.portfolio.mySkills;
-  readonly projects = this.portfolio.myProjects;
-
-  stats: { label: string; value: string }[] = [];
-
-  // ── Avatar upload ────────────────────────────────────────────
-  avatarPreview = signal<string | null>(null);
-
-  ngOnInit(): void {
-    this.today = new Date().toLocaleDateString('fr-FR', {
-      weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
-    });
-
-    const u       = this.userService.currentUser();
-    const profile = u ? this.profileService.getById(u.profileId) : null;
-
-    this.user = {
-      name:     `${u?.prenom ?? ''} ${u?.nom ?? ''}`.trim(),
-      initials: `${u?.prenom?.charAt(0) ?? ''}${u?.nom?.charAt(0) ?? ''}`.toUpperCase(),
-      avatar:   profile?.avatar || null,
+  readonly user = computed(() => {
+    const u = this.userSvc.currentUser();
+    const p = this.userSvc.myProfile();
+    return {
+      name:     u ? `${u.prenom} ${u.nom}`.trim() : '',
+      initials: u ? `${u.prenom.charAt(0)}${u.nom.charAt(0)}`.toUpperCase() : '',
+      avatar:   p?.avatar || null,
     };
+  });
 
-    this.avatarPreview.set(this.user.avatar);
+  readonly avatarPreview = computed(() => this.userSvc.myProfile()?.avatar || null);
 
-    // ✅ Stats depuis le service (valeurs dynamiques)
-    this.stats = [
-      { label: 'Projets réalisés', value: String(this.portfolio.myProjects().length) },
-      { label: 'Compétences',      value: String(this.portfolio.mySkills().length)   },
-      { label: 'Messages non lus', value: String(this.portfolio.unreadCount())       },
-    ];
+  readonly skills   = this.portfolioSvc.mySkills;
+  readonly projects = this.portfolioSvc.myProjects;
+
+  readonly stats = computed(() => [
+    { label: 'Projets réalisés', value: String(this.portfolioSvc.myProjects().length) },
+    { label: 'Compétences',      value: String(this.portfolioSvc.mySkills().length) },
+    { label: 'Messages non lus', value: String(this.portfolioSvc.unreadCount()) },
+  ]);
+
+  /**
+   * Navigue vers /dashboard/cv et déclenche downloadCV()
+   * qui ouvre une NOUVELLE FENÊTRE contenant uniquement le .cv-paper,
+   * puis lance l'impression de cette fenêtre propre.
+   */
+  generateCV(): void {
+    this.router.navigate(['/dashboard/cv']).then(() => {
+      // Attendre qu'Angular ait rendu la page CV
+      setTimeout(() => {
+        // Chercher le composant CV via son bouton downloadCV
+        const btn = document.querySelector<HTMLButtonElement>('.cv-dl-btn');
+        if (btn) {
+          btn.click();   // déclenche downloadCV() du composant CV
+        }
+      }, 600);
+    });
   }
 
-  // ── Clic sur l'avatar → ouvre l'input file ───────────────────
   triggerAvatarUpload(): void {
-    const input = document.getElementById('avatar-upload') as HTMLInputElement;
-    input?.click();
+    (document.getElementById('avatar-upload') as HTMLInputElement)?.click();
   }
 
-  // ── Lecture du fichier sélectionné ──────────────────────────
   onAvatarChange(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (!input.files?.length) return;
-
     const reader = new FileReader();
     reader.onload = () => {
-      const base64 = reader.result as string;
-      this.avatarPreview.set(base64);
-      this.user = { ...this.user, avatar: base64 };
-
-      // ✅ Sauvegarde dans le profil si ProfileService le permet
-      const u = this.userService.currentUser();
-      if (u) {
-        const profile = this.profileService.getById(u.profileId);
-        if (profile) {
-          this.profileService.update(u.profileId, { ...profile, avatar: base64 });
-        }
-      }
+      this.userSvc.updateMyProfile({ avatar: reader.result as string });
     };
     reader.readAsDataURL(input.files[0]);
   }

@@ -13,8 +13,8 @@
     </button>
 
     <div class="ppd-nav__profile">
-     <img class="ppd-nav__avatar" [src]="profile().avatar" [alt]="profile().nom" />
-<span class="ppd-nav__name">{{ profile().nom }}</span>
+     <img class="ppd-nav__avatar" [src]="profile()?.avatar" [alt]="profile()?.username" />
+<span class="ppd-nav__name">{{ profile()?.username }}</span>
     </div>
   </nav>
 
@@ -150,7 +150,7 @@
             <span class="ppd-other-card__name">{{ op.name }}</span>
             <span class="ppd-other-card__pct" [style.color]="op.color">{{ op.pct }}%</span>
           </div>
-          <span class="ppd-other-card__stack">{{ op.stack }}</span>
+          <span class="ppd-other-card__stack">{{ op.technologies?.join(', ') }}</span>
           <p class="ppd-other-card__desc">{{ op.description }}</p>
         </div>
         <div class="ppd-other-card__arrow">

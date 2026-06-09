@@ -1,7 +1,7 @@
 import { Component, HostListener, OnInit, Input, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { UserService } from '../../user';
+import { UserService } from '../../data/user';
 
 @Component({
   selector: 'app-header-index',
@@ -21,13 +21,12 @@ export class HeaderIndex implements OnInit {
   activeSection = 'hero';
 
   private isManualScroll    = false;
-  private manualScrollTimer: any = null;
+  private manualScrollTimer: ReturnType<typeof setTimeout> | null = null;
 
   get currentUser() { return this.userService.currentUser(); }
 
   isLoggedIn(): boolean {
-    const onExplorer = this.router.url.startsWith('/explorer');
-    if (!onExplorer) return false;
+    if (!this.router.url.startsWith('/explorer')) return false;
     if (this.forceLoggedIn !== null) return this.forceLoggedIn;
     return this.userService.isLoggedIn();
   }
@@ -46,8 +45,6 @@ export class HeaderIndex implements OnInit {
     
   }
 
-
-
   @HostListener('window:scroll')
   onScroll(): void {
     this.isScrolled = window.scrollY > 20;
@@ -59,9 +56,9 @@ export class HeaderIndex implements OnInit {
     const sections = ['footer', 'features', 'hero'];
     for (const id of sections) {
       const el = document.getElementById(id);
-      if (el) {
-        const rect = el.getBoundingClientRect();
-        if (rect.top <= 100) { this.activeSection = id; break; }
+      if (el && el.getBoundingClientRect().top <= 100) {
+        this.activeSection = id;
+        break;
       }
     }
   }
@@ -90,9 +87,6 @@ export class HeaderIndex implements OnInit {
     this.isManualScroll = true;
     if (this.manualScrollTimer) clearTimeout(this.manualScrollTimer);
     this.manualScrollTimer = setTimeout(() => { this.isManualScroll = false; }, 900);
-    const el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
-
-  scrollTo(id: string, event: Event): void { this.scrollToSection(id, event); }
 }

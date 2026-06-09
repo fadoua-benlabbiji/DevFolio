@@ -1,26 +1,51 @@
-import { Component, inject, signal, computed } from '@angular/core';
+import { Component, inject, signal, computed, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AuthService } from '../../auth';
-import { PortfolioService } from '../../portfolio';
+import { UserService } from '../../data/user';
+import { PortfolioService } from '../../data/portfolio';
 
 @Component({
   selector: 'app-cv',
   standalone: true,
   imports: [CommonModule],
   templateUrl: './cv.html',
-  styleUrl: './cv.css'
+  styleUrl: './cv.css',
 })
-export class CV {
-  private auth = inject(AuthService);
-  private portfolio = inject(PortfolioService);
+export class CV implements AfterViewInit {
 
-  readonly user = this.auth.currentUser;
-readonly projects = this.portfolio.myProjects;
-readonly skills   = this.portfolio.mySkills;
+  private userSvc      = inject(UserService);
+  private portfolioSvc = inject(PortfolioService);
 
-  accentColor = signal('#2563eb');
-  downloading = signal(false);
-  downloaded = signal(false);
+  readonly profile     = this.userSvc.myProfile;
+  readonly educations  = this.userSvc.myEducations;
+  readonly languages   = this.userSvc.myLanguages;
+
+  readonly projects    = this.portfolioSvc.myProjects;
+  readonly skills      = this.portfolioSvc.mySkills;
+  readonly experiences = this.portfolioSvc.myExperiences;
+
+  readonly fullName = computed(() => {
+    const u = this.userSvc.currentUser();
+    return u ? `${u.prenom} ${u.nom}` : '';
+  });
+
+  readonly email = computed(() =>
+    this.userSvc.currentUser()?.email ?? ''
+  );
+
+  // Tous les projets pour le CV (avec sécurisation technologies)
+  readonly allProjects = computed(() =>
+    this.projects().map(p => ({ ...p, technologies: p.technologies ?? [] }))
+  );
+
+  // Top 3 projets : terminés d'abord, puis en cours
+  readonly topProjects = computed(() => {
+    const all = this.allProjects();
+    return [...all.filter(p => p.pct === 100), ...all.filter(p => p.pct < 100)].slice(0, 3);
+  });
+
+  accentColor  = signal('#2563eb');
+  downloading  = signal(false);
+  downloaded   = signal(false);
 
   readonly colorOptions = [
     { value: '#2563eb', label: 'Bleu Saphir' },
@@ -33,64 +58,38 @@ readonly skills   = this.portfolio.mySkills;
     { value: '#0d9488', label: 'Teal Pro' },
   ];
 
-  readonly experiences = [
-    {
-      poste: 'Développeuse Full-Stack',
-      entreprise: 'TechNova',
-      periode: '2023 — présent',
-      description: 'Développement d\'applications SaaS B2B avec React et Node.js.'
-    },
-    {
-      poste: 'Développeuse Frontend',
-      entreprise: 'WebStudio',
-      periode: '2021 — 2023',
-      description: 'Intégration d\'interfaces responsives et optimisation des performances web.'
-    }
-  ];
+  ngAfterViewInit(): void {}
 
-  readonly formations = [
-    { diplome: 'Master Informatique',    etablissement: 'ENSIAS Rabat',         annee: '2021' },
-    { diplome: 'Licence Génie Logiciel', etablissement: 'Université Hassan II',  annee: '2019' }
-  ];
+  setColor(color: string): void { this.accentColor.set(color); }
 
-  setColor(color: string): void {
-    this.accentColor.set(color);
-  }
-
-  readonly topProjects = computed(() =>
-    this.projects().filter(p => p.pct === 100).slice(0, 3)
-  );
-
-  // ─── Téléchargement avec style complet embarqué ───────────────────────────
   async downloadCV(): Promise<void> {
     this.downloading.set(true);
 
+    // Récupérer UNIQUEMENT le .cv-paper
     const cvEl = document.querySelector('.cv-paper') as HTMLElement;
     if (!cvEl) { this.downloading.set(false); return; }
 
-    // 1. Clone le nœud pour ne pas toucher au DOM live
     const clone = cvEl.cloneNode(true) as HTMLElement;
-
-    // 2. Résoudre la CSS variable --accent : remplacer chaque occurrence
-    //    par la vraie valeur hex dans les style="" inline du clone
     const accent = this.accentColor();
+
+    // Remplacer les var(--accent) par la vraie couleur
     this.resolveAccentVar(clone, accent);
 
-    // 3. Convertir les images en base64 pour qu'elles s'affichent hors réseau
+    // Inliner les images base64
     await this.inlineImages(clone);
 
-    // 4. Construire le HTML complet avec le CSS entier embarqué
+    // Inliner aussi les styles calculés de la sidebar (background dark)
+    this.inlineComputedStyles(cvEl, clone);
+
     const html = this.buildPrintHTML(clone.outerHTML, accent);
 
-    // 5. Ouvrir la fenêtre et déclencher l'impression
-    const printWindow = window.open('', '_blank');
+    const printWindow = window.open('', '_blank', 'width=900,height=700');
     if (!printWindow) { this.downloading.set(false); return; }
 
     printWindow.document.open();
     printWindow.document.write(html);
     printWindow.document.close();
 
-    // Attendre le chargement des polices Google avant d'imprimer
     printWindow.onload = () => {
       setTimeout(() => {
         printWindow.focus();
@@ -102,82 +101,84 @@ readonly skills   = this.portfolio.mySkills;
     };
   }
 
-  /** Parcourt tous les éléments du clone et remplace var(--accent) par la valeur hex */
-  private resolveAccentVar(root: HTMLElement, accent: string): void {
-    const all = root.querySelectorAll<HTMLElement>('*');
-    all.forEach(el => {
-      const style = el.getAttribute('style') ?? '';
-      if (style.includes('var(--accent)')) {
-        el.setAttribute('style', style.replaceAll('var(--accent)', accent));
-      }
+  private resolveAccentVar(el: HTMLElement, accent: string): void {
+    el.querySelectorAll<HTMLElement>('[style]').forEach(node => {
+      node.style.cssText = node.style.cssText.replace(/var\(--accent\)/g, accent);
     });
-    // Aussi sur l'élément root lui-même
-    const rootStyle = root.getAttribute('style') ?? '';
-    root.setAttribute('style',
-      `--accent:${accent};--sidebar-bg:#111827;--sidebar-text:rgba(255,255,255,0.85);--sidebar-muted:rgba(255,255,255,0.45);${rootStyle}`
-    );
   }
 
-  /** Convertit les <img> en base64 pour éviter les images cassées à l'impression */
-  private async inlineImages(root: HTMLElement): Promise<void> {
-    const imgs = Array.from(root.querySelectorAll<HTMLImageElement>('img'));
+  /** Inline critical computed styles (background colors) from source to clone */
+  private inlineComputedStyles(source: HTMLElement, clone: HTMLElement): void {
+    const sourceEls = Array.from(source.querySelectorAll<HTMLElement>('*'));
+    const cloneEls  = Array.from(clone.querySelectorAll<HTMLElement>('*'));
+    sourceEls.forEach((el, i) => {
+      if (!cloneEls[i]) return;
+      const cs = window.getComputedStyle(el);
+      // Forcer background et color pour les éléments clés
+      const bg = cs.backgroundColor;
+      const color = cs.color;
+      if (bg && bg !== 'rgba(0, 0, 0, 0)' && bg !== 'transparent') {
+        cloneEls[i].style.backgroundColor = bg;
+      }
+      if (color) {
+        cloneEls[i].style.color = color;
+      }
+    });
+  }
+
+  private async inlineImages(el: HTMLElement): Promise<void> {
+    const imgs = Array.from(el.querySelectorAll<HTMLImageElement>('img'));
     await Promise.all(imgs.map(img => new Promise<void>(resolve => {
-      const src = img.src;
-      if (!src || src.startsWith('data:')) { resolve(); return; }
+      if (!img.src || img.src.startsWith('data:')) { resolve(); return; }
       const canvas = document.createElement('canvas');
-      const image = new Image();
+      const image  = new Image();
       image.crossOrigin = 'anonymous';
-      image.onload = () => {
-        canvas.width = image.naturalWidth;
+      image.onload  = () => {
+        canvas.width  = image.naturalWidth;
         canvas.height = image.naturalHeight;
         canvas.getContext('2d')!.drawImage(image, 0, 0);
         img.src = canvas.toDataURL('image/png');
         resolve();
       };
-      image.onerror = () => resolve(); // ignorer si erreur CORS
-      image.src = src;
+      image.onerror = () => resolve();
+      image.src = img.src;
     })));
   }
 
-  /** Construit le document HTML complet avec le CSS entier inline */
-  private buildPrintHTML(cvHTML: string, accent: string): string {
-    // Calcule quelques dérivés de la couleur accent pour les fallbacks color-mix()
-    // (color-mix() n'est pas supporté partout en print)
-    const accentLight = this.hexToRgba(accent, 0.08);
-    const accentLighter = this.hexToRgba(accent, 0.04);
-    const accentBadge = this.hexToRgba(accent, 0.12);
-
+  private buildPrintHTML(body: string, accent: string): string {
     return `<!DOCTYPE html>
-<html lang="fr">
+<html>
 <head>
   <meta charset="UTF-8">
-  <title>CV — ${this.user()?.prenom ?? ''} ${this.user()?.nom ?? ''}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    /* ── Reset ── */
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'DM Sans', sans-serif; background: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    /* ── CV Paper ── */
+    html, body {
+      background: white;
+      font-family: 'DM Sans', system-ui, sans-serif;
+      font-size: 11.5px;
+      line-height: 1.55;
+      color: #1f2937;
+    }
+
+    :root { --accent: ${accent}; }
+
+    /* CV Paper — layout A4 */
     .cv-paper {
       --accent: ${accent};
       --sidebar-bg: #111827;
-      --sidebar-text: rgba(255,255,255,0.85);
-      --sidebar-muted: rgba(255,255,255,0.45);
       display: grid;
-      grid-template-columns: 220px 1fr;
-      width: 100%;
-      max-width: 860px;
-      min-height: 1100px;
+      grid-template-columns: 240px 1fr;
+      width: 210mm;
+      min-height: 297mm;
       background: #fff;
-      font-family: 'DM Sans', sans-serif;
-      margin: 0 auto;
     }
 
-    /* ── Sidebar ── */
+    /* SIDEBAR */
     .cv-sidebar {
-      background: #111827;
+      background: #111827 !important;
       display: flex;
       flex-direction: column;
       position: relative;
@@ -186,143 +187,117 @@ readonly skills   = this.portfolio.mySkills;
     .cv-sidebar::before {
       content: '';
       position: absolute;
-      top: -40px; left: -40px;
-      width: 200px; height: 200px;
+      top: -60px; left: -60px;
+      width: 220px; height: 220px;
       background: ${accent};
       opacity: 0.18;
       border-radius: 50%;
     }
-    .cv-sidebar::after {
-      content: '';
-      position: absolute;
-      bottom: 60px; right: -50px;
-      width: 140px; height: 140px;
-      background: ${accent};
-      opacity: 0.1;
-      border-radius: 50%;
-    }
-    .cv-sidebar__top {
+    .cv-sidebar__identity {
       display: flex; flex-direction: column; align-items: center;
-      padding: 36px 20px 24px; text-align: center; position: relative; z-index: 1;
+      padding: 44px 20px 28px; text-align: center; position: relative; z-index: 1;
     }
-    .cv-avatar-ring {
-      width: 84px; height: 84px; border-radius: 50%; padding: 3px;
-      background: linear-gradient(135deg, ${accent}, rgba(255,255,255,0.3));
-      margin-bottom: 14px;
+    .cv-avatar-wrap {
+      width: 88px; height: 88px; border-radius: 50%;
+      background: linear-gradient(135deg, ${accent}, rgba(255,255,255,0.25));
+      padding: 3px; margin-bottom: 16px;
     }
     .cv-avatar {
-      width: 100%; height: 100%; border-radius: 50%; object-fit: cover;
-      border: 2px solid #111827; display: block;
+      width: 100%; height: 100%; border-radius: 50%;
+      object-fit: cover; background: #fff;
     }
-    .cv-name {
-      font-family: 'DM Serif Display', serif; font-size: 18px;
-      color: #fff; margin: 0 0 6px; line-height: 1.2;
+    .cv-avatar--initials {
+      background: ${accent}; color: #fff; display: flex;
+      align-items: center; justify-content: center;
+      font-weight: 700; font-size: 28px; width: 100%; height: 100%; border-radius: 50%;
     }
-    .cv-titre {
-      font-size: 11px; font-weight: 600; letter-spacing: 0.12em;
-      text-transform: uppercase; color: ${accent}; margin: 0;
+    .cv-sid-name {
+      font-family: 'DM Serif Display', serif; font-size: 17px;
+      font-weight: 600; color: #fff !important; margin: 0 0 6px; line-height: 1.3;
     }
-    .cv-section-side {
+    .cv-sid-titre {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; color: ${accent} !important;
+    }
+    .cv-sid-section {
       padding: 18px 20px;
       border-top: 1px solid rgba(255,255,255,0.07);
       position: relative; z-index: 1;
     }
-    .cv-section-side__title {
-      font-size: 10px; font-weight: 700; letter-spacing: 0.15em;
-      text-transform: uppercase; color: ${accent}; margin: 0 0 12px;
+    .cv-sid-section__title {
+      font-size: 9.5px; font-weight: 700; letter-spacing: 0.14em;
+      text-transform: uppercase; color: ${accent} !important;
+      margin: 0 0 12px; display: flex; align-items: center; gap: 7px;
+    }
+    .cv-sid-section__dash {
+      display: inline-block; width: 16px; height: 2px; background: ${accent};
+    }
+    .cv-contact-list { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 9px; }
+    .cv-contact-list li {
+      display: flex; align-items: flex-start; gap: 8px;
+      font-size: 10.5px; color: rgba(255,255,255,0.78) !important; line-height: 1.4; word-break: break-word;
+    }
+    .cv-contact-icon { flex-shrink: 0; display: inline-flex; align-items: center; color: ${accent} !important; min-width: 14px; margin-top: 1px; }
+    .cv-contact-link { word-break: break-all; flex: 1; }
+    .cv-skills-list  { display: flex; flex-direction: column; gap: 11px; }
+    .cv-skill-row    { display: flex; justify-content: space-between; margin-bottom: 5px; }
+    .cv-skill-name   { font-size: 10.5px; font-weight: 500; color: rgba(255,255,255,0.82) !important; }
+    .cv-skill-pct    { font-size: 9.5px; color: rgba(255,255,255,0.45) !important; }
+    .cv-skill-track  { height: 3px; background: rgba(255,255,255,0.1) !important; border-radius: 2px; overflow: hidden; }
+    .cv-skill-fill   { height: 100%; border-radius: 2px; }
+    .cv-lang-list    { display: flex; flex-direction: column; gap: 8px; }
+    .cv-lang-item    { display: flex; justify-content: space-between; align-items: center; }
+    .cv-lang-name    { font-size: 10.5px; color: rgba(255,255,255,0.82) !important; font-weight: 500; }
+    .cv-lang-badge   {
+      font-size: 9px; font-weight: 700; padding: 2px 8px; border-radius: 20px;
+      background: rgba(255,255,255,0.1) !important; color: ${accent} !important; letter-spacing: 0.04em;
     }
 
-    /* Contact */
-    .cv-contact-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
-    .cv-contact-list li { display: flex; align-items: center; gap: 8px; font-size: 11px; color: rgba(255,255,255,0.85); word-break: break-all; }
-    .cv-contact-icon { flex-shrink: 0; display: flex; align-items: center; color: ${accent}; }
-
-    /* Skills */
-    .cv-skills-list { display: flex; flex-direction: column; gap: 9px; }
-    .cv-skill-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
-    .cv-skill-name { font-size: 11px; color: rgba(255,255,255,0.85); font-weight: 500; }
-    .cv-skill-pct { font-size: 10px; color: rgba(255,255,255,0.45); }
-    .cv-skill-bar { height: 3px; background: rgba(255,255,255,0.12); border-radius: 2px; overflow: hidden; }
-    .cv-skill-fill { height: 100%; background: ${accent}; border-radius: 2px; }
-
-    /* Formation */
-    .cv-formation-item { display: flex; gap: 10px; margin-bottom: 10px; }
-    .cv-formation-annee { font-size: 10px; font-weight: 700; color: ${accent}; min-width: 32px; padding-top: 1px; }
-    .cv-formation-diplome { font-size: 11px; color: rgba(255,255,255,0.85); font-weight: 600; margin: 0 0 2px; }
-    .cv-formation-etab { font-size: 10px; color: rgba(255,255,255,0.45); margin: 0; }
-
-    /* ── Main ── */
+    /* MAIN */
     .cv-main {
-      padding: 36px 32px; display: flex; flex-direction: column; gap: 28px; background: #fff;
+      padding: 40px 36px 36px; display: flex; flex-direction: column; gap: 26px; background: #fff !important;
     }
     .cv-bio {
-      padding: 16px 20px;
-      background: ${accentLight};
-      border-left: 3px solid ${accent};
-      border-radius: 0 8px 8px 0;
+      padding: 14px 18px; border-left: 3px solid ${accent};
+      background: #f8f9ff !important; border-radius: 0 8px 8px 0;
     }
-    .cv-bio p { font-size: 13px; color: #374151; line-height: 1.6; margin: 0; font-style: italic; }
-
-    /* Section titles */
-    .cv-section-main__title {
+    .cv-bio__text { font-size: 12px; color: #374151 !important; line-height: 1.7; font-style: italic; }
+    .cv-section__title {
       display: flex; align-items: center; gap: 10px;
-      font-family: 'DM Serif Display', serif; font-size: 15px; color: #111; margin: 0 0 16px;
+      font-family: 'DM Serif Display', serif; font-size: 15px; font-weight: 600;
+      color: #111827 !important; margin: 0 0 16px; padding-bottom: 8px;
+      border-bottom: 1.5px solid #e5e7eb;
     }
-    .cv-section-main__line { flex: 1; height: 1px; background: ${accent}; opacity: 0.25; }
-    .cv-section-main__title .cv-section-main__line:first-child {
-      flex: 0.1; background: ${accent}; opacity: 1; height: 2px; border-radius: 1px;
+    .cv-section__title svg { flex-shrink: 0; color: ${accent} !important; stroke: ${accent} !important; }
+    .cv-timeline         { display: flex; flex-direction: column; gap: 18px; }
+    .cv-timeline-item    { display: flex; gap: 14px; position: relative; }
+    .cv-timeline-dot     { flex-shrink: 0; width: 9px; height: 9px; border-radius: 50%; background: ${accent} !important; margin-top: 5px; }
+    .cv-timeline-item::before {
+      content: ''; position: absolute; left: 4px; top: 18px; bottom: -18px;
+      width: 1px; background: #e5e7eb !important;
     }
+    .cv-timeline-item:last-child::before { display: none; }
+    .cv-timeline-header  { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 6px; margin-bottom: 4px; }
+    .cv-timeline-role    { font-size: 13px; font-weight: 700; color: #111827 !important; }
+    .cv-timeline-date    { font-size: 10px; color: #9ca3af !important; font-weight: 500; }
+    .cv-timeline-company { font-size: 11.5px; font-weight: 600; color: ${accent} !important; display: block; margin-bottom: 5px; }
+    .cv-timeline-desc    { font-size: 11px; color: #6b7280 !important; line-height: 1.5; }
+    .cv-projects-grid    { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px,1fr)); gap: 12px; }
+    .cv-project-card     { border: 1px solid #e5e7eb !important; border-radius: 10px; overflow: hidden; background: #fff !important; }
+    .cv-project-card__top { height: 3px; }
+    .cv-project-card__body { padding: 13px 14px; }
+    .cv-project-name     { font-size: 12.5px; font-weight: 700; color: #111827 !important; margin: 0 0 4px; }
+    .cv-project-stack    { font-size: 10px; color: ${accent} !important; font-weight: 600; margin: 0 0 6px; }
+    .cv-project-desc     { font-size: 10.5px; color: #6b7280 !important; line-height: 1.45; }
 
-    /* Expériences */
-    .cv-exp-item { margin-bottom: 16px; padding-left: 14px; border-left: 2px solid #e5e7eb; position: relative; }
-    .cv-exp-item::before {
-      content: ''; position: absolute; left: -5px; top: 5px;
-      width: 8px; height: 8px; border-radius: 50%; background: ${accent};
-    }
-    .cv-exp-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px; }
-    .cv-exp-poste { font-size: 13px; font-weight: 700; color: #111; margin: 0; }
-    .cv-exp-ent { color: ${accent}; font-weight: 600; }
-    .cv-exp-periode { font-size: 11px; color: #9ca3af; margin: 2px 0 6px; }
-    .cv-exp-desc { font-size: 12px; color: #4b5563; line-height: 1.5; margin: 0; }
-
-    /* Projets */
-    .cv-projects-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-    .cv-project-card { border: 1px solid #e5e7eb; border-radius: 10px; padding: 14px; position: relative; overflow: hidden; }
-    .cv-project-card__accent { position: absolute; top: 0; left: 0; right: 0; height: 3px; border-radius: 10px 10px 0 0; }
-    .cv-project-name { font-size: 12px; font-weight: 700; color: #111; margin: 8px 0 3px; }
-    .cv-project-stack { font-size: 10px; color: ${accent}; font-weight: 600; margin: 0 0 5px; }
-    .cv-project-desc { font-size: 11px; color: #6b7280; margin: 0; line-height: 1.4; }
-
-    /* Langues */
-    .cv-langues { display: flex; gap: 12px; flex-wrap: wrap; }
-    .cv-langue-item { display: flex; align-items: center; gap: 8px; }
-    .cv-langue-name { font-size: 13px; font-weight: 600; color: #111; }
-    .cv-langue-level {
-      font-size: 10px; font-weight: 600; padding: 3px 9px;
-      border-radius: 20px; text-transform: uppercase; letter-spacing: 0.05em;
-    }
-    .cv-langue-level--native { background: ${accentBadge}; color: ${accent}; }
-    .cv-langue-level--pro { background: #f3f4f6; color: #6b7280; }
-
-    /* ── Print rules ── */
-    @page { size: A4; margin: 8mm; }
+    @page  { size: A4; margin: 0; }
     @media print {
-      body { margin: 0; }
-      .cv-paper { box-shadow: none; border-radius: 0; max-width: 100%; }
+      html, body { margin: 0; padding: 0; }
+      .cv-paper  { width: 210mm; min-height: 297mm; }
     }
   </style>
 </head>
-<body>
-  ${cvHTML}
-</body>
+<body>${body}</body>
 </html>`;
-  }
-
-  /** Convertit un hex en rgba() pour remplacer color-mix() */
-  private hexToRgba(hex: string, alpha: number): string {
-    const r = parseInt(hex.slice(1, 3), 16);
-    const g = parseInt(hex.slice(3, 5), 16);
-    const b = parseInt(hex.slice(5, 7), 16);
-    return `rgba(${r},${g},${b},${alpha})`;
   }
 }

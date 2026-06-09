@@ -1,191 +1,238 @@
 <div class="cv-page">
 
-  <!-- ─── Header de la page ─── -->
+  <!-- ─── Header controls ─── -->
   <div class="cv-page__header">
-    <div>
-      <h1 class="cv-page__title">
-        <span class="cv-page__title-icon">✦</span>
-        Générer le CV
-      </h1>
-      <p class="cv-page__subtitle">Modèle Moderne — personnalise la couleur, puis télécharge.</p>
+    <div class="cv-page__header-left">
+     
     </div>
-
-    <button class="cv-dl-btn" (click)="downloadCV()" [class.cv-dl-btn--loading]="downloading()" [class.cv-dl-btn--done]="downloaded()">
+    <button class="cv-dl-btn" (click)="downloadCV()"
+            [class.cv-dl-btn--loading]="downloading()"
+            [class.cv-dl-btn--done]="downloaded()">
       <span class="cv-dl-btn__icon">
-        <svg *ngIf="!downloaded()" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <svg *ngIf="!downloaded()" width="16" height="16" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
           <polyline points="7 10 12 15 17 10"/>
           <line x1="12" y1="15" x2="12" y2="3"/>
         </svg>
-        <svg *ngIf="downloaded()" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <svg *ngIf="downloaded()" width="16" height="16" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="20 6 9 17 4 12"/>
         </svg>
       </span>
-      <span>{{ downloaded() ? 'Téléchargé !' : downloading() ? 'Préparation…' : 'Télécharger le CV' }}</span>
+      {{ downloaded() ? 'Téléchargé !' : downloading() ? 'Préparation…' : 'Télécharger PDF' }}
     </button>
   </div>
 
-  <!-- ─── Sélecteur couleur ─── -->
+  <!-- ─── Couleur accent ─── -->
   <div class="cv-controls">
-    <div class="cv-controls__label">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="13.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="10.5" r="2.5"/><circle cx="8.5" cy="7.5" r="2.5"/><circle cx="6.5" cy="12.5" r="2.5"/>
-        <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/>
-      </svg>
-      Couleur accent
-    </div>
+    <span class="cv-controls__label">Couleur accent</span>
     <div class="cv-colors">
-      <button
-        *ngFor="let c of colorOptions"
-        class="cv-color-dot"
-        [style.background]="c.value"
-        [class.cv-color-dot--active]="accentColor() === c.value"
-        (click)="setColor(c.value)"
-        [title]="c.label"
-      ></button>
+      <button *ngFor="let c of colorOptions"
+              class="cv-color-dot"
+              [style.background]="c.value"
+              [class.cv-color-dot--active]="accentColor() === c.value"
+              (click)="setColor(c.value)"
+              [title]="c.label">
+      </button>
     </div>
   </div>
 
-  <!-- ─── Aperçu CV ─── -->
+  <!-- ─── CV Paper ─── -->
   <div class="cv-preview-wrap">
     <div class="cv-paper" [style.--accent]="accentColor()">
 
-      <!-- Barre latérale gauche -->
+      <!-- ══════════════ SIDEBAR ══════════════ -->
       <aside class="cv-sidebar">
-        <div class="cv-sidebar__top">
-          <div class="cv-avatar-ring">
-            <img class="cv-avatar" [src]="user()?.avatar" [alt]="user()?.prenom" />
+
+        <!-- Avatar + identité -->
+        <div class="cv-sidebar__identity">
+          <div class="cv-avatar-wrap">
+            @if (profile()?.avatar) {
+              <img class="cv-avatar" [src]="profile()?.avatar" alt="photo" />
+            } @else {
+              <div class="cv-avatar cv-avatar--initials">
+                {{ fullName()?.charAt(0) ?? '?' }}
+              </div>
+            }
           </div>
-          <h2 class="cv-name">{{ user()?.prenom }}<br>{{ user()?.nom }}</h2>
-          <p class="cv-titre">Développeuse Full-Stack</p>
+          <h1 class="cv-sid-name">{{ fullName() || 'Votre Nom' }}</h1>
+          <p class="cv-sid-titre">{{ profile()?.titre || 'Développeur Full-Stack' }}</p>
         </div>
 
         <!-- Contact -->
-        <div class="cv-section-side">
-          <h3 class="cv-section-side__title">Contact</h3>
+        <div class="cv-sid-section">
+          <h3 class="cv-sid-section__title">
+            <span class="cv-sid-section__dash"></span>
+            Contact
+          </h3>
           <ul class="cv-contact-list">
-            <li>
+            <li *ngIf="email()">
               <span class="cv-contact-icon">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                  <polyline points="22,6 12,13 2,6"/>
+                </svg>
               </span>
-              {{ user()?.email }}
+              <span>{{ email() }}</span>
             </li>
-            <li>
+            <li *ngIf="profile()?.ville">
               <span class="cv-contact-icon">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                  <circle cx="12" cy="10" r="3"/>
+                </svg>
               </span>
-              Casablanca, Maroc
+              <span>{{ profile()?.ville }}</span>
             </li>
-            <li>
+            <li *ngIf="profile()?.github">
               <span class="cv-contact-icon">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+                </svg>
               </span>
-              github.com/lina-dev
+              <span class="cv-contact-link">{{ profile()?.github }}</span>
             </li>
-            <li>
+            <li *ngIf="profile()?.linkedin">
               <span class="cv-contact-icon">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
+                  <rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/>
+                </svg>
               </span>
-              linkedin.com/in/lina-dev
+              <span class="cv-contact-link">{{ profile()?.linkedin }}</span>
+            </li>
+            <li *ngIf="profile()?.website">
+              <span class="cv-contact-icon">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"/>
+                  <line x1="2" y1="12" x2="22" y2="12"/>
+                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                </svg>
+              </span>
+              <span class="cv-contact-link">{{ profile()?.website }}</span>
             </li>
           </ul>
         </div>
 
-        <!-- Compétences -->
-        <div class="cv-section-side">
-          <h3 class="cv-section-side__title">Compétences</h3>
+        <!-- Compétences par catégorie -->
+        <div class="cv-sid-section" *ngIf="skills().length > 0">
+          <h3 class="cv-sid-section__title">
+            <span class="cv-sid-section__dash"></span>
+            Compétences
+          </h3>
           <div class="cv-skills-list">
             <div class="cv-skill-item" *ngFor="let s of skills()">
-              <div class="cv-skill-header">
+              <div class="cv-skill-row">
                 <span class="cv-skill-name">{{ s.name }}</span>
                 <span class="cv-skill-pct">{{ s.pct }}%</span>
               </div>
-              <div class="cv-skill-bar">
-                <div class="cv-skill-fill" [style.width.%]="s.pct"></div>
+              <div class="cv-skill-track">
+                <div class="cv-skill-fill" [style.width.%]="s.pct" [style.background]="'var(--accent)'"></div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Formations -->
-        <div class="cv-section-side">
-          <h3 class="cv-section-side__title">Formation</h3>
-          <div *ngFor="let f of formations" class="cv-formation-item">
-            <span class="cv-formation-annee">{{ f.annee }}</span>
-            <div>
-              <p class="cv-formation-diplome">{{ f.diplome }}</p>
-              <p class="cv-formation-etab">{{ f.etablissement }}</p>
-            </div>
-          </div>
-        </div>
-      </aside>
-
-      <!-- Contenu principal -->
-      <main class="cv-main">
-
-        <!-- Bio -->
-        <section class="cv-bio">
-          <p>Passionnée par les interfaces élégantes et les architectures propres. Je conçois des applications web performantes avec Angular, React, Node.js et PostgreSQL.</p>
-        </section>
-
-        <!-- Expériences -->
-        <section class="cv-section-main">
-          <h3 class="cv-section-main__title">
-            <span class="cv-section-main__line"></span>
-            Expériences
-            <span class="cv-section-main__line"></span>
-          </h3>
-          <div *ngFor="let exp of experiences" class="cv-exp-item">
-            <div class="cv-exp-header">
-              <div>
-                <h4 class="cv-exp-poste">{{ exp.poste }} — <span class="cv-exp-ent">{{ exp.entreprise }}</span></h4>
-                <p class="cv-exp-periode">{{ exp.periode }}</p>
-              </div>
-              <div class="cv-exp-dot"></div>
-            </div>
-            <p class="cv-exp-desc">{{ exp.description }}</p>
-          </div>
-        </section>
-
-        <!-- Projets -->
-        <section class="cv-section-main">
-          <h3 class="cv-section-main__title">
-            <span class="cv-section-main__line"></span>
-            Projets Clés
-            <span class="cv-section-main__line"></span>
-          </h3>
-          <div class="cv-projects-grid">
-            <div *ngFor="let p of topProjects()" class="cv-project-card">
-              <div class="cv-project-card__accent" [style.background]="p.color"></div>
-              <h4 class="cv-project-name">{{ p.name }}</h4>
-              <p class="cv-project-stack">{{ p.stack }}</p>
-              <p class="cv-project-desc">{{ p.description }}</p>
-            </div>
-          </div>
-        </section>
 
         <!-- Langues -->
-        <section class="cv-section-main">
-          <h3 class="cv-section-main__title">
-            <span class="cv-section-main__line"></span>
+        <div class="cv-sid-section" *ngIf="languages().length > 0">
+          <h3 class="cv-sid-section__title">
+            <span class="cv-sid-section__dash"></span>
             Langues
-            <span class="cv-section-main__line"></span>
           </h3>
-          <div class="cv-langues">
-            <div class="cv-langue-item">
-              <span class="cv-langue-name">Français</span>
-              <span class="cv-langue-level cv-langue-level--native">Natif</span>
+          <div class="cv-lang-list">
+            <div class="cv-lang-item" *ngFor="let l of languages()">
+              <span class="cv-lang-name">{{ l.nom }}</span>
+              <span class="cv-lang-badge">{{ l.niveau }}</span>
             </div>
-            <div class="cv-langue-item">
-              <span class="cv-langue-name">Anglais</span>
-              <span class="cv-langue-level cv-langue-level--pro">Professionnel</span>
-            </div>
-            <div class="cv-langue-item">
-              <span class="cv-langue-name">Arabe</span>
-              <span class="cv-langue-level cv-langue-level--native">Natif</span>
+          </div>
+        </div>
+
+      </aside>
+
+      <!-- ══════════════ MAIN ══════════════ -->
+      <main class="cv-main">
+
+        <!-- ① Bio / Profil -->
+        <section class="cv-bio" *ngIf="profile()?.bio">
+          <div class="cv-bio__bar"></div>
+          <p class="cv-bio__text">{{ profile()?.bio }}</p>
+        </section>
+
+        <!-- ② Formation (depuis Paramètres / DevFolio) -->
+        <section class="cv-section" *ngIf="educations().length > 0">
+          <h3 class="cv-section__title">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+              <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+            </svg>
+            Formation
+          </h3>
+          <div class="cv-timeline">
+            <div class="cv-timeline-item" *ngFor="let edu of educations()">
+              <div class="cv-timeline-dot"></div>
+              <div class="cv-timeline-body">
+                <div class="cv-timeline-header">
+                  <span class="cv-timeline-role">{{ edu.diplome }}</span>
+                  <span class="cv-timeline-date">{{ edu.debut }} — {{ edu.fin }}</span>
+                </div>
+                <span class="cv-timeline-company">{{ edu.etablissement }}</span>
+              </div>
             </div>
           </div>
         </section>
+
+        <!-- ③ Expériences -->
+        <section class="cv-section" *ngIf="experiences().length > 0">
+          <h3 class="cv-section__title">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+              <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+            </svg>
+            Expériences
+          </h3>
+          <div class="cv-timeline">
+            <div class="cv-timeline-item" *ngFor="let exp of experiences()">
+              <div class="cv-timeline-dot"></div>
+              <div class="cv-timeline-body">
+                <div class="cv-timeline-header">
+                  <span class="cv-timeline-role">{{ exp.role }}</span>
+                  <span class="cv-timeline-date">{{ exp.start }} — {{ exp.end }}</span>
+                </div>
+                <span class="cv-timeline-company">{{ exp.company }}</span>
+                <p class="cv-timeline-desc" *ngIf="exp.description">{{ exp.description }}</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ④ Projets clés -->
+        <section class="cv-section" *ngIf="allProjects().length > 0">
+          <h3 class="cv-section__title">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+              <polyline points="2 17 12 22 22 17"/>
+              <polyline points="2 12 12 17 22 12"/>
+            </svg>
+            Projets Clés
+          </h3>
+          <div class="cv-projects-grid">
+            <div class="cv-project-card" *ngFor="let p of allProjects()">
+              <div class="cv-project-card__top" [style.background]="p.color"></div>
+              <div class="cv-project-card__body">
+                <h4 class="cv-project-name">{{ p.name }}</h4>
+                <p class="cv-project-stack">{{ p.technologies.join(', ') }}</p>
+                <p class="cv-project-desc">{{ p.description }}</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Message si aucune donnée -->
+        <div class="cv-empty" *ngIf="!profile()?.bio && educations().length === 0 && experiences().length === 0 && allProjects().length === 0">
+          <p>Remplis ton DevFolio ou tes Paramètres pour voir ton CV se générer ici.</p>
+        </div>
 
       </main>
     </div>

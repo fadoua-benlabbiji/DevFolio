@@ -2,7 +2,7 @@ import { Component, Input, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, NavigationEnd, RouterLink } from '@angular/router';
 import { filter } from 'rxjs/operators';
-import { UserService } from '../../user';
+import { UserService } from '../../data/user';
 
 @Component({
   selector: 'app-header',

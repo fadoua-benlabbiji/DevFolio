@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink, Router } from '@angular/router';
-import { UserService} from '../../user';// ← ajustez le chemin si besoin
+import { UserService} from '../../data/user';
 
 @Component({
   selector: 'app-connexion',

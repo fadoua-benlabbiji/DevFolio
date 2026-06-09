@@ -9,21 +9,21 @@
         Portfolio actif
       </p>
       <h2 class="welcome-card__greeting">
-        Bon retour, <span>{{ user.name }}</span> 👋
+        Bon retour, <span>{{ user().name }}</span> 👋
       </h2>
       <p class="welcome-card__sub">
         Ajoute tes projets, gère tes compétences et génère ton CV.
       </p>
       <div class="welcome-card__actions">
-        <a routerLink="/dashboard/cv" class="welcome-card__btn welcome-card__btn--primary">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-               stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-            <polyline points="14 2 14 8 20 8"/>
-          </svg>
-          Générer mon CV
-        </a>
-        <a routerLink="/dashboard/devfolio" class="welcome-card__btn welcome-card__btn--outline">
+      <button (click)="generateCV()" class="welcome-card__btn welcome-card__btn--primary">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+        </svg>
+        Générer mon CV
+      </button>
+        <a routerLink="/dashboard/devfolio" [queryParams]="{fullscreen: true}" class="welcome-card__btn welcome-card__btn--outline">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="10"/>
@@ -50,10 +50,10 @@
       <!-- Avatar avec overlay au hover -->
       <div class="avatar-container">
         @if (avatarPreview()) {
-          <img class="welcome-card__avatar" [src]="avatarPreview()!" [alt]="user.name" />
+          <img class="welcome-card__avatar" [src]="avatarPreview()!" [alt]="user().name" />
         } @else {
           <div class="welcome-card__avatar welcome-card__avatar--initials">
-            {{ user.initials }}
+            {{ user().initials }}
           </div>
         }
 
@@ -80,8 +80,8 @@
         <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
       </svg>
     </div>
-    <div class="stat__value">{{ stats[0].value }}</div>
-    <div class="stat__label">{{ stats[0].label }}</div>
+    <div class="stat__value">{{ stats()[0].value }}</div>
+    <div class="stat__label">{{ stats()[0].label }}</div>
   </div>
 
   <div class="stat">
@@ -91,8 +91,8 @@
         <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
       </svg>
     </div>
-    <div class="stat__value">{{ stats[1].value }}</div>
-    <div class="stat__label">{{ stats[1].label }}</div>
+    <div class="stat__value">{{ stats()[1].value }}</div>
+    <div class="stat__label">{{ stats()[1].label }}</div>
   </div>
 
   <div class="stat">
@@ -103,8 +103,8 @@
         <polyline points="22,6 12,13 2,6"/>
       </svg>
     </div>
-    <div class="stat__value">{{ stats[2].value }}</div>
-    <div class="stat__label">{{ stats[2].label }}</div>
+    <div class="stat__value">{{ stats()[2].value }}</div>
+    <div class="stat__label">{{ stats()[2].label }}</div>
   </div>
 </div>
 
@@ -136,7 +136,7 @@
         <div class="proj__dot" [style.background]="p.color"></div>
         <div class="proj__info">
           <div class="proj__name">{{ p.name }}</div>
-          <div class="proj__stack">{{ p.stack }}</div>
+          <div class="proj__stack">{{ p.technologies?.join(', ') }}</div>
         </div>
         <div class="proj__right">
           <span class="badge badge--done" *ngIf="p.pct === 100">Terminé</span>

@@ -19,7 +19,7 @@
   top: -200px;
   right: -200px;
   width: 600px;
-  height: 600px;
+  height:600px;
   background: radial-gradient(circle, color-mix(in srgb, var(--proj-color) 18%, transparent), transparent 70%);
   pointer-events: none;
   z-index: 0;

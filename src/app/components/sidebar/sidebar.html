@@ -2,48 +2,48 @@
 <aside class="sidebar">
 
   <!-- Logo -->
-
   <div class="sidebar__logo">
-   <a class="logo" (click)="logout()" style="cursor:pointer">
+    <a class="logo" (click)="logout()" style="cursor:pointer">
       <div class="logo-icon">
         <img src="logo2.png" class="logo-img" width="30px" height="30px">
       </div>
       <span class="sidebar__logo-text">DevFolio</span>
     </a>
   </div>
-<!-- User Profile -->
-<div class="sidebar__user">
-  @if (user().avatar) {
-    <img class="sidebar__avatar" [src]="user().avatar" [alt]="user().name" />
-  } @else {
-    <div class="sidebar__avatar sidebar__avatar--initials">
-      {{ user().initials }}
+
+  <!-- User Profile -->
+  <div class="sidebar__user">
+    @if (user().avatar) {
+      <img class="sidebar__avatar" [src]="user().avatar" [alt]="user().name" />
+    } @else {
+      <div class="sidebar__avatar sidebar__avatar--initials">
+        {{ user().initials }}
+      </div>
+    }
+    <div class="sidebar__user-info">
+      <span class="sidebar__user-name">{{ user().name }}</span>
+      <span class="sidebar__user-handle">{{ user().username }}</span>
     </div>
-  }
-  <div class="sidebar__user-info">
-    <span class="sidebar__user-name">{{ user().name }}</span>
-    <span class="sidebar__user-handle">{{ user().username }}</span>
   </div>
-</div>
 
   <!-- Navigation -->
   <nav class="sidebar__nav">
     <ul class="sidebar__nav-list">
-      <li *ngFor="let item of navItems" class="sidebar__nav-item">
-        <button
-          class="sidebar__nav-btn"
-          [routerLink]="item.route"
-          routerLinkActive="sidebar__nav-btn--active"
-        >
-          <span class="sidebar__nav-icon" [innerHTML]="getIcon(item.icon)"></span>
-          <span class="sidebar__nav-label">{{ item.label }}</span>
-          <!-- Badge dynamique -->
-          <span
-            *ngIf="item.badgeFn && item.badgeFn() > 0"
-            class="sidebar__nav-badge"
-          >{{ item.badgeFn() }}</span>
-        </button>
-      </li>
+      @for (item of navItems; track item.route) {
+        <li class="sidebar__nav-item">
+          <button
+            class="sidebar__nav-btn"
+            [routerLink]="item.route"
+            [class.sidebar__nav-btn--active]="isActive(item.route)"
+          >
+            <span class="sidebar__nav-icon" [innerHTML]="getIcon(item.icon)"></span>
+            <span class="sidebar__nav-label">{{ item.label }}</span>
+            @if (item.badgeFn && item.badgeFn() > 0) {
+              <span class="sidebar__nav-badge">{{ item.badgeFn() }}</span>
+            }
+          </button>
+        </li>
+      }
     </ul>
   </nav>
 
@@ -61,4 +61,5 @@
       <span>Déconnexion</span>
     </button>
   </div>
+
 </aside>

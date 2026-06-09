@@ -766,3 +766,151 @@
   opacity: 0.9; /* plus transparent */
   transition: width .3s ease;
 }
+/* ══ MODAL ══ */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 28px;
+  width: 100%;
+  max-width: 560px;
+  max-height: 90vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+}
+
+.modal-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #111;
+  margin: 0 0 4px;
+}
+
+/* Séparateur de sections dans le formulaire */
+.form-divider {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #9ca3af;
+  padding: 4px 0;
+  border-bottom: 1px solid #f3f4f6;
+  margin-top: 4px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #374151;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  padding: 9px 12px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #111;
+  background: #fafafa;
+  outline: none;
+  transition: border-color 0.15s;
+  font-family: inherit;
+  resize: vertical;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  border-color: #111;
+  background: #fff;
+}
+
+.form-group input[type="range"] {
+  padding: 4px 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  accent-color: #111;
+}
+
+.form-group input[type="color"] {
+  padding: 2px 4px;
+  height: 38px;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.form-hint {
+  font-size: 11px;
+  color: #9ca3af;
+  margin-top: 2px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 8px;
+  padding-top: 16px;
+  border-top: 1px solid #f3f4f6;
+}
+/* ── Option "Nouvelle catégorie" en vert ── */
+select option[value="__custom__"] {
+  color: #16a34a;
+  font-weight: 700;
+}
+/* ── Bouton "Nouvelle catégorie" ── */
+.btn-add-category {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  background: #16a34a;
+  color: #ffffff;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  letter-spacing: 0.01em;
+  margin-top: 4px;
+  align-self: flex-start;
+}
+
+.btn-add-category:hover {
+  background: #15803d;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
+}
+.c{
+  padding: 24px;
+}

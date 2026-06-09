@@ -1,196 +1,274 @@
 <div class="project-detail">
   @if (project) {
-    <!-- Header -->
-    <div class="project-header">
-      <button class="back-btn" (click)="goBack()">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M19 12H5M12 19l-7-7 7-7"/>
-        </svg>
-        Retour aux projets
-      </button>
-      
-      <div class="project-hero">
-        @if (project.logo) {
-          <div class="project-logo">
-            <img [src]="project.logo" [alt]="project.name" />
-          </div>
-        }
-        
-        <div class="project-hero-content">
-          <h1 class="project-title">{{ project.name }}</h1>
-          <p class="project-stack">{{ project.stack }}</p>
-          <p class="project-desc">{{ project.description }}</p>
-          
-          <!-- Status -->
-          <div class="project-status">
-            @if (project.pct === 100) {
-              <span class="badge badge--done">✓ Terminé</span>
-            } @else {
-              <span class="badge badge--wip">{{ project.pct }}% · {{ progressStatus }}</span>
-            }
-          </div>
 
-          <!-- Progress bar -->
-          @if (project.pct < 100) {
-            <div class="progress-section">
-              <div class="prog-bg">
-                <div class="prog-fill" [style.width.%]="project.pct" [style.background]="project.color"></div>
-              </div>
-              <span class="progress-label">{{ project.pct }}% complété</span>
+    <button class="back-btn" (click)="goBack()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+      </svg>
+      Retour aux projets
+    </button>
+
+    <!-- ══ HERO ══ -->
+    <div class="project-hero">
+      <div class="hero-accent" [style.background]="project.color || '#F5C518'"></div>
+
+      <div class="project-hero-content">
+
+        <div class="hero-top">
+          @if (project.logo) {
+            <div class="project-logo">
+              <img [src]="project.logo" [alt]="project.name" />
+            </div>
+          } @else {
+            <div class="project-logo-placeholder" [style.background]="project.color || '#111'">
+              {{ project.name.charAt(0).toUpperCase() }}
             </div>
           }
+          <div class="hero-title-block">
+            <h1 class="project-title">{{ project.name }}</h1>
+            <div class="project-status">
+              @if (project.pct === 100) {
+                <span class="badge badge--done">✓ Terminé</span>
+              } @else {
+                <span class="badge badge--wip">⏳ {{ project.pct }}% · {{ progressStatus }}</span>
+              }
+            </div>
+          </div>
+        </div>
 
-          <!-- Links -->
-          <div class="project-links">
-            @if (project.github) {
-              <a [href]="project.github" target="_blank" class="btn btn-primary">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.375 3.375 0 0 0-.975-2.438 3.75 3.75 0 0 0 1.425-2.873c0-.75-.3-1.462-.93-2.012a3.75 3.75 0 0 0 .465-1.88c0-2.686-2.239-4.875-5-4.875S7 2.314 7 5s2.239 4.875 5 4.875c.524 0 1.024-.077 1.5-.228"/>
+        <p class="project-desc">{{ project.description }}</p>
+
+        <div class="stack-tags">
+          @for (t of (project.technologies ?? []); track t) {
+            <span class="stack-tag">{{ t.trim() }}</span>
+          }
+        </div>
+
+        @if (project.pct < 100) {
+          <div class="progress-section">
+            <div class="progress-header">
+              <span class="progress-text">Avancement</span>
+              <span class="progress-pct">{{ project.pct }}%</span>
+            </div>
+            <div class="prog-bg">
+              <div class="prog-fill" [style.width.%]="project.pct" [style.background]="project.color"></div>
+            </div>
+          </div>
+        }
+
+        <div class="project-links">
+          @if (project.github && project.github !== '#') {
+            <a [href]="project.github" target="_blank" class="btn btn-dark">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5 5 0 0 0 20 4.77 4.92 4.92 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A4.92 4.92 0 0 0 5 4.77a5 5 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+              </svg>
+              Code source
+            </a>
+          }
+          @if (project.demo && project.demo !== '#') {
+            <a [href]="project.demo" target="_blank" class="btn btn-outline">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                <polyline points="15 3 21 3 21 9"/>
+                <line x1="10" y1="14" x2="21" y2="3"/>
+              </svg>
+              Voir la démo
+            </a>
+          }
+        </div>
+
+      </div>
+
+      <div class="hero-pct" [style.border-color]="project.color">
+        <span class="hero-pct__num" [style.color]="project.color">{{ project.pct }}</span>
+        <span class="hero-pct__label">%</span>
+      </div>
+
+    </div>
+
+    <!-- ══ BODY ══ -->
+    <div class="project-content">
+
+      <div class="content-main">
+
+        @if (project.readme) {
+          <div class="content-section">
+            <div class="section-header">
+              <span class="section-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                  <polyline points="14 2 14 8 20 8"/>
+                  <line x1="16" y1="13" x2="8" y2="13"/>
+                  <line x1="16" y1="17" x2="8" y2="17"/>
                 </svg>
-                GitHub
-              </a>
-            }
-            @if (project.demo) {
-              <a [href]="project.demo" target="_blank" class="btn btn-secondary">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              </span>
+              <p class="section-label">À propos du projet</p>
+            </div>
+            <div class="readme-content">{{ project.readme }}</div>
+          </div>
+        }
+
+        @if (project.features && project.features.length > 0) {
+          <div class="content-section">
+            <div class="section-header">
+              <span class="section-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                </svg>
+              </span>
+              <p class="section-label">Fonctionnalités clés</p>
+            </div>
+            <ul class="features-list">
+              @for (feature of project.features; track feature) {
+                <li>
+                  <span class="feature-check">✓</span>
+                  {{ feature }}
+                </li>
+              }
+            </ul>
+          </div>
+        }
+
+        @if (project.impact) {
+          <div class="content-section">
+            <div class="section-header">
+              <span class="section-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <circle cx="12" cy="12" r="10"/>
-                  <path d="M12 6v6l4 2"/>
+                  <circle cx="12" cy="12" r="6"/>
+                  <circle cx="12" cy="12" r="2"/>
                 </svg>
-                Demo en ligne
-              </a>
+              </span>
+              <p class="section-label">Impact & Résultats</p>
+            </div>
+            <div class="impact-box">{{ project.impact }}</div>
+          </div>
+        }
+
+
+
+        @if (project.images && project.images.length > 0) {
+          <div class="content-section">
+            <div class="section-header">
+              <span class="section-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="3" width="18" height="18" rx="2"/>
+                  <circle cx="8.5" cy="8.5" r="1.5"/>
+                  <polyline points="21 15 16 10 5 21"/>
+                </svg>
+              </span>
+              <p class="section-label">Galerie</p>
+            </div>
+            <div class="gallery">
+              @for (image of project.images; track image) {
+                <div class="gallery-item">
+                  <img [src]="image" [alt]="project.name" />
+                </div>
+              }
+            </div>
+          </div>
+        }
+
+        @if (!project.readme && !project.features?.length && !project.impact && !project.technologies?.length) {
+          <div class="content-section empty-content">
+            <div class="empty-content-inner">
+              <div class="empty-icon">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                  <polyline points="14 2 14 8 20 8"/>
+                </svg>
+              </div>
+              <p class="empty-title">Aucun détail ajouté</p>
+              <p class="empty-desc">Modifiez ce projet pour ajouter une description, des fonctionnalités et plus encore.</p>
+            </div>
+          </div>
+        }
+
+      </div>
+
+      <!-- Sidebar -->
+      <div class="content-sidebar">
+
+        <div class="sidebar-card">
+          <p class="section-label">Avancement</p>
+          <div class="sidebar-progress">
+            <div class="sidebar-progress-top">
+              <span>{{ progressStatus }}</span>
+              <strong [style.color]="project.color">{{ project.pct }}%</strong>
+            </div>
+            <div class="prog-bg">
+              <div class="prog-fill" [style.width.%]="project.pct" [style.background]="project.color || '#111'"></div>
+            </div>
+          </div>
+        </div>
+
+        @if (project.role || project.startDate) {
+          <div class="sidebar-card">
+            <p class="section-label">Infos</p>
+            @if (project.role) {
+              <div class="info-row">
+                <span class="info-label">Rôle</span>
+                <span class="info-value">{{ project.role }}</span>
+              </div>
+            }
+            @if (project.startDate) {
+              <div class="info-row">
+                <span class="info-label">Période</span>
+                <span class="info-value">{{ project.startDate }}{{ project.endDate ? ' → ' + project.endDate : ' → En cours' }}</span>
+              </div>
+            }
+          </div>
+        }
+
+        <div class="sidebar-card">
+          <p class="section-label">Technologies utilisées</p>
+          <div class="tags-list">
+            @for (s of (project.technologies ?? []); track s) {
+              <span class="tag">{{ s.trim() }}</span>
             }
           </div>
         </div>
-      </div>
-    </div>
 
-    <!-- Main Content -->
-    <div class="project-content">
-      
-      <!-- Description -->
-      @if (project.readme) {
-        <section class="content-section">
-          <h2>À propos du projet</h2>
-          <div class="readme-content">
-            {{ project.readme }}
-          </div>
-        </section>
-      }
-
-      <!-- Infos clés -->
-      <section class="info-grid">
-        @if (project.startDate || project.endDate) {
-          <div class="info-card">
-            <h3>Période</h3>
-            <p>
-              @if (project.startDate) { {{ project.startDate }} }
-              @if (project.startDate && project.endDate) { <span class="sep">→</span> }
-              @if (project.endDate) { {{ project.endDate }} }
-            </p>
-          </div>
-        }
-        
-        @if (project.role) {
-          <div class="info-card">
-            <h3>Mon rôle</h3>
-            <p>{{ project.role }}</p>
+        @if ((project.github && project.github !== '#') || (project.demo && project.demo !== '#')) {
+          <div class="sidebar-card">
+            <p class="section-label">Liens</p>
+            <div class="links-list">
+              @if (project.github && project.github !== '#') {
+                <a [href]="project.github" target="_blank" class="link-external">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5 5 0 0 0 20 4.77 4.92 4.92 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A4.92 4.92 0 0 0 5 4.77a5 5 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+                  </svg>
+                  GitHub
+                </a>
+              }
+              @if (project.demo && project.demo !== '#') {
+                <a [href]="project.demo" target="_blank" class="link-external">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                    <polyline points="15 3 21 3 21 9"/>
+                    <line x1="10" y1="14" x2="21" y2="3"/>
+                  </svg>
+                  Démo en ligne
+                </a>
+              }
+            </div>
           </div>
         }
 
         @if (project.color) {
-          <div class="info-card">
-            <h3>Couleur</h3>
-            <div style="display: flex; align-items: center; gap: 8px;">
-              <div class="color-swatch" [style.background]="project.color"></div>
-              <span>{{ project.color }}</span>
+          <div class="sidebar-card">
+            <p class="section-label">Couleur du projet</p>
+            <div class="color-row">
+              <div class="color-dot" [style.background]="project.color"></div>
+              <span class="color-hex">{{ project.color }}</span>
             </div>
           </div>
         }
-      </section>
 
-      <!-- Technologies -->
-      @if (project.technologies && project.technologies.length > 0) {
-        <section class="content-section">
-          <h2>Technologies utilisées</h2>
-          <div class="tags-list">
-            @for (tech of project.technologies; track tech) {
-              <span class="tag">{{ tech }}</span>
-            }
-          </div>
-        </section>
-      }
-
-      <!-- Fonctionnalités -->
-      @if (project.features && project.features.length > 0) {
-        <section class="content-section">
-          <h2>Fonctionnalités principales</h2>
-          <ul class="features-list">
-            @for (feature of project.features; track feature) {
-              <li>{{ feature }}</li>
-            }
-          </ul>
-        </section>
-      }
-
-      <!-- Galerie d'images -->
-      @if (project.images && project.images.length > 0) {
-        <section class="content-section">
-          <h2>Galerie</h2>
-          <div class="gallery">
-            @for (image of project.images; track image) {
-              <div class="gallery-item">
-                <img [src]="image" [alt]="project.name" />
-              </div>
-            }
-          </div>
-        </section>
-      }
-
-      <!-- Impact -->
-      @if (project.impact) {
-        <section class="content-section">
-          <h2>Impact & Résultats</h2>
-          <div class="impact-box">
-            {{ project.impact }}
-          </div>
-        </section>
-      }
-
-      <!-- Détails complets -->
-      <section class="details-full">
-        <h2>Détails techniques</h2>
-        <div class="details-grid">
-          <div class="detail-item">
-            <h3>Stack technique</h3>
-            <p>{{ project.stack }}</p>
-          </div>
-
-          @if (project.pct) {
-            <div class="detail-item">
-              <h3>Statut d'avancement</h3>
-              <p>{{ progressStatus }} ({{ project.pct }}%)</p>
-            </div>
-          }
-
-          @if (project.github) {
-            <div class="detail-item">
-              <h3>Dépôt GitHub</h3>
-              <a [href]="project.github" target="_blank" class="link-external">Consulter le repo</a>
-            </div>
-          }
-
-          @if (project.demo) {
-            <div class="detail-item">
-              <h3>Démo en ligne</h3>
-              <a [href]="project.demo" target="_blank" class="link-external">Voir la démo</a>
-            </div>
-          }
-        </div>
-      </section>
+      </div>
     </div>
+
   } @else {
-    <div class="loading">
-      <p>Chargement du projet...</p>
-    </div>
+    <div class="loading">Chargement du projet…</div>
   }
 </div>

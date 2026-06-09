@@ -1,21 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
 import { RouterLink, Router } from '@angular/router';
 import { HeaderIndex } from '../../components/header-index/header-index';
 import { Footer } from '../../components/footer/footer';
-
-export interface Profile {
-  id: number;
-  nom: string;
-  titre: string;
-  bio: string;
-  ville: string;
-  projets: number;
-  skills: string[];
-  avatar: string;
-  featured: boolean;
-}
+import { UserService, UserProfile } from '../../data/user';
 
 @Component({
   selector: 'app-acceuil',
@@ -26,7 +14,10 @@ export interface Profile {
 })
 export class Acceuil implements OnInit {
 
-  profiles: Profile[] = [];
+  private userSvc = inject(UserService);
+  private router  = inject(Router);
+
+  profiles: UserProfile[] = [];
 
   features = [
     {
@@ -61,13 +52,9 @@ export class Acceuil implements OnInit {
     }
   ];
 
-  constructor(private http: HttpClient, private router: Router) {}
-
   ngOnInit(): void {
-    this.http.get<Profile[]>('assets/profiles.json').subscribe({
-      next: (data) => this.profiles = data,
-      error: (err) => console.error('Erreur lors du chargement des profils', err)
-    });
+    // Charge les profils featured depuis UserService (plus de dépendance JSON)
+    this.profiles = this.userSvc.getAllProfiles().filter(p => p.featured);
   }
 
   goRegister(): void {

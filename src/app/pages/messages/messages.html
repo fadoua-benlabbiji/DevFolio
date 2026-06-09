@@ -1,189 +1,214 @@
-<!-- messages.html — Style Gmail/Outlook -->
+<!-- messages.html -->
+
 <div class="msg-layout">
 
   <!-- ══ SIDEBAR ══ -->
   <aside class="msg-sidebar">
 
+    <!-- En-tête + bouton composer -->
     <div class="msg-sidebar__head">
       <h2 class="msg-sidebar__title">Messages</h2>
-      <span class="msg-sidebar__badge" *ngIf="msgSvc.unreadCount() > 0">
-        {{ msgSvc.unreadCount() }}
-      </span>
+      <button class="msg-compose-btn" (click)="openCompose()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 5v14M5 12h14"/>
+        </svg>
+        Composer
+      </button>
     </div>
 
-    <div class="msg-sidebar__search">
-      <i class="ti ti-search msg-search-icon"></i>
+    <!-- Recherche -->
+    <div class="msg-search-wrap">
+      <svg class="msg-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+      </svg>
       <input
         type="text"
         class="msg-search-input"
         placeholder="Rechercher…"
-        [(ngModel)]="searchQuery"
+        [value]="searchQuery()"
+        (input)="searchQuery.set($any($event.target).value)"
       />
     </div>
 
-    <ul class="msg-conv-list">
-      <li
-        *ngFor="let conv of filteredConversations()"
-        class="msg-conv-item"
-        [class.msg-conv-item--active]="msgSvc.selectedId() === conv.id"
-        [class.msg-conv-item--unread]="msgSvc.unreadInConv(conv) > 0"
-        (click)="selectConv(conv.id)"
-      >
-        <div class="msg-conv-avatar-wrap">
-          <img class="msg-conv-avatar" [src]="conv.contactAvatar" [alt]="conv.contactName" />
-          <span class="msg-conv-online" *ngIf="conv.isOnline"></span>
-        </div>
-
-        <div class="msg-conv-info">
-          <div class="msg-conv-top">
-            <span class="msg-conv-name">{{ conv.contactName }}</span>
-            <span class="msg-conv-time">
-              {{ msgSvc.lastMessage(conv) ? msgSvc.formatTime(msgSvc.lastMessage(conv)!.sentAt) : '' }}
-            </span>
-          </div>
-          <div class="msg-conv-bottom">
-            <span class="msg-conv-preview">
-              <span *ngIf="msgSvc.lastMessage(conv)?.senderId === myId" class="msg-mine-prefix">Vous : </span>
-              {{ msgSvc.lastMessage(conv)?.text | msgTronquer:42 }}
-            </span>
-            <span class="msg-conv-unread" *ngIf="msgSvc.unreadInConv(conv) > 0">
-              {{ msgSvc.unreadInConv(conv) }}
-            </span>
-          </div>
-        </div>
-      </li>
-
-      <li class="msg-conv-empty" *ngIf="filteredConversations().length === 0">
-        <i class="ti ti-message-off"></i>
-        <p>Aucune conversation trouvée</p>
-      </li>
-    </ul>
-  </aside>
-
-  <!-- ══ PANNEAU CHAT ══ -->
-  <main class="msg-chat" *ngIf="msgSvc.selectedConversation() as conv; else noConv">
-
-    <!-- En-tête -->
-    <div class="msg-chat__head">
-      <div class="msg-chat__contact">
-        <div class="msg-chat-avatar-wrap">
-          <img class="msg-chat-avatar" [src]="conv.contactAvatar" [alt]="conv.contactName" />
-          <span class="msg-chat-online" *ngIf="conv.isOnline"></span>
-        </div>
-        <div class="msg-chat-contact-info">
-          <span class="msg-chat-contact-name">{{ conv.contactName }}</span>
-          <span class="msg-chat-contact-title">{{ conv.contactTitle }}</span>
-          <span class="msg-chat-status" [class.online]="conv.isOnline">
-            {{ conv.isOnline ? '● En ligne' : (conv.lastSeen ?? 'Hors ligne') }}
-          </span>
-        </div>
-      </div>
-      <div class="msg-chat__actions">
-        <button class="msg-action-btn" title="Appel vidéo">
-          <i class="ti ti-video"></i>
-        </button>
-        <button class="msg-action-btn" title="Plus d'options">
-          <i class="ti ti-dots-vertical"></i>
-        </button>
-      </div>
-    </div>
-
-    <!-- Zone messages -->
-    <div class="msg-chat__body" #chatBody>
-      <ng-container *ngFor="let group of msgSvc.groupByDate(conv.messages)">
-
-        <!-- Séparateur date -->
-        <div class="msg-date-sep">
-          <span>{{ msgSvc.formatDateSeparator(group.date) }}</span>
-        </div>
-
-        <!-- Messages -->
-        <div
-          *ngFor="let msg of group.messages"
-          class="msg-bubble-wrap"
-          [class.msg-bubble-wrap--mine]="msg.senderId === myId"
-          [class.msg-bubble-wrap--theirs]="msg.senderId !== myId"
-        >
-          <!-- Avatar contact (seulement si message reçu + dernier du groupe) -->
-          <img
-            *ngIf="msg.senderId !== myId && isLastInGroup(group.messages, msg)"
-            class="msg-bubble-avatar"
-            [src]="conv.contactAvatar"
-            [alt]="conv.contactName"
-          />
-          <div
-            *ngIf="msg.senderId !== myId && !isLastInGroup(group.messages, msg)"
-            class="msg-bubble-avatar-placeholder"
-          ></div>
-
-          <!-- Bulle -->
-          <div
-            class="msg-bubble"
-            [class.msg-bubble--mine]="msg.senderId === myId"
-            [class.msg-bubble--theirs]="msg.senderId !== myId"
-          >
-            <p class="msg-bubble__text">{{ msg.text }}</p>
-            <div class="msg-bubble__meta">
-              <span class="msg-bubble__time">{{ msgSvc.formatTime(msg.sentAt) }}</span>
-              <span *ngIf="msg.senderId === myId" class="msg-status" [ngClass]="'msg-status--' + msg.status">
-                <!-- sending -->
-                <svg *ngIf="msg.status === 'sending'" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                <!-- sent -->
-                <svg *ngIf="msg.status === 'sent'" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-                <!-- delivered -->
-                <svg *ngIf="msg.status === 'delivered'" width="16" height="13" viewBox="0 0 28 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 12 9 17 20 6"/><polyline points="11 17 22 6"/></svg>
-                <!-- read -->
-                <svg *ngIf="msg.status === 'read'" width="16" height="13" viewBox="0 0 28 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 12 9 17 20 6"/><polyline points="11 17 22 6"/></svg>
-              </span>
-            </div>
-          </div>
-        </div>
-
-      </ng-container>
-
-      <!-- Typing indicator -->
-      <div class="msg-typing" *ngIf="isTyping()">
-        <img class="msg-typing-avatar" [src]="conv.contactAvatar" [alt]="conv.contactName" />
-        <div class="msg-typing-bubble">
-          <span class="msg-typing-dot"></span>
-          <span class="msg-typing-dot"></span>
-          <span class="msg-typing-dot"></span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Zone saisie -->
-    <div class="msg-chat__footer">
-      <div class="msg-input-wrap">
-        <button class="msg-attach-btn" title="Joindre"><i class="ti ti-paperclip"></i></button>
-        <textarea
-          class="msg-input"
-          [placeholder]="'Répondre à ' + conv.contactName + '…'"
-          [(ngModel)]="draftText"
-          (keydown.enter)="onEnter($any($event))"
-          rows="1"
-          #msgInput
-        ></textarea>
-        <button class="msg-emoji-btn" title="Emoji"><i class="ti ti-mood-smile"></i></button>
-      </div>
+    <!-- Onglets Reçus / Envoyés -->
+    <div class="msg-tabs">
       <button
-        class="msg-send-btn"
-        [class.msg-send-btn--active]="draftText.trim().length > 0"
-        (click)="send()"
-        [disabled]="!draftText.trim()"
-        title="Envoyer"
+        class="msg-tab"
+        [class.msg-tab--active]="ongletActif() === 'reçus'"
+        (click)="changerOnglet('reçus')"
       >
-        <i class="ti ti-send"></i>
+        Reçus
+        @if (unread() > 0) {
+          <span class="msg-badge">{{ unread() }}</span>
+        }
+      </button>
+      <button
+        class="msg-tab"
+        [class.msg-tab--active]="ongletActif() === 'envoyés'"
+        (click)="changerOnglet('envoyés')"
+      >
+        Envoyés
       </button>
     </div>
 
+    <!-- Liste des messages -->
+    <ul class="msg-list">
+
+      @for (msg of filteredList(); track msg.id) {
+        <li
+          class="msg-item"
+          [class.msg-item--active]="selectedId() === msg.id"
+          [class.msg-item--unread]="!msg.read && ongletActif() === 'reçus'"
+          (click)="select(msg)"
+        >
+          <div class="msg-item__avatar">
+            {{ initiales(msg.fromName) }}
+          </div>
+          <div class="msg-item__content">
+            <div class="msg-item__top">
+              <span class="msg-item__name">{{ msg.fromName }}</span>
+              <span class="msg-item__date">{{ formatDate(msg.date) }}</span>
+            </div>
+            <p class="msg-item__subject">{{ msg.subject }}</p>
+            <p class="msg-item__preview">{{ msg.body | apercu }}</p>
+          </div>
+        </li>
+      }
+
+      @empty {
+        <li class="msg-list__empty">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+            <polyline points="22,6 12,13 2,6"/>
+          </svg>
+          <p>Aucun message trouvé</p>
+        </li>
+      }
+
+    </ul>
+  </aside>
+
+  <!-- ══ DÉTAIL ══ -->
+  <main class="msg-detail">
+
+    @if (selectedMessage(); as msg) {
+
+      <div class="msg-detail__head">
+        <div class="msg-detail__meta">
+          <div class="msg-detail__avatar">
+            {{ initiales(msg.fromName) }}
+          </div>
+          <div>
+            <h3 class="msg-detail__subject">{{ msg.subject }}</h3>
+            <p class="msg-detail__from">
+              <span>De : {{ msg.fromName }}</span>
+              <span class="msg-detail__date">{{ formatDate(msg.date) }}</span>
+            </p>
+          </div>
+        </div>
+        <button class="msg-delete-btn" (click)="supprimer(msg.id)" title="Supprimer">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="3 6 5 6 21 6"/>
+            <path d="M19 6l-1 14H6L5 6"/>
+            <path d="M10 11v6M14 11v6"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="msg-detail__body">
+        <p>{{ msg.body }}</p>
+      </div>
+
+      @if (ongletActif() === 'reçus') {
+        <div class="msg-detail__footer">
+          <button class="msg-reply-btn" (click)="openCompose()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="9 17 4 12 9 7"/>
+              <path d="M20 18v-2a4 4 0 0 0-4-4H4"/>
+            </svg>
+            Répondre
+          </button>
+        </div>
+      }
+
+    } @else {
+
+      <div class="msg-detail__empty">
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+          <polyline points="22,6 12,13 2,6"/>
+        </svg>
+        <p>Sélectionnez un message</p>
+      </div>
+
+    }
+
   </main>
 
-  <ng-template #noConv>
-    <div class="msg-empty-state">
-      <i class="ti ti-messages"></i>
-      <p>Sélectionnez une conversation</p>
-    </div>
-  </ng-template>
-
 </div>
+
+<!-- ══ MODAL COMPOSER ══ -->
+@if (showCompose()) {
+  <div class="msg-compose-overlay" (click)="closeCompose()">
+    <div class="msg-compose-modal" (click)="$event.stopPropagation()">
+
+      <div class="msg-compose-modal__head">
+        <h3>Nouveau message</h3>
+        <button class="msg-compose-close" (click)="closeCompose()">✕</button>
+      </div>
+
+      <div class="msg-compose-modal__body">
+
+        <div class="msg-field">
+          <label class="msg-field__label">À</label>
+          <input
+            type="text"
+            class="msg-field__input"
+            placeholder="Nom du destinataire"
+            [value]="composeForm().toName"
+            (input)="setField('toName', $any($event.target).value)"
+          />
+        </div>
+
+        <div class="msg-field">
+          <label class="msg-field__label">Objet</label>
+          <input
+            type="text"
+            class="msg-field__input"
+            placeholder="Objet du message"
+            [value]="composeForm().subject"
+            (input)="setField('subject', $any($event.target).value)"
+          />
+        </div>
+
+        <div class="msg-field">
+          <label class="msg-field__label">Message</label>
+          <textarea
+            class="msg-field__textarea"
+            placeholder="Écrivez votre message…"
+            rows="6"
+            [value]="composeForm().body"
+            (input)="setField('body', $any($event.target).value)"
+          ></textarea>
+        </div>
+
+      </div>
+
+      <div class="msg-compose-modal__footer">
+        <button class="msg-cancel-btn" (click)="closeCompose()">Annuler</button>
+        <button
+          class="msg-send-btn"
+          (click)="envoyer()"
+          [disabled]="!composeForm().toName.trim() || !composeForm().subject.trim() || !composeForm().body.trim()"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="22" y1="2" x2="11" y2="13"/>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+          </svg>
+          Envoyer
+        </button>
+      </div>
+
+    </div>
+  </div>
+}

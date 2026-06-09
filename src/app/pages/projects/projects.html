@@ -1,4 +1,5 @@
-<div class="page-header">
+<div class="cont">
+  <div class="page-header">
 <div class="filter-tabs">
   <button class="filter-tab" [class.active]="activeFilter() === 'tous'" (click)="activeFilter.set('tous')">
 
@@ -35,18 +36,22 @@
       </h2>
 
       <div class="form-group">
-        <label>Nom du projet</label>
+        <label>Nom du projet *</label>
         <input type="text" [(ngModel)]="form.name" placeholder="Ex: TaskFlow" />
       </div>
 
       <div class="form-group">
-        <label>Stack technique</label>
-        <input type="text" [(ngModel)]="form.stack" placeholder="Ex: React, TypeScript, Supabase" />
+        <label>Technologies (séparées par virgule)</label>
+        <input type="text"
+               [ngModel]="form.technologies.join(', ')"
+               (ngModelChange)="form.technologies = $event.split(',').map(t => t.trim()).filter(t => t !== '')"
+               placeholder="Ex: React, TypeScript, Supabase" />
       </div>
 
       <div class="form-group">
-        <label>Description</label>
-        <textarea [(ngModel)]="form.description" rows="3" placeholder="Description courte du projet..."></textarea>
+        <label>Description courte</label>
+        <textarea [(ngModel)]="form.description" rows="3"
+                  placeholder="Description courte du projet..."></textarea>
       </div>
 
       <div class="form-row">
@@ -60,14 +65,26 @@
         </div>
       </div>
 
-      <div class="form-group">
-        <label>Logo du projet (URL)</label>
-        <input type="url" [(ngModel)]="form.logo" placeholder="https://.../logo.png" />
+      <div class="form-row">
+        <div class="form-group">
+          <label>Date de début</label>
+          <input type="text" [(ngModel)]="form.startDate" placeholder="Ex: Jan 2024" />
+        </div>
+        <div class="form-group">
+          <label>Date de fin</label>
+          <input type="text" [(ngModel)]="form.endDate" placeholder="Ex: Mars 2024 / En cours" />
+        </div>
       </div>
 
       <div class="form-group">
-        <label>Description README</label>
-        <textarea [(ngModel)]="form.readme" rows="5" placeholder="Description détaillée..."></textarea>
+        <label>Mon rôle</label>
+        <input type="text" [(ngModel)]="form.role"
+               placeholder="Ex: Lead Dev, Full-Stack…" />
+      </div>
+
+      <div class="form-group">
+        <label>Logo du projet (URL)</label>
+        <input type="url" [(ngModel)]="form.logo" placeholder="https://.../logo.png" />
       </div>
 
       <div class="form-row">
@@ -79,6 +96,24 @@
           <label>Demo</label>
           <input type="url" [(ngModel)]="form.demo" placeholder="https://..." />
         </div>
+      </div>
+
+      <div class="form-group">
+        <label>Fonctionnalités clés (une par ligne)</label>
+        <textarea [(ngModel)]="featuresText" rows="4"
+                  placeholder="- Authentification JWT&#10;- Dashboard temps réel"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Impact & Résultats</label>
+        <textarea [(ngModel)]="form.impact" rows="2"
+                  placeholder="Ex: +40% de performance, 200 utilisateurs actifs…"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>README / Documentation (Markdown)</label>
+        <textarea [(ngModel)]="form.readme" rows="6"
+                  placeholder="# Titre&#10;&#10;## Description…"></textarea>
       </div>
 
       <div class="modal-actions">
@@ -117,7 +152,11 @@
         </div>
         <div class="proj-card__info">
           <p class="proj-card__desc">{{ p.description | tronquer:90 }}</p>
-          <span class="proj-card__stack">{{ p.stack }}</span>
+          <div class="proj-card__stack">
+            @for (t of (p.technologies ?? []); track t) {
+              <span class="tech-tag">{{ t }}</span>
+            }
+          </div>
           @if (p.pct < 100) {
             <div class="prog-bg">
               <div class="prog-fill" [style.width.%]="p.pct" [style.background]="p.color"></div>
@@ -128,9 +167,9 @@
 
       <div class="proj-card__right">
         <div class="proj-card__links">
-          @if (p.github) {
-            <a [href]="p.github" target="_blank" class="link-chip">GitHub</a>
-          }
+        @if (p.github && p.github !== '#') {
+          <a [href]="p.github" target="_blank" class="link-chip">GitHub</a>
+        }
           <button class="link-chip" (click)="viewProject(p.id)">Détails</button>
         </div>
         <div class="proj-card__actions">
@@ -146,4 +185,5 @@
       <button class="btn btn-primary" (click)="openAdd()">Ajouter mon premier projet</button>
     </div>
   }
+</div>
 </div>
