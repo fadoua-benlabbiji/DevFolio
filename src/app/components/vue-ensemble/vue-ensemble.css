@@ -543,3 +543,6 @@ app-vue-ensemble {
 
 /* Cacher l'overlay — on ne veut pas de fond sombre */
 .avatar-overlay { display: none; }
+.cont{
+  padding: 24px;
+}

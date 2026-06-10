@@ -1,4 +1,5 @@
-<div class="welcome-card">
+<div class="cont">
+  <div class="welcome-card">
   <div class="welcome-card__content">
     <div class="welcome-card__left">
       <p class="welcome-card__tag">
@@ -36,7 +37,7 @@
     </div>
 
     <!-- ✅ Avatar cliquable pour modifier -->
-    <div class="welcome-card__avatar-wrap" (click)="triggerAvatarUpload()" title="Modifier la photo">
+    <div class="welcome-card__avatar-wrap" (click)="activerInput()" title="Modifier la photo">
 
       <!-- Input file caché -->
       <input
@@ -53,7 +54,7 @@
           <img class="welcome-card__avatar" [src]="avatarPreview()!" [alt]="user().name" />
         } @else {
           <div class="welcome-card__avatar welcome-card__avatar--initials">
-            {{ user().initials }}
+            {{ user().name | initiales }}
           </div>
         }
 
@@ -153,4 +154,5 @@
       </div>
     </div>
   </div>
+</div>
 </div>

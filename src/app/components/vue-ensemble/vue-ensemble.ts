@@ -3,11 +3,12 @@ import { Component, computed, inject } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { UserService } from '../../data/user';
 import { PortfolioService } from '../../data/portfolio';
+import { TronquerPipe } from '../../tronquer-pipe';
 
 @Component({
   selector: 'app-vue-ensemble',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule,TronquerPipe],
   templateUrl: './vue-ensemble.html',
   styleUrl: './vue-ensemble.css',
 })
@@ -17,60 +18,50 @@ export class VueEnsemble {
   private portfolioSvc = inject(PortfolioService);
   private router       = inject(Router);
 
-  readonly today = new Date().toLocaleDateString('fr-FR', {
-    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
-  });
-
-  readonly user = computed(() => {
+  public user = computed(() => {
     const u = this.userSvc.currentUser();
     const p = this.userSvc.myProfile();
     return {
-      name:     u ? `${u.prenom} ${u.nom}`.trim() : '',
-      initials: u ? `${u.prenom.charAt(0)}${u.nom.charAt(0)}`.toUpperCase() : '',
+      name:     u ? `${u.prenom} ${u.nom}` : '',
       avatar:   p?.avatar || null,
     };
   });
 
-  readonly avatarPreview = computed(() => this.userSvc.myProfile()?.avatar || null);
+  public avatarPreview = computed(() => this.userSvc.myProfile()?.avatar || null);
 
-  readonly skills   = this.portfolioSvc.mySkills;
-  readonly projects = this.portfolioSvc.myProjects;
-
-  readonly stats = computed(() => [
+  public skills   = this.portfolioSvc.mySkills;
+  public projects = this.portfolioSvc.myProjects;
+  public stats = computed(() => [
     { label: 'Projets réalisés', value: String(this.portfolioSvc.myProjects().length) },
     { label: 'Compétences',      value: String(this.portfolioSvc.mySkills().length) },
     { label: 'Messages non lus', value: String(this.portfolioSvc.unreadCount()) },
   ]);
 
-  /**
-   * Navigue vers /dashboard/cv et déclenche downloadCV()
-   * qui ouvre une NOUVELLE FENÊTRE contenant uniquement le .cv-paper,
-   * puis lance l'impression de cette fenêtre propre.
-   */
   generateCV(): void {
+    //changement de page
     this.router.navigate(['/dashboard/cv']).then(() => {
-      // Attendre qu'Angular ait rendu la page CV
+      
       setTimeout(() => {
-        // Chercher le composant CV via son bouton downloadCV
+     
         const btn = document.querySelector<HTMLButtonElement>('.cv-dl-btn');
         if (btn) {
-          btn.click();   // déclenche downloadCV() du composant CV
+          btn.click();   //simuler clique sur le button
         }
       }, 600);
     });
   }
 
-  triggerAvatarUpload(): void {
+  activerInput(): void {
     (document.getElementById('avatar-upload') as HTMLInputElement)?.click();
   }
 
   onAvatarChange(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    if (!input.files?.length) return;
-    const reader = new FileReader();
-    reader.onload = () => {
+    const input = event.target as HTMLInputElement; // event.target=element declencheur
+    if (!input.files?.length) return;  //aucun fichier selectionne
+    const reader = new FileReader();  //objet reader
+    reader.onload = () => {       //apres lecture
       this.userSvc.updateMyProfile({ avatar: reader.result as string });
     };
-    reader.readAsDataURL(input.files[0]);
+    reader.readAsDataURL(input.files[0]); //lecture de fichier
   }
 }

@@ -26,40 +26,34 @@ export class MonDevfolio implements OnInit {
   private route        = inject(ActivatedRoute);
   private sanitizer    = inject(DomSanitizer);
 
-  // ── State ─────────────────────────────────────────────────────────────────
+
   activeTab     = signal<Tab>('infos');
   previewView   = signal<View>('portfolio');
   activeProject = signal<Project | null>(null);
-  saved         = signal(false);
   colors        = COLORS;
-  isLoading     = signal(false);
   fullPreview   = signal(false);
   tabsList: Tab[] = ['infos', 'competences', 'projets', 'experience', 'formation'];
 
-  // ── Portfolio data ────────────────────────────────────────────────────────
   projects    = this.portfolioSvc.myProjects;
   skills      = this.portfolioSvc.mySkills;
   experiences = this.portfolioSvc.myExperiences;
 
-  // Formations & Langues depuis UserService
-  readonly formations = this.userSvc.myEducations;
-  readonly languages  = this.userSvc.myLanguages;
+  public formations = this.userSvc.myEducations;
+  public languages  = this.userSvc.myLanguages;
 
-  // ── Profil (lié à UserService) ────────────────────────────────────────────
   profileForm: any = {};
 
-  readonly accentColor = computed(() =>
+  public accentColor = computed(() =>
     this.profileForm.accentColor ?? this.userSvc.myProfile()?.accentColor ?? '#F5C518'
   );
 
-  readonly slug = computed(() => {
+  public slug = computed(() => {
     const p = this.userSvc.myProfile();
     return p?.username || 'mon-portfolio';
   });
 
-  // ── Profile computed (pour le template preview) ──────────────────────────
-  /** Vue normalisée du profil courant pour le template de prévisualisation */
-  readonly profile = computed(() => {
+ 
+  public profile = computed(() => {
     const p    = this.userSvc.myProfile();
     const u    = this.userSvc.currentUser();
     const email = u?.email ?? '';
@@ -76,18 +70,7 @@ export class MonDevfolio implements OnInit {
     };
   });
 
-  /** Indique si le portfolio a suffisamment de contenu à afficher */
-  hasContent(): boolean {
-    const p = this.profile();
-    return !!(
-      p.bio ||
-      p.title ||
-      this.projects().length ||
-      this.skills().length ||
-      this.experiences().length ||
-      this.formations().length
-    );
-  }
+
 
   // ── Formulaires ───────────────────────────────────────────────────────────
   newSkill = { name: '', category: 'Frontend', pct: 80 };

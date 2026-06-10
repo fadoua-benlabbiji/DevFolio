@@ -10,43 +10,36 @@ import { PortfolioService } from '../../data/portfolio';
   templateUrl: './cv.html',
   styleUrl: './cv.css',
 })
-export class CV implements AfterViewInit {
+export class CV  {  //apres le chargement 
 
   private userSvc      = inject(UserService);
   private portfolioSvc = inject(PortfolioService);
 
-  readonly profile     = this.userSvc.myProfile;
-  readonly educations  = this.userSvc.myEducations;
-  readonly languages   = this.userSvc.myLanguages;
+  public  profile     = this.userSvc.myProfile;
+  public educations  = this.userSvc.myEducations;
+  public languages   = this.userSvc.myLanguages;
 
-  readonly projects    = this.portfolioSvc.myProjects;
-  readonly skills      = this.portfolioSvc.mySkills;
-  readonly experiences = this.portfolioSvc.myExperiences;
+  public projects    = this.portfolioSvc.myProjects;
+  public skills      = this.portfolioSvc.mySkills;
+  public experiences = this.portfolioSvc.myExperiences;
 
-  readonly fullName = computed(() => {
+  public fullName = computed(() => {
     const u = this.userSvc.currentUser();
     return u ? `${u.prenom} ${u.nom}` : '';
   });
 
-  readonly email = computed(() =>
+  public email = computed(() =>
     this.userSvc.currentUser()?.email ?? ''
   );
 
-  // Tous les projets pour le CV (avec sécurisation technologies)
-  readonly allProjects = computed(() =>
+  // pour que technologie n etre pas null
+  public allProjects = computed(() =>
     this.projects().map(p => ({ ...p, technologies: p.technologies ?? [] }))
   );
 
-  // Top 3 projets : terminés d'abord, puis en cours
-  readonly topProjects = computed(() => {
-    const all = this.allProjects();
-    return [...all.filter(p => p.pct === 100), ...all.filter(p => p.pct < 100)].slice(0, 3);
-  });
 
   accentColor  = signal('#2563eb');
-  downloading  = signal(false);
-  downloaded   = signal(false);
-
+  
   readonly colorOptions = [
     { value: '#2563eb', label: 'Bleu Saphir' },
     { value: '#16a34a', label: 'Vert Émeraude' },
@@ -58,63 +51,53 @@ export class CV implements AfterViewInit {
     { value: '#0d9488', label: 'Teal Pro' },
   ];
 
-  ngAfterViewInit(): void {}
+
 
   setColor(color: string): void { this.accentColor.set(color); }
 
   async downloadCV(): Promise<void> {
-    this.downloading.set(true);
 
-    // Récupérer UNIQUEMENT le .cv-paper
+    // Récupérer le cv
     const cvEl = document.querySelector('.cv-paper') as HTMLElement;
-    if (!cvEl) { this.downloading.set(false); return; }
-
+    //creer une copie dom
     const clone = cvEl.cloneNode(true) as HTMLElement;
     const accent = this.accentColor();
 
-    // Remplacer les var(--accent) par la vraie couleur
-    this.resolveAccentVar(clone, accent);
+    // on affecte la valeur du couleur 
+    this.Affectercolor(clone, accent);
 
-    // Inliner les images base64
+    // preparation des image pour l imprimer
     await this.inlineImages(clone);
 
-    // Inliner aussi les styles calculés de la sidebar (background dark)
-    this.inlineComputedStyles(cvEl, clone);
-
+    // Inliner aussi les styles 
+    this.inlineStyles(cvEl, clone);
+    //outer retourne l elemenet sous forme de chaine
     const html = this.buildPrintHTML(clone.outerHTML, accent);
-
-    const printWindow = window.open('', '_blank', 'width=900,height=700');
-    if (!printWindow) { this.downloading.set(false); return; }
-
-    printWindow.document.open();
-    printWindow.document.write(html);
-    printWindow.document.close();
-
-    printWindow.onload = () => {
+      const win = window.open('', '_blank');
+      if (!win) return;
+      win.document.write(html);
+      win.document.close();
+      win.focus();
       setTimeout(() => {
-        printWindow.focus();
-        printWindow.print();
-        this.downloading.set(false);
-        this.downloaded.set(true);
-        setTimeout(() => this.downloaded.set(false), 3000);
-      }, 600);
-    };
+        win.print();       
+        win.close();
+      }, 500); 
   }
 
-  private resolveAccentVar(el: HTMLElement, accent: string): void {
-    el.querySelectorAll<HTMLElement>('[style]').forEach(node => {
+  private Affectercolor(el: HTMLElement, accent: string): void {
+    el.querySelectorAll<HTMLElement>('[style]').forEach(node => { //selectionner les elem qui ant attribut style
+      //tout le texte entre ""
       node.style.cssText = node.style.cssText.replace(/var\(--accent\)/g, accent);
     });
   }
 
-  /** Inline critical computed styles (background colors) from source to clone */
-  private inlineComputedStyles(source: HTMLElement, clone: HTMLElement): void {
+ 
+  private inlineStyles(source: HTMLElement, clone: HTMLElement): void {
     const sourceEls = Array.from(source.querySelectorAll<HTMLElement>('*'));
     const cloneEls  = Array.from(clone.querySelectorAll<HTMLElement>('*'));
     sourceEls.forEach((el, i) => {
       if (!cloneEls[i]) return;
       const cs = window.getComputedStyle(el);
-      // Forcer background et color pour les éléments clés
       const bg = cs.backgroundColor;
       const color = cs.color;
       if (bg && bg !== 'rgba(0, 0, 0, 0)' && bg !== 'transparent') {
@@ -125,10 +108,13 @@ export class CV implements AfterViewInit {
       }
     });
   }
-
+   //preparation de l image 
   private async inlineImages(el: HTMLElement): Promise<void> {
+    //pour transfomer de nodeListe a un tab js
     const imgs = Array.from(el.querySelectorAll<HTMLImageElement>('img'));
+    //resolue plusieur promise
     await Promise.all(imgs.map(img => new Promise<void>(resolve => {
+      //verifier qu'une image est en base64
       if (!img.src || img.src.startsWith('data:')) { resolve(); return; }
       const canvas = document.createElement('canvas');
       const image  = new Image();
@@ -136,10 +122,13 @@ export class CV implements AfterViewInit {
       image.onload  = () => {
         canvas.width  = image.naturalWidth;
         canvas.height = image.naturalHeight;
+        // dessiner l image dans le canva
         canvas.getContext('2d')!.drawImage(image, 0, 0);
+        //transfomrer l image ne base64
         img.src = canvas.toDataURL('image/png');
         resolve();
       };
+      //echec 
       image.onerror = () => resolve();
       image.src = img.src;
     })));

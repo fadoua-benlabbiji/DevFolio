@@ -1,8 +1,5 @@
-<!-- mon-devfolio.html — Design Élégant & Professionnel -->
+
 <div class="dv-root">
-
-  <!-- ══ TOP NAV ══ -->
-
 
   <!-- ══ EDITOR BAR ══ -->
   <div class="dv-editor-bar">
@@ -12,15 +9,10 @@
       </span>
     </div>
     <div class="dv-editor-bar__right">
-      <button class="dv-btn dv-btn--outline" (click)="resetAll()">
-        <i class="ti ti-refresh"></i> Réinitialiser
-      </button>
       <button class="dv-btn dv-btn--ghost" (click)="toggleFullPreview()">
         <i class="ti ti-maximize"></i> Plein écran
       </button>
-      <button class="dv-btn dv-btn--save" [class.dv-btn--saving]="isLoading()">
-        <i class="ti ti-device-floppy"></i> Sauvegarder
-      </button>
+
     </div>
   </div>
 
@@ -30,7 +22,7 @@
             class="dv-tab"
             [class.dv-tab--active]="activeTab() === tab"
             (click)="setTab(tab)">
-      <i [class]="getTabIcon(tab)"></i>
+
       {{ getTabLabel(tab) }}
     </button>
     <div class="dv-color-grid">
@@ -628,9 +620,8 @@
 
       </div>
 
-      <div class="dv-pf-empty" *ngIf="!hasContent()">
-        <div class="dv-pf-empty__icon">✦</div>
-        <p>Remplissez le formulaire pour voir votre portfolio ici en direct !</p>
+      <div class="dv-pf-empty" >
+      
       </div>
 
     </div>
